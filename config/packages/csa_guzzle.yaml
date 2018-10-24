@@ -5,6 +5,8 @@ csa_guzzle:
     profiler: '%kernel.debug%'
     clients:
         default: ~
-#        my_client:
-#            config:
-#                base_uri: 'http://example.com'
+        football_api:
+             config:
+                 base_uri: '%api_uri%'
+                 headers:
+                     X-Auth-Token: '%api_key%'
