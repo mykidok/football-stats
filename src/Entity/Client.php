@@ -17,8 +17,8 @@ class Client
     }
 
 
-    public function get($entrypoint, array $options = [])
+    public function get($entrypoint, array $options = []): array
     {
-        return json_decode($this->client->get($entrypoint, $options)->getBody()->getContents());
+        return json_decode($this->client->get($entrypoint, $options)->getBody()->getContents(), true);
     }
 }
