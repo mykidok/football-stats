@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    api_uri: 'https://api.football-data.org/v2/'
+    api_key: '%env(API_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -27,5 +29,8 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Entity\Client:
+        public: true
+        arguments:
+            $client: '@csa_guzzle.client.football_api'
+            $apiKey: '%api_key%'
