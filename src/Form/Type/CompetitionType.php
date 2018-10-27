@@ -17,15 +17,18 @@ class CompetitionType extends AbstractType
             ->add('competition', ChoiceType::class, [
                 'choices' => [
                     'Bundesliga' => '2002',
+                    'Ligue 1' => '2015',
                     'Serie A' => '2019',
                     'Premier League' => '2084',
-                    'Ligue 1' => '2015',
                 ],
-                'label' => 'Competitions',
-                'required' => false,
+                'required' => true,
+                'label' => false,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Submit',
+                'attr' => [
+                    'class' => 'btn btn-primary'
+                ],
             ])
         ;
     }

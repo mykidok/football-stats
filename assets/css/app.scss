@@ -20,11 +20,18 @@ body {
 }
 
 .home-blue {
-    height: 50%;
+    height: 55%;
     background: #00a9ff;
 }
 
 .home-white {
-    height: 50%;
+    padding-top: 10px;
+    height: 45%;
     background: white;
+}
+
+.force-to-bottom {
+  position: absolute;
+  bottom: 45%;
+  width: 100%;
 }
