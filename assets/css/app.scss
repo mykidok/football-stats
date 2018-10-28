@@ -1,0 +1,36 @@
+@import "~bootstrap/scss/bootstrap";
+
+html {
+  min-height: 100%;
+  position: relative;
+}
+
+body {
+    height: 100%;
+}
+
+#full-page{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  overflow:hidden;
+  z-index:-1;
+}
+
+.home-blue {
+    height: 45%;
+    background: #00a9ff;
+}
+
+.home-white {
+    padding-top: 10px;
+    height: 55%;
+    background: white;
+}
+
+.list-group{
+  overflow:scroll;
+  -webkit-overflow-scrolling: touch;
+}
