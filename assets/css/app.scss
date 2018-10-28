@@ -20,18 +20,17 @@ body {
 }
 
 .home-blue {
-    height: 55%;
+    height: 45%;
     background: #00a9ff;
 }
 
 .home-white {
     padding-top: 10px;
-    height: 45%;
+    height: 55%;
     background: white;
 }
 
-.force-to-bottom {
-  position: absolute;
-  bottom: 45%;
-  width: 100%;
+.list-group{
+  overflow:scroll;
+  -webkit-overflow-scrolling: touch;
 }
