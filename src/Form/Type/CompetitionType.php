@@ -14,12 +14,16 @@ class CompetitionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('competition', ChoiceType::class, [
+            ->add('competition', CompetitionChoiceType::class, [
                 'choices' => [
                     'Bundesliga' => '2002',
+                    'Championship' => '2016',
+                    'Eredivisie' => '2003',
+                    'Liga' => '2014',
                     'Ligue 1' => '2015',
                     'Serie A' => '2019',
-                    'Premier League' => '2084',
+                    'Primeira Liga' => '2017',
+                    'Premier League' => '2021',
                 ],
                 'required' => true,
                 'label' => false,
