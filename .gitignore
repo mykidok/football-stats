@@ -23,3 +23,6 @@ composer.phar
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-pack ###
+
+docker-compose.yml
+phpdocker/

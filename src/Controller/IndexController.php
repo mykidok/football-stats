@@ -3,11 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Client;
-use App\Form\Type\CompetitionChoiceType;
+use App\Entity\Match;
+use App\Entity\Standing;
+use App\Entity\Table;
+use App\Entity\Team;
 use App\Form\Type\CompetitionType;
+use App\Handler\MatchDayHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,12 +23,15 @@ class IndexController extends Controller
     /** @var FormFactoryInterface $formFactory */
     private $formFactory;
 
-    public function __construct(Client $client, FormFactoryInterface $formFactory)
+    /** @var MatchDayHandler */
+    private $handler;
+
+    public function __construct(Client $client, FormFactoryInterface $formFactory, MatchDayHandler $handler)
     {
         $this->client = $client;
         $this->formFactory = $formFactory;
+        $this->handler = $handler;
     }
-
 
     /**
      * @Route(
@@ -48,83 +54,63 @@ class IndexController extends Controller
 
         $overNbGoalsMatches = [];
         $underNbGoalsMatches = [];
-
+        $blank = true;
+        $nbLimit = null;
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $blank = false;
             $data = $form->getData();
             $competitionId = $data['competition'];
+            $nbLimit = $data['nbGoals'];
 
-            $today = (new \DateTime())->format('Y-m-d');
-            $dayMatches = $this->client->get('matches', [
+            $date = $data['date'];
+
+            $dayMatches = $this->client->getMatchDay([
                 'query' => [
                     'competitions' => $competitionId,
-                    'dateTo' => $today,
-                    'dateFrom' => $today,
+                    'dateTo' => $date,
+                    'dateFrom' => $date,
                 ]]
             );
-            unset($dayMatches['count'], $dayMatches['filters']);
 
-            if (empty($dayMatches)) {
+            if ($dayMatches->getMatches()->isEmpty()) {
                 return [
                     'overNbGoalsMatches' => $overNbGoalsMatches,
                     'underNbGoalsMatches' => $underNbGoalsMatches,
+                    'blank' => $blank,
                     'form' => $form->createView(),
                 ];
             }
 
-            $standings = $this->client->get(sprintf('competitions/%s/standings', $competitionId));
+            $entrypoint = sprintf('competitions/%s/standings', $competitionId);
+            $globalStanding = $this->client->getGlobalStanding($entrypoint);
 
-            foreach ($standings['standings'] as $standing) {
-                if ('TOTAL' === $standing['type']) {
-                    continue;
-                }
+            /** @var Match $match */
+            foreach ($dayMatches->getMatches() as $match) {
+                $this->handler->handleTeam($match->getHomeTeam(), $globalStanding->getHomeStanding());
+                $this->handler->handleTeam($match->getAwayTeam(), $globalStanding->getAwayStanding());
 
-                foreach ($standing['table'] as $table) {
-                    if ('HOME' === $standing['type']) {
-                        foreach ($dayMatches['matches'] as &$dayMatch) {
-                            if ($dayMatch['homeTeam']['id'] === $table['team']['id']) {
-                                $nbGoals = $table['goalsFor'] + $table['goalsAgainst'];
-                                $playedGames = $table['playedGames'];
-                                $dayMatch['homeTeam']['nbGoalsPerMatch'] = $nbGoals/$playedGames;
-                            }
-                        }
-                    }
-                    if ('AWAY' === $standing['type']) {
-                        foreach ($dayMatches['matches'] as &$dayMatch) {
-                            if ($dayMatch['awayTeam']['id'] === $table['team']['id']) {
-                                $nbGoals = $table['goalsFor'] + $table['goalsAgainst'];
-                                $playedGames = $table['playedGames'];
-                                $dayMatch['awayTeam']['nbGoalsPerMatch'] = $nbGoals/$playedGames;
-                            }
-                        }
-                    }
-
-                }
-            }
-
-            foreach ($dayMatches['matches'] as &$dayMatch) {
-                $previsionalNbGoals = ($dayMatch['homeTeam']['nbGoalsPerMatch'] + $dayMatch['awayTeam']['nbGoalsPerMatch']) / 2;
-
-                $payload = [
-                    'homeTeam' => $dayMatch['homeTeam'],
-                    'awayTeam' => $dayMatch['awayTeam'],
-                    'previsionalNbGoals' => $previsionalNbGoals,
-                ];
-
-                if ($previsionalNbGoals > 2.5) {
-                    $overNbGoalsMatches[] = $payload;
-                } else {
-                    $underNbGoalsMatches[] = $payload;
-                }
+                $previsionalNbGoals = ($match->getHomeTeam()->getNbGoalsPerMatch() + $match->getAwayTeam()->getNbGoalsPerMatch()) / 2;
+                $match->setPrevisionalNbGoals(round($previsionalNbGoals, 3));
+                $match->getPrevisionalNbGoals() > $nbLimit ? $overNbGoalsMatches[] = $match : $underNbGoalsMatches[] = $match;
             }
         }
 
         return [
+            'nbLimit' => $nbLimit,
             'overNbGoalsMatches' => $overNbGoalsMatches,
             'underNbGoalsMatches' => $underNbGoalsMatches,
+            'blank' => $blank,
             'form' => $form->createView(),
         ];
     }
 
+    private function matchIsComplete(Match $match) {
+        if (null !== $match->getHomeTeam()->getNbGoalsPerMatch()
+                && null !== $match->getAwayTeam()->getNbGoalsPerMatch()) {
+            return true;
+        }
 
+        return false;
+    }
 }

@@ -34,3 +34,9 @@ services:
         arguments:
             $client: '@csa_guzzle.client.football_api'
             $apiKey: '%api_key%'
+
+    App\EventListener\ExceptionListener:
+        arguments:
+            $session: '@session'
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
