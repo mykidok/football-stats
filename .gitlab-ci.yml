@@ -4,9 +4,8 @@ stages:
 tets_codingstyle:
   stage: test
   tags:
-    - php
+    - gitlab-org
   except:
     - master
   script:
-    - composer install --quiet --no-interaction -- no-script
     - bin/php-cs-fixer fix --dry-run --using-cache=no --no-interaction --config=.php_cs -v
