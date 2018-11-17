@@ -1,0 +1,100 @@
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'translations' %}
+
+{% block content %}
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% for key, championship in data %}
+            <li class="nav-item">
+            <a class="nav-link {% if key is same as('Bundesliga') %}active{% endif %}" id="{{ key|replace({' ': ''}) }}-tab" data-toggle="tab" href="#{{ key|replace({' ': ''}) }}" role="tab" aria-controls="{{ key|replace({' ': ''}) }}" aria-selected="true">
+                {{ key }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div id="statistics" class="tab-content">
+        {% for key, championship in data %}
+            <div class="tab-pane {% if key is same as('Bundesliga') %}active{% endif %}" id="{{ key|replace({' ': ''}) }}" role="tabpanel" aria-labelledby="{{ key|replace({' ': ''}) }}-tab">
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>{{ 'translations.statistics.championship_statistics'|trans }}</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <img class="img-thumbnail img-fluid" width="170" src="{{ championship.logo }}">
+                                </div>
+                                <h3 class="mt-4">
+                                    {{ 'translations.statistics.played_games'|trans }}: {{ championship.nbMatch }}
+                                </h3>
+                                <h3 class="mt-4">
+                                    {{ 'translations.statistics.success'|trans }}:
+                                </h3>
+                                <div class="progress mt-4" style="height: 25px">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         role="progressbar" aria-valuenow="{{ championship.championshipPercentage }}"
+                                         aria-valuemin="0" aria-valuemax="100" style="width: {{ championship.championshipPercentage }}%"></div>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <h1>
+                                        <span class="badge badge-pill badge-primary">{{ championship.championshipPercentage }}%</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="small font-weight-bold" scope="col">#</th>
+                                        <th class="small font-weight-bold" scope="col">{{ 'translations.statistics.name'|trans }}</th>
+                                        <th class="small font-weight-bold" scope="col">{{ 'translations.statistics.played_games'|trans }}</th>
+                                        <th class="small font-weight-bold" scope="col">{{ 'translations.statistics.success'|trans }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for team in championship.teams %}
+                                        {% if team.percentage < 20 %}
+                                            {% set background = '#002A40' %}
+                                        {% elseif team.percentage < 40 %}
+                                            {% set background = '#00547F' %}
+                                        {% elseif team.percentage < 60 %}
+                                            {% set background = '#007FBF' %}
+                                        {% elseif team.percentage < 80 %}
+                                            {% set background = '#0098E5' %}
+                                        {% else %}
+                                            {% set background = '#00A9FF' %}
+                                        {% endif %}
+                                        <tr>
+                                            <th class="small" scope="row">{{ loop.index }}</th>
+                                            <td class="small">{{ team.name }}</td>
+                                            <td class="text-center small">{{ team.teamNbMatch }}</td>
+                                            <td class="small"><span class="badge badge-pill" style="color: white;background: {{ background }}">{{ team.percentage }}%</span></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $( document ).ready(function() {
+            $('#myTab').find('a').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show')
+            })
+        });
+    </script>
+{% endblock %}

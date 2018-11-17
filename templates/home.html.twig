@@ -1,68 +1,24 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Football Statistics{% endblock %}</title>
-        {% block stylesheets %}<link rel="stylesheet" href="{{ asset('build/app.css') }}">{% endblock %}
-    </head>
-    <body>
-        {% block body %}
-            <div id="full-page">
-                <div class="container-fluid home-blue">
-                    <div class="text-center">
-                        <img class="text-center" src="{{ asset('/build/logo.png') }}">
-                        <h3 class="text-white text-center mt-2">Which championship do you want to bet on ?</h3>
-                    </div>
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'translations' %}
 
-                </div>
-                <div class="container-fluid home-white">
-                    {{ form_start(form) }}
-                    {{ form_errors(form) }}
-                    <div class="row justify-content-md-center">
-                        <div class="col-md-3">
-                            {{ form_widget(form.competition) }}
-                        </div>
-                        <div class="col-md-1">
-                            {{ form_widget(form.submit) }}
-                        </div>
-                        {{ form_rest(form) }}
-                        {{ form_end(form) }}
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-6">
-                            <h4>Under 2,5 goals</h4>
-                            <hr>
-                            {% if underNbGoalsMatches | length > 0 %}
-                                <div class="list-group">
-                                    {% for match in underNbGoalsMatches %}
-                                        <a href="#" class="list-group-item list-group-item-action ">
-                                            {{ match.homeTeam.name }} - {{ match.awayTeam.name }}
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <p>No matchs to bet on</p>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <h4>Over 2,5 goals</h4>
-                            <hr>
-                            {% if overNbGoalsMatches | length > 0 %}
-                                <div class="list-group">
-                                    {% for match in overNbGoalsMatches %}
-                                        <a href="#" class="list-group-item list-group-item-action ">
-                                            {{ match.homeTeam.name }} - {{ match.awayTeam.name }}
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <p>No matchs to bet on</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+{% block body %}
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-3">
+                <img src="{{ asset('build/images/logo.png') }}" class="img-fluid" width="300">
+                {% include "partial/languages.html.twig" %}
             </div>
-        {% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
-</html>
+            <div class="col-md-9">
+                <h1 class="display-4">{{ 'translations.home.welcome'|trans }}</h1>
+                <p class="lead">{{ 'translations.home.advises'|trans }}</p>
+                <hr class="my-4">
+                <p class="text-justify">{{ 'translations.home.explanation'|trans }}</p>
+                <p class="text-justify">{{ 'translations.home.statistics'|trans }}</p>
+                <p class="text-justify">{{ 'translations.home.enjoy'|trans }}</p>
+                <p class="lead">
+                    <a class="btn btn-light btn-lg" href="{{ path('bets') }}" role="button" id="home_button">{{ 'translations.home.click'|trans }}</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

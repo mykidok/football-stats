@@ -2,12 +2,10 @@
 
 namespace App\Form\Type;
 
-
-use App\Transformer\DateTimeTransformer;
+use App\Entity\Championship;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -19,44 +17,37 @@ class CompetitionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('competition', ChoiceType::class, [
-                'choices' => [
-                    'Bundesliga' => '2002',
-                    'Championship' => '2016',
-                    'Eredivisie' => '2003',
-                    'Liga' => '2014',
-                    'Ligue 1' => '2015',
-                    'Serie A' => '2019',
-                    'Primeira Liga' => '2017',
-                    'Premier League' => '2021',
-                ],
+            ->add('competition', EntityType::class, [
+                'class' => Championship::class,
+                'choice_label' =>'name',
                 'required' => true,
                 'label' => false,
+                'query_builder' => function(EntityRepository $er) {
+                    return $er->createQueryBuilder('c')->orderBy('c.name', 'ASC');
+                },
+                'translation_domain'=> false
             ])
             ->add('nbGoals', NumberType::class, [
                 'label' => false,
+                'translation_domain' => 'translations',
                 'attr' => [
-                    'placeholder' => 'Goals',
+                    'placeholder' => 'translations.form.goals',
                 ],
                 'required' => true,
             ])
             ->add('date', DateType::class, [
                 'widget' => 'single_text',
                 'label' => false,
-                'attr' => [
-                    'placeholder' => 'Date',
-                ],
                 'required' => true,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Submit',
+                'label' => 'translations.form.submit',
+                'translation_domain' => 'translations',
                 'attr' => [
                     'class' => 'btn btn-primary'
                 ],
             ])
         ;
-
-        $builder->get('date')->addModelTransformer(new DateTimeTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver)
