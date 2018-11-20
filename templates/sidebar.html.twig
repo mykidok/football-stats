@@ -1,0 +1,19 @@
+{% trans_default_domain 'translations' %}
+
+<div id="sidebar" class="col-2 menu sticky-top p-3">
+    <div class="text-center">
+        <a href="{{ path('home') }}">
+            <img class="img-fluid" width="200" src="{{ asset('build/images/logo.png') }}">
+        </a>
+    </div>
+    <div class="nav flex-column mt-5">
+        <a href="{{ path('home') }}" class="mt-2 rounded nav-link font-weight-bold">
+            <span class="fa fa-home"></span>&nbsp;{{ 'translations.sidebar.home'|trans }}</a>
+        <a href="{{ path('bets') }}" class="mt-2 rounded nav-link font-weight-bold">
+            <span class="fa fa-gamepad"></span>&nbsp;{{ 'translations.sidebar.bets'|trans }}</a>
+        <a href="{{ path('statistics') }}" class="mt-2 rounded nav-link font-weight-bold">
+            <span class="fa fa-chart-bar"></span>&nbsp;{{ 'translations.sidebar.statistics'|trans }}</a>
+    </div>
+    <hr>
+    {% include "partial/languages.html.twig" %}
+</div>

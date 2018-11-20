@@ -1,5 +1,5 @@
 @import "~bootstrap/scss/bootstrap";
-
+//
 html {
   min-height: 100%;
   position: relative;
@@ -9,28 +9,45 @@ body {
     height: 100%;
 }
 
-#full-page{
-  position:absolute;
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
-  overflow:hidden;
-  z-index:-1;
+#sidebar {
+  min-height: 100vh;
+  background: #00a9ff;
+  color: #fff;
+  transition: all 0.3s;
 }
 
-.home-blue {
-    height: 45%;
-    background: #00a9ff;
+hr {
+  background-color: white;
 }
 
-.home-white {
-    padding-top: 10px;
-    height: 55%;
-    background: white;
+#sidebar .nav-link {
+  color: white;
 }
 
-.list-group{
-  overflow:scroll;
-  -webkit-overflow-scrolling: touch;
+#sidebar .nav-link:hover {
+  background-color: white;
+  background-image: none;
+  color: #00a9ff;
+}
+
+#myTab .nav-link:hover {
+  background-color: #00a9ff;
+  background-image: none;
+  color: white;
+}
+
+table {
+  display: block;
+  max-height: 82vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.jumbotron {
+  background: #00a9ff;
+  color: #fff;
+}
+
+#home_button {
+  color: #00a9ff;
 }
