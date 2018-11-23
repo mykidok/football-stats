@@ -34,7 +34,7 @@ class UpdateTeamGoals extends ContainerAwareCommand
 
         $this->client = $client;
         $this->em = $em;
-        $this->em = $teamHandler;
+        $this->teamHandler = $teamHandler;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
