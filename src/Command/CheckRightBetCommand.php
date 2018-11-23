@@ -56,6 +56,7 @@ class CheckRightBetCommand extends ContainerAwareCommand
 
             if (empty($gameDay['matches'])) {
                 $output->writeln(sprintf('------ No match today for %s ------', $championship->getName()));
+                continue;
             }
 
             $i = 0;
