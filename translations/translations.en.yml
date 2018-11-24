@@ -1,10 +1,15 @@
 translations:
   bets:
-    bets_alert: Choose a championship, a number of goals, pick a date and then submit !
+    bets_alert: Choose a championship, pick a date and then submit !
     under_limit_goals: Under %nbLimit% goals
     over_limit_goals: Over %nbLimit% goals
     goals: GOALS
     no_games: NO GAMES
+    game: Game
+    hour: Hour
+    form: Form
+    cote: Cote
+    legend: Indicates you if the form of the teams agrees with the prediction
   home:
     welcome: Welcome to My Football Bets!
     advises: Here, you will be given advises to help you make your bets better.

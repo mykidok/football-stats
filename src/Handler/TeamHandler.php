@@ -3,6 +3,7 @@
 namespace App\Handler;
 
 use App\Entity\Team;
+use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TeamHandler
@@ -12,9 +13,15 @@ class TeamHandler
      */
     private $em;
 
-    public function __construct(EntityManagerInterface $em)
+    /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
+
+    public function __construct(EntityManagerInterface $em, TeamRepository $teamRepository)
     {
         $this->em = $em;
+        $this->teamRepository = $teamRepository;
     }
 
     public function handleTeamUpdate(array $data, array $context)
@@ -22,10 +29,8 @@ class TeamHandler
         foreach ($data['table'] as $datum) {
             $nbGoalsPerMatch = ($datum['goalsFor'] + $datum['goalsAgainst']) / $datum['playedGames'];
 
-            $teamRepository = $this->em->getRepository(Team::class);
-
             /** @var Team $team */
-            $team = $teamRepository->findOneBy(['apiId' => $datum['team']['id']]);
+            $team = $this->teamRepository->findOneBy(['apiId' => $datum['team']['id']]);
 
             'HOME' === $context['type'] ? $team->setNbGoalsPerMatchHome($nbGoalsPerMatch)
                 : $team->setNbGoalsPerMatchAway($nbGoalsPerMatch);

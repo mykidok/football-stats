@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Championship;
 use App\Entity\Client;
 use App\Entity\Game;
 use App\Form\Type\CompetitionType;
@@ -72,42 +73,32 @@ class IndexController extends Controller
                 []
             );
 
-        $overNbGoalsMatches = [];
-        $underNbGoalsMatches = [];
-        $blank = true;
-        $nbLimit = null;
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $blank = false;
             $data = $form->getData();
             $competition = $data['competition'];
-            $nbLimit = $data['nbGoals'];
-
             $date = $data['date'];
+        } else {
+            /** @var Championship $competition */
+            $competition = $this->championshipRepository->findOneBy(['name' => 'Bundesliga']);
+            $date = new \DateTime('today');
+        }
 
-            $matches = $this->repository->findGamesOfTheDayForChampionship($competition, $date);
+        $matches = $this->repository->findGamesOfTheDayForChampionship($competition, $date);
 
-            if (empty($matches)) {
-                return [
-                    'nbLimit' => $nbLimit,
-                    'overNbGoalsMatches' => $overNbGoalsMatches,
-                    'underNbGoalsMatches' => $underNbGoalsMatches,
-                    'blank' => $blank,
-                    'form' => $form->createView(),
-                ];
-            }
+        $overNbGoalsMatches = [];
+        $underNbGoalsMatches = [];
+        $nbLimit = Game::LIMIT;
 
-            /** @var Game $match */
-            foreach ($matches as $match) {
-                $match->getPrevisionalNbGoals() > $nbLimit ? $overNbGoalsMatches[] = $match : $underNbGoalsMatches[] = $match;
-            }
+        /** @var Game $match */
+        foreach ($matches as $match) {
+            $match->getPrevisionalNbGoals() > $nbLimit ? $overNbGoalsMatches[] = $match : $underNbGoalsMatches[] = $match;
         }
 
         return [
             'nbLimit' => $nbLimit,
             'overNbGoalsMatches' => $overNbGoalsMatches,
             'underNbGoalsMatches' => $underNbGoalsMatches,
-            'blank' => $blank,
             'form' => $form->createView(),
         ];
     }

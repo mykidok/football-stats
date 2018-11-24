@@ -7,7 +7,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
  * @UniqueEntity(fields={"apiId"})
  */
 class Team
@@ -58,6 +58,14 @@ class Team
      * @Assert\NotNull()
      */
     private $apiId;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $momentForm;
 
 
     public function getId(): int
@@ -140,5 +148,18 @@ class Team
         return $this;
     }
 
+    public function getMomentForm(): ?int
+    {
+        return $this->momentForm;
+    }
 
+    /**
+     * @return Team
+     */
+    public function setMomentForm(?int $momentForm): self
+    {
+        $this->momentForm = $momentForm;
+
+        return $this;
+    }
 }

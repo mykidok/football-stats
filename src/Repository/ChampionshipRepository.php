@@ -23,7 +23,13 @@ class ChampionshipRepository extends ServiceEntityRepository
         $qb
             ->select('c.name, c.logo')
             ->addSelect('t.name as teamName')
-            ->addSelect('COUNT(g.id) as nbMatch')
+            ->addSelect(
+                'SUM(
+                            CASE WHEN (g.goodResult IS NOT NULL AND g.championship = c.id)
+                            THEN 1
+                            ELSE 0 END
+                    ) as nbMatch'
+            )
             ->addSelect(
                 'SUM(
                             CASE WHEN (g.goodResult = 1 AND g.championship = c.id)
@@ -31,14 +37,14 @@ class ChampionshipRepository extends ServiceEntityRepository
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN (g.championship = c.id)
+                            CASE WHEN (g.championship = c.id AND g.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
                         ) as championshipPercentage'
             )
             ->addSelect(
                 'SUM(
-                            CASE WHEN (g.homeTeam = t.id OR g.awayTeam = t.id)
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
                         ) as teamNbMatch'
@@ -50,7 +56,7 @@ class ChampionshipRepository extends ServiceEntityRepository
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN (g.homeTeam = t.id OR g.awayTeam = t.id)
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
                         ) as teamPercentage'
