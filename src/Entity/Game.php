@@ -77,6 +77,21 @@ class Game
      */
     private $goodResult;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $momentForm;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=false, unique=true)
+     * @Assert\NotNull()
+     */
+    private $apiId;
+
     public function getId(): int
     {
         return $this->id;
@@ -86,14 +101,6 @@ class Game
     {
         return $this->homeTeam;
     }
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(type="integer", nullable=false, unique=true)
-     * @Assert\NotNull()
-     */
-    private $apiId;
 
     /**
      * @return Game
@@ -165,7 +172,7 @@ class Game
         return $this;
     }
 
-    public function isGoodResult(): bool
+    public function isGoodResult(): ?bool
     {
         return $this->goodResult;
     }
@@ -173,7 +180,7 @@ class Game
     /**
      * @return Game
      */
-    public function setGoodResult(bool $goodResult): self
+    public function setGoodResult(?bool $goodResult): self
     {
         $this->goodResult = $goodResult;
 
@@ -206,6 +213,21 @@ class Game
     public function setApiId(int $apiId): self
     {
         $this->apiId = $apiId;
+
+        return $this;
+    }
+
+    public function isMomentForm(): ?bool
+    {
+        return $this->momentForm;
+    }
+
+    /**
+     * @return Game
+     */
+    public function setMomentForm(?bool $momentForm): self
+    {
+        $this->momentForm = $momentForm;
 
         return $this;
     }

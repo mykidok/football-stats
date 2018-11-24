@@ -6,6 +6,7 @@ use App\Entity\Championship;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -27,18 +28,11 @@ class CompetitionType extends AbstractType
                 },
                 'translation_domain'=> false
             ])
-            ->add('nbGoals', NumberType::class, [
-                'label' => false,
-                'translation_domain' => 'translations',
-                'attr' => [
-                    'placeholder' => 'translations.form.goals',
-                ],
-                'required' => true,
-            ])
             ->add('date', DateType::class, [
                 'widget' => 'single_text',
                 'label' => false,
                 'required' => true,
+                'data' => new \DateTime('today'),
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'translations.form.submit',
