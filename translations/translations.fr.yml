@@ -3,7 +3,7 @@ translations.bets.under_limit_goals: Moins de %nbLimit% buts
 translations.bets.goals: BUTS
 translations.bets.no_games: PAS DE MATCHS
 translations.bets.over_limit_goals: Plus de %nbLimit% buts
-translations.bets.legend: Cela t'indiques si la forme du moment des équipe est en accord avec la prédiction
+translations.bets.legend: Cela t'indiques si la forme du moment des équipes est en accord avec la prédiction
 translations.sidebar.home: Accueil
 translations.sidebar.bets: Paris
 translations.sidebar.statistics: Statistiques
