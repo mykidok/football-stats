@@ -66,7 +66,7 @@ class ImportOddsForGamesOfTheDay extends ContainerAwareCommand
                 continue;
             }
 
-            if ($game->getPrevisionalNbGoals() < Game::LIMIT) {
+            if ($game->getPrevisionalNbGoals() <= Game::LIMIT) {
                 $odd = str_replace(',', '.', $bet['outcomes'][1]['cote']);
                 $game->setOdd($odd);
             } elseif ($game->getPrevisionalNbGoals() > Game::LIMIT) {
