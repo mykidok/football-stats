@@ -43,6 +43,15 @@ class TeamRepository extends ServiceEntityRepository
                     'ag.awayTeam = t AND ag.goodResult IS NOT NULL',
                     'hg.homeTeam = t AND hg.goodResult IS NOT NULL')
             )
+            ->andWhere(
+                $qb->expr()->orX(
+                    'ag.date < :date_end AND ag.date > :date_start',
+                    'hg.date < :date_end AND hg.date > :date_start')
+            )
+            ->setParameters([
+                'date_start' => $date->format('Y-m-d 00:00:00'),
+                'date_end' => $date->format('Y-m-d 23:59:59'),
+            ])
         ;
 
         return $qb->getQuery()->getScalarResult();
