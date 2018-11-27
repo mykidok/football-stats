@@ -29,19 +29,18 @@ class IndexController extends Controller
     /**
      * @var GameRepository
      */
-    private $repository;
+    private $gameRepository;
 
     /** @var ChampionshipRepository */
     private $championshipRepository;
 
-    public function __construct(Client $client, FormFactoryInterface $formFactory, GameRepository $repository, ChampionshipRepository $championshipRepository)
+    public function __construct(Client $client, FormFactoryInterface $formFactory, GameRepository $gameRepository, ChampionshipRepository $championshipRepository)
     {
         $this->client = $client;
         $this->formFactory = $formFactory;
-        $this->repository = $repository;
+        $this->gameRepository = $gameRepository;
         $this->championshipRepository = $championshipRepository;
     }
-
 
     /**
      * @Route(
@@ -84,7 +83,7 @@ class IndexController extends Controller
             $date = new \DateTime('today');
         }
 
-        $matches = $this->repository->findGamesOfTheDayForChampionship($competition, $date);
+        $matches = $this->gameRepository->findGamesOfTheDayForChampionship($competition, $date);
 
         $overNbGoalsMatches = [];
         $underNbGoalsMatches = [];

@@ -8,7 +8,8 @@ translations:
     game: Game
     hour: Hour
     form: Form
-    cote: Cote
+    odd: Odd
+    predictional_goals: Predictional goals
     legend: Indicates you if the form of the teams agrees with the prediction
   home:
     welcome: Welcome to My Football Bets!

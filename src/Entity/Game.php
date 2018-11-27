@@ -85,6 +85,14 @@ class Game
     private $momentForm;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(type="float", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $odd;
+
+    /**
      * @var int
      *
      * @ORM\Column(type="integer", nullable=false, unique=true)
@@ -228,6 +236,21 @@ class Game
     public function setMomentForm(?bool $momentForm): self
     {
         $this->momentForm = $momentForm;
+
+        return $this;
+    }
+
+    public function getOdd(): ?float
+    {
+        return $this->odd;
+    }
+
+    /**
+     * @return Game
+     */
+    public function setOdd(?float $odd): self
+    {
+        $this->odd = $odd;
 
         return $this;
     }

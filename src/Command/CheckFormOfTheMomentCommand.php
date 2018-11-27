@@ -42,6 +42,10 @@ class CheckFormOfTheMomentCommand extends ContainerAwareCommand
         $now = new \DateTime('now');
         $games = $this->gameRepository->findGamesOfTheDay($now);
 
+        if (empty($games)) {
+            $output->writeln('No games played today');
+        }
+
         $teamsWithForm = $this->teamRepository->findTeamWithFormOfTheMoment($now);
 
         foreach ($teamsWithForm as $team) {
@@ -57,8 +61,6 @@ class CheckFormOfTheMomentCommand extends ContainerAwareCommand
         foreach ($games as $game) {
             $homeTeamForm = null;
             $awayTeamForm = null;
-            $homeTeam = $game->getHomeTeam();
-            $awayTeam = $game->getAwayTeam();
             if (null !== $game->getHomeTeam()->getMomentForm()) {
                 $homeTeamForm = $game->getHomeTeam()->getMomentForm();
             }

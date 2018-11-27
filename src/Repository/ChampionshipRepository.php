@@ -66,6 +66,7 @@ class ChampionshipRepository extends ServiceEntityRepository
             ->groupBy('c.id, teamName')
             ->orderBy('c.name', 'ASC')
             ->addOrderBy('teamPercentage', 'DESC')
+            ->addOrderBy('teamNbMatch', 'DESC')
         ;
 
         return $qb->getQuery()->getScalarResult();

@@ -9,8 +9,7 @@ translations.sidebar.bets: Paris
 translations.sidebar.statistics: Statistiques
 translations.home.welcome: Bienvenue sur My Football Bets !
 translations.home.advises: Ici, tu vas recevoir des conseils pour t'aider à faire tes paris.
-translations.home.explanation: Sur ce site, tu pourras choisir le nombre de buts sur lequel tu veux parier (under/over) et tu auras accès
-  aux prédictions de chaque match sur 8 championnats (Bundesliga, Liga, Premier League, Championship, Ligue 1, Serie A, Primeira Liga et Eredivisie).
+translations.home.explanation: Sur ce site, tu pourras choisir le nombre de buts sur lequel tu veux parier (under/over) et tu auras accès aux prédictions de chaque match sur 8 championnats (Bundesliga, Liga, Premier League, Championship, Ligue 1, Serie A, Primeira Liga et Eredivisie).
 translations.home.statistics: Tu peux aussi avoir accès aux statistiques des prédictions, tu pourras donc savoir sur quel championnat ou sur quelle équipe les prédictions sont les plus efficaces.
 translations.home.enjoy: Hope you'll enjoy it!
 translations.home.click: Clique ici pour voir les prédictions !
@@ -21,3 +20,8 @@ translations.statistics.name: Nom
 translations.statistics.percentage: Pourcentage
 translations.form.goals: Buts
 translations.form.submit: Envoyer
+translations.bets.hour: Heure
+translations.bets.game: Match
+translations.bets.odd: Cote
+translations.bets.form: Forme
+translations.bets.predictional_goals: Nombre de buts prévisionnel
