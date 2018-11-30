@@ -1,0 +1,120 @@
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'translations' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                {% if combination is not same as(null) %}
+                    <div class="card-header">
+                        <h4>{{ 'translations.combination.combination_of_the_day' | trans }}
+                            - {{ combination.date | date('Y/m/d') }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        {% if combination is not same as(null) %}
+                            <table class="table table-borderless table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{{ 'translations.bets.games' | trans }}</th>
+                                    <th>{{ 'translations.bets.under_over' | trans }}</th>
+                                    <th>{{ 'translations.bets.odd' | trans }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for game in combination.games %}
+                                    <tr>
+                                        <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
+                                        <td class="small">
+                                            {% if game.previsionalNbGoals < 2.5 %}
+                                                - 2.5
+                                            {% elseif game.previsionalNbGoals > 2.5 %}
+                                                + 2.5
+                                            {% endif %}
+                                        </td>
+                                        <td class="small">{{ game.odd }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <hr>
+                            <div>
+                                {{ 'translations.combination.bet' | trans }} <span class="badge badge-primary">10 €</span>
+                            </div>
+                            <div class="text-right">
+                                {{ 'translations.combination.possible_win' | trans }} <span class="badge badge-primary">{{ combination.generalOdd | round(2) }} €</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="card-header text-center">
+                        <h4>{{ 'translations.combination.not_enough' | trans }}</h4>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            {% if lastCombinations | length > 0 %}
+                <div id="accordion">
+                    {% for combination in lastCombinations %}
+                        {% set index = loop.index %}
+                        {% if combination.success %}
+                            {% set color = "green" %}
+                            {% set icon = "fa fa-check" %}
+                        {% else %}
+                            {% set color = "red" %}
+                            {% set icon = "fa fa-times" %}
+                        {% endif %}
+                        <div class="card">
+                            <div class="card-header" id="heading{{ index }}">
+                                <h5 class="mb-0">
+                                    {{ 'translations.combination.combination_of' | trans }}
+                                    {{ combination.date | date('Y/m/d') }}<span class="ml-4 {{ icon }}" style="color: {{ color }}"></span>
+                                    <a class="float-right" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ index }}">
+                                        <i class="fa fa-chevron-down"></i>
+                                    </a>
+                                </h5>
+                            </div>
+
+                            <div id="collapse{{ index }}" class="collapse" aria-labelledby="heading{{ index }}" data-parent="#accordion">
+                                <div class="card-body">
+                                    <table class="table table-borderless table-striped">
+                                        <tbody>
+                                        {% for game in combination.games %}
+                                            <tr>
+                                                <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
+                                                <td class="small">
+                                                    {% if game.previsionalNbGoals <= 2.5 %}
+                                                        - 2.5
+                                                    {% elseif game.previsionalNbGoals > 2.5 %}
+                                                        + 2.5
+                                                    {% endif %}
+                                                </td>
+                                                <td class="small">{{ game.odd }}</td>
+                                                {% if game.goodResult %}
+                                                    {% set colorGame = "green" %}
+                                                    {% set iconGame = "fa fa-check" %}
+                                                {% else %}
+                                                    {% set colorGame = "red" %}
+                                                    {% set iconGame = "fa fa-times" %}
+                                                {% endif %}
+                                                <td class="small"><span class="{{ iconGame }}" style="color: {{ colorGame }}"></span></td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% if combination.success %}
+                                        <hr>
+                                        <div class="text-right">
+                                            {{ 'translations.combination.win' | trans }} <span class="badge badge-primary">{{ combination.generalOdd | round(2) }} €</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

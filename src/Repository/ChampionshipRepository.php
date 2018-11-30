@@ -71,4 +71,39 @@ class ChampionshipRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getScalarResult();
     }
+
+    public function findTeamsWithStatistics()
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb
+            ->select('t.name as teamName')
+            ->addSelect(
+                'SUM(
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.goodResult IS NOT NULL)
+                            THEN 1
+                            ELSE 0 END
+                        ) as teamNbMatch'
+            )
+            ->addSelect(
+                'SUM(
+                            CASE WHEN (g.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
+                            THEN 1
+                            ELSE 0 END
+                    ) * 100 /
+                    SUM(
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.goodResult IS NOT NULL)
+                            THEN 1
+                            ELSE 0 END
+                        ) as teamPercentage'
+            )
+            ->leftJoin(Team::class, 't', Join::WITH, 'c.id = t.championship')
+            ->leftJoin(Game::class, 'g', Join::WITH, 'c.id = g.championship')
+            ->groupBy('c.id, teamName')
+            ->addOrderBy('teamPercentage', 'DESC')
+            ->addOrderBy('teamNbMatch', 'DESC')
+        ;
+
+        return $qb->getQuery()->getScalarResult();
+    }
 }

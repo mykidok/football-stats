@@ -54,6 +54,25 @@ class GameRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findGamesOfTheDayOrderByOdd(\DateTime $date)
+    {
+        $qb = $this->createQueryBuilder('g');
+
+        $qb
+            ->select('g')
+            ->where('g.date > :date_start')
+            ->andWhere('g.date < :date_end')
+            ->orderBy('g.momentForm', 'DESC')
+            ->addOrderBy('g.odd', 'DESC')
+            ->setParameters([
+                'date_start' => $date->format('Y-m-d 00:00:00'),
+                'date_end' => $date->format('Y-m-d 23:59:59'),
+            ])
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function findOneByHomeTeamShortName(\DateTime $date, string $shortName)
     {
         $qb = $this->createQueryBuilder('g');

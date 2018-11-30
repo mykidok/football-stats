@@ -7,15 +7,14 @@ use App\Entity\Championship;
 use App\Entity\Client;
 use App\Entity\Game;
 use App\Repository\GameRepository;
-use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class ImportGamesCommand extends ContainerAwareCommand
+class ImportGamesCommand extends Command
 {
     /**
      * @var Client

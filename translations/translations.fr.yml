@@ -1,12 +1,13 @@
-translations.bets.bets_alert: Choisis un championnat, une date et cliques sur envoyer !
+translations.bets.bets_alert: Choisis un championnat, une date et clique sur envoyer !
 translations.bets.under_limit_goals: Moins de %nbLimit% buts
 translations.bets.goals: BUTS
 translations.bets.no_games: PAS DE MATCHS
 translations.bets.over_limit_goals: Plus de %nbLimit% buts
 translations.bets.legend: Cela t'indiques si la forme du moment des équipes est en accord avec la prédiction
 translations.sidebar.home: Accueil
-translations.sidebar.bets: Paris
+translations.sidebar.bets: Prédictions
 translations.sidebar.statistics: Statistiques
+translations.sidebar.combination: Ticket du jour
 translations.home.welcome: Bienvenue sur My Football Bets !
 translations.home.advises: Ici, tu vas recevoir des conseils pour t'aider à faire tes paris.
 translations.home.explanation: Sur ce site, tu pourras choisir le nombre de buts sur lequel tu veux parier (under/over) et tu auras accès aux prédictions de chaque match sur 8 championnats (Bundesliga, Liga, Premier League, Championship, Ligue 1, Serie A, Primeira Liga et Eredivisie).
@@ -25,3 +26,11 @@ translations.bets.game: Match
 translations.bets.odd: Cote
 translations.bets.form: Forme
 translations.bets.predictional_goals: Nombre de buts prévisionnel
+translations.combination.combination_of_the_day: Ticket du jour
+translations.bets.games: Match
+translations.bets.under_over: Plus / Moins
+translations.combination.bet: Mise :
+translations.combination.win: Gain :
+translations.combination.possible_win: Gain possible :
+translations.combination.not_enough: Pas assez de matchs aujourd'hui pour générer un ticket
+translations.combination.combination_of: Ticket du

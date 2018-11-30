@@ -6,11 +6,11 @@ use App\Entity\Championship;
 use App\Entity\Client;
 use App\Handler\TeamHandler;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateTeamGoals extends ContainerAwareCommand
+class UpdateTeamGoalsCommand extends Command
 {
     /**
      * @var Client
