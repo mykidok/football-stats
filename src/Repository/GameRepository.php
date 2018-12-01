@@ -54,7 +54,7 @@ class GameRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findGamesOfTheDayOrderByOdd(\DateTime $date)
+    public function findGamesOfTheDayOrderByOddAndPercentage(\DateTime $date)
     {
         $qb = $this->createQueryBuilder('g');
 
@@ -63,6 +63,8 @@ class GameRepository extends ServiceEntityRepository
             ->where('g.date > :date_start')
             ->andWhere('g.date < :date_end')
             ->orderBy('g.momentForm', 'DESC')
+            ->addOrderBy('g.percentage', 'DESC')
+            ->addOrderBy('g.nbMatchForTeams', 'DESC')
             ->addOrderBy('g.odd', 'DESC')
             ->setParameters([
                 'date_start' => $date->format('Y-m-d 00:00:00'),

@@ -5,6 +5,8 @@ namespace App\Command;
 
 use App\Entity\Combination;
 use App\Entity\Game;
+use App\Entity\Team;
+use App\Manager\GameManager;
 use App\Repository\ChampionshipRepository;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,7 +31,12 @@ class CreateCombinationOfTheDayCommand extends Command
      */
     private $championshipRepository;
 
-    public function __construct(EntityManagerInterface $em, GameRepository $gameRepository, ChampionshipRepository $championshipRepository)
+    /**
+     * @var GameManager
+     */
+    private $gameManager;
+
+    public function __construct(EntityManagerInterface $em, GameRepository $gameRepository, ChampionshipRepository $championshipRepository, GameManager $gameManager)
     {
         parent::__construct('api:create:combination');
         $this->setDescription('Check results of the day to check if bets were right');
@@ -37,14 +44,16 @@ class CreateCombinationOfTheDayCommand extends Command
         $this->em = $em;
         $this->gameRepository = $gameRepository;
         $this->championshipRepository = $championshipRepository;
+        $this->gameManager = $gameManager;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $teams = $this->championshipRepository->findTeamsWithStatistics();
 
-        /** @var Game[] $games */
-        $games = $this->gameRepository->findGamesOfTheDayOrderByOdd(new \DateTime('now'));
+        $this->gameManager->setPercentageForGamesOfTheDay($teams);
+
+        $games = $this->gameRepository->findGamesOfTheDayOrderByOddAndPercentage(new \DateTime('now'));
 
         if (count($games) < 6) {
             return $output->writeln('Not enough games today to create combination');
@@ -53,16 +62,16 @@ class CreateCombinationOfTheDayCommand extends Command
         $combination = new Combination();
         $combination->setDate(new \DateTime('now'));
 
-        for ($i = 0; $i <= 2; $i++) {
-            foreach ($teams as $team) {
-                if ($team['teamName'] === $games[$i]->getHomeTeam()->getName()) {
-                    $combination->addGame($games[$i]);
-                    if (null === $combinationOdd = $combination->getGeneralOdd()) {
-                        $combination->setGeneralOdd($games[$i]->getOdd() * Combination::BET_AMOUNT);
-                    } else {
-                        $combination->setGeneralOdd($combinationOdd * $games[$i]->getOdd());
-                    }
-                }
+        for ($i = 0; $i < 3; $i++) {
+            $combination->addGame($games[$i]);
+        }
+
+        /** @var Game $game */
+        foreach ($combination->getGames() as $game) {
+            if (null === $combinationOdd = $combination->getGeneralOdd()) {
+                $combination->setGeneralOdd($game->getOdd() * Combination::BET_AMOUNT);
+            } else {
+                $combination->setGeneralOdd($combinationOdd * $game->getOdd());
             }
         }
 
