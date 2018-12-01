@@ -67,6 +67,12 @@ class Team
      */
     private $momentForm;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true, unique=true)
+     */
+    private $shortName;
 
     public function getId(): int
     {
@@ -162,4 +168,21 @@ class Team
 
         return $this;
     }
+
+    public function getShortName(): ?string
+    {
+        return $this->shortName;
+    }
+
+    /**
+     * @return Team
+     */
+    public function setShortName(?string $shortName): self
+    {
+        $this->shortName = $shortName;
+
+        return $this;
+    }
+
+
 }

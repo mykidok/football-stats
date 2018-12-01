@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Championship;
 use App\Entity\Game;
+use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\Expr\Join;
@@ -51,5 +52,46 @@ class GameRepository extends ServiceEntityRepository
         ;
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findGamesOfTheDayOrderByOddAndPercentage(\DateTime $date)
+    {
+        $qb = $this->createQueryBuilder('g');
+
+        $qb
+            ->select('g')
+            ->where('g.date > :date_start')
+            ->andWhere('g.date < :date_end')
+            ->orderBy('g.momentForm', 'DESC')
+            ->addOrderBy('g.percentage', 'DESC')
+            ->addOrderBy('g.nbMatchForTeams', 'DESC')
+            ->addOrderBy('g.odd', 'DESC')
+            ->setParameters([
+                'date_start' => $date->format('Y-m-d 00:00:00'),
+                'date_end' => $date->format('Y-m-d 23:59:59'),
+            ])
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findOneByHomeTeamShortName(\DateTime $date, string $shortName)
+    {
+        $qb = $this->createQueryBuilder('g');
+
+        $qb
+            ->select('g')
+            ->where('g.date > :date_start')
+            ->andWhere('g.date < :date_end')
+            ->andWhere('t.shortName = :shortName')
+            ->leftJoin(Team::class, 't', Join::WITH, 'g.homeTeam = t')
+            ->setParameters([
+                'date_start' => $date->format('Y-m-d 00:00:00'),
+                'date_end' => $date->format('Y-m-d 23:59:59'),
+                'shortName' => $shortName,
+            ])
+        ;
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

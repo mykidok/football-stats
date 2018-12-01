@@ -8,11 +8,11 @@ use App\Entity\Team;
 use App\Repository\GameRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CheckFormOfTheMomentCommand extends ContainerAwareCommand
+class CheckFormOfTheMomentCommand extends Command
 {
     /**
      * @var EntityManagerInterface
@@ -42,6 +42,10 @@ class CheckFormOfTheMomentCommand extends ContainerAwareCommand
         $now = new \DateTime('now');
         $games = $this->gameRepository->findGamesOfTheDay($now);
 
+        if (empty($games)) {
+            $output->writeln('No games played today');
+        }
+
         $teamsWithForm = $this->teamRepository->findTeamWithFormOfTheMoment($now);
 
         foreach ($teamsWithForm as $team) {
@@ -57,8 +61,6 @@ class CheckFormOfTheMomentCommand extends ContainerAwareCommand
         foreach ($games as $game) {
             $homeTeamForm = null;
             $awayTeamForm = null;
-            $homeTeam = $game->getHomeTeam();
-            $awayTeam = $game->getAwayTeam();
             if (null !== $game->getHomeTeam()->getMomentForm()) {
                 $homeTeamForm = $game->getHomeTeam()->getMomentForm();
             }

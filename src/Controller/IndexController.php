@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Championship;
 use App\Entity\Client;
+use App\Entity\Combination;
 use App\Entity\Game;
 use App\Form\Type\CompetitionType;
 use App\Repository\ChampionshipRepository;
+use App\Repository\CombinationRepository;
 use App\Repository\GameRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -29,19 +32,26 @@ class IndexController extends Controller
     /**
      * @var GameRepository
      */
-    private $repository;
+    private $gameRepository;
 
-    /** @var ChampionshipRepository */
+    /**
+     * @var ChampionshipRepository
+     */
     private $championshipRepository;
 
-    public function __construct(Client $client, FormFactoryInterface $formFactory, GameRepository $repository, ChampionshipRepository $championshipRepository)
+    /**
+     * @var CombinationRepository
+     */
+    private $combinationRepository;
+
+    public function __construct(Client $client, FormFactoryInterface $formFactory, GameRepository $gameRepository, ChampionshipRepository $championshipRepository, CombinationRepository $combinationRepository)
     {
         $this->client = $client;
         $this->formFactory = $formFactory;
-        $this->repository = $repository;
+        $this->gameRepository = $gameRepository;
         $this->championshipRepository = $championshipRepository;
+        $this->combinationRepository = $combinationRepository;
     }
-
 
     /**
      * @Route(
@@ -84,7 +94,7 @@ class IndexController extends Controller
             $date = new \DateTime('today');
         }
 
-        $matches = $this->repository->findGamesOfTheDayForChampionship($competition, $date);
+        $matches = $this->gameRepository->findGamesOfTheDayForChampionship($competition, $date);
 
         $overNbGoalsMatches = [];
         $underNbGoalsMatches = [];
@@ -144,6 +154,26 @@ class IndexController extends Controller
 
         return [
             'data' => $data,
+        ];
+    }
+
+    /**
+     * @Route(
+     *     path="/combination",
+     *     name="combination",
+     *     methods={"GET"}
+     * )
+     *
+     * @Template(template="combination.html.twig")
+     */
+    public function combinationAction()
+    {
+        $combination = $this->combinationRepository->findCombinationOfTheDay(new \DateTime());
+        $lastCombinations = $this->combinationRepository->findLastFiveCombinations();
+
+        return [
+            'combination' => $combination,
+            'lastCombinations' => $lastCombinations,
         ];
     }
 }

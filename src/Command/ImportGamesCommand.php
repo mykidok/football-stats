@@ -6,15 +6,15 @@ namespace App\Command;
 use App\Entity\Championship;
 use App\Entity\Client;
 use App\Entity\Game;
-use Doctrine\DBAL\Exception\ConstraintViolationException;
+use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class ImportGamesCommand extends ContainerAwareCommand
+class ImportGamesCommand extends Command
 {
     /**
      * @var Client
@@ -31,7 +31,12 @@ class ImportGamesCommand extends ContainerAwareCommand
      */
     private $denormalizer;
 
-    public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer)
+    /**
+     * @var GameRepository
+     */
+    private $gameRepository;
+
+    public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer, GameRepository $gameRepository)
     {
         parent::__construct('api:import:games');
         $this->setDescription('Import games of the day from API Football Data');
@@ -39,6 +44,7 @@ class ImportGamesCommand extends ContainerAwareCommand
         $this->client = $client;
         $this->em = $em;
         $this->denormalizer = $denormalizer;
+        $this->gameRepository = $gameRepository;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -64,13 +70,15 @@ class ImportGamesCommand extends ContainerAwareCommand
                 /** @var Game $match */
                 $match = $this->denormalizer->denormalize($item, Game::class, JsonEncoder::FORMAT);
 
-                try {
-                    $this->em->persist($match);
-                    $this->em->flush();
-                    $i++;
-                } catch (ConstraintViolationException $exception) {
+                $matchExist = $this->gameRepository->findOneBy(['apiId' => $match->getApiId()]);
+
+                if (null !== $matchExist) {
                     continue;
                 }
+
+                $this->em->persist($match);
+                $this->em->flush();
+                $i++;
             }
 
             $output->writeln(sprintf('------ %d games imported for %s ------', $i, $championship->getName()));

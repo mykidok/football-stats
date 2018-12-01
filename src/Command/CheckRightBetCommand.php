@@ -7,11 +7,11 @@ use App\Entity\Client;
 use App\Entity\Game;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CheckRightBetCommand extends ContainerAwareCommand
+class CheckRightBetCommand extends Command
 {
     /**
      * @var Client

@@ -2,13 +2,6 @@
 {% trans_default_domain 'translations' %}
 
 {% block content %}
-    {% for label, messages in app.flashes(['danger']) %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endfor %}
     <div class="alert alert-primary col-md-12" id="text">
         {{ 'translations.bets.bets_alert'|trans }}
     </div>
@@ -40,73 +33,101 @@
                 {{ 'translations.bets.legend' | trans }}
             </p>
         </div>
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>{{ 'translations.bets.under_limit_goals'|trans({'%nbLimit%':nbLimit}) }}</h4>
+
+        <div class="mt-3">
+            {% if underNbGoalsMatches | length > 0 %}
+                <div class="card mt-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <h4 class="text-center">{{ 'translations.bets.under_limit_goals'|trans({'%nbLimit%':nbLimit}) }}</h4>
+                        </div>
+                        <div class="col-md-9">
+                            <table class="table table-hover table-borderless mt-2">
+                                <thead>
+                                <tr>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.hour' | trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.game'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.odd'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.form'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.predictional_goals'|trans }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for match in underNbGoalsMatches %}
+                                    {% if match.previsionalNbGoals < 2.1 %}
+                                        {% set background = '#002A40' %}
+                                    {% elseif match.previsionalNbGoals < 2.6 %}
+                                        {% set background = '#00547F' %}
+                                    {% elseif match.previsionalNbGoals < 3.2 %}
+                                        {% set background = '#007FBF' %}
+                                    {% elseif match.previsionalNbGoals < 4 %}
+                                        {% set background = '#0098E5' %}
+                                    {% else %}
+                                        {% set background = '#00A9FF' %}
+                                    {% endif %}
+                                    <tr>
+                                        <th class="small" scope="row">{{ match.date | date('H:i') }}</th>
+                                        <td class="small text-left" scope="row">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</td>
+                                        <td class="small" scope="row">{{ match.odd }}</td>
+                                        <td class="small" scope="row">{% include ('/partial/_momentForm.html.twig') %}</td>
+                                        <td scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    {% if underNbGoalsMatches | length > 0 %}
-                        <ul class="list-group">
-                            {% for match in underNbGoalsMatches %}
-                                {% if match.previsionalNbGoals < 2.1 %}
-                                    {% set background = '#002A40' %}
-                                {% elseif match.previsionalNbGoals < 2.6 %}
-                                    {% set background = '#00547F' %}
-                                {% elseif match.previsionalNbGoals < 3.2 %}
-                                    {% set background = '#007FBF' %}
-                                {% elseif match.previsionalNbGoals < 4 %}
-                                    {% set background = '#0098E5' %}
-                                {% else %}
-                                    {% set background = '#00A9FF' %}
-                                {% endif %}
-                                <li class="list-group-item list-group-item-action small">
-                                    {% include "/partial/_momentForm.html.twig" %}
-                                    {{ match.date | date('H:i') }} : {{ match.homeTeam.name }} - {{ match.awayTeam.name }}
-                                    <span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <li class="list-group-item list-group-item-action">
-                            <span class="badge badge-pill" style="background: red; color: white;">{{ 'translations.bets.no_games'|trans }}</span>
-                        </li>
-                    {% endif %}
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>{{ 'translations.bets.over_limit_goals'|trans({'%nbLimit%':nbLimit}) }}</h4>
+            {% endif %}
+            {% if overNbGoalsMatches | length > 0 %}
+                <div class="card mt-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <h4 class="text-center">{{ 'translations.bets.over_limit_goals'|trans({'%nbLimit%':nbLimit}) }}</h4>
+                        </div>
+                        <div class="col-md-9">
+                            <table class="table table-hover table-borderless mt-2">
+                                <thead>
+                                <tr>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.hour' | trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.game'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.odd'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.form'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.predictional_goals'|trans }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for match in overNbGoalsMatches %}
+                                    {% if match.previsionalNbGoals < 2.1 %}
+                                        {% set background = '#002A40' %}
+                                    {% elseif match.previsionalNbGoals < 2.6 %}
+                                        {% set background = '#00547F' %}
+                                    {% elseif match.previsionalNbGoals < 3.2 %}
+                                        {% set background = '#007FBF' %}
+                                    {% elseif match.previsionalNbGoals < 4 %}
+                                        {% set background = '#0098E5' %}
+                                    {% else %}
+                                        {% set background = '#00A9FF' %}
+                                    {% endif %}
+                                    <tr>
+                                        <th class="small" scope="row">{{ match.date | date('H:i') }}</th>
+                                        <td class="small text-left" scope="row">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</td>
+                                        <td class="small" scope="row">{{ match.odd }}</td>
+                                        <td class="small" scope="row">{% include ('/partial/_momentForm.html.twig') %}</td>
+                                        <td scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    {% if overNbGoalsMatches | length > 0 %}
-                        <ul class="list-group">
-                            {% for match in overNbGoalsMatches %}
-                                {% if match.previsionalNbGoals < 2.1 %}
-                                    {% set background = '#002A40' %}
-                                {% elseif match.previsionalNbGoals < 2.6 %}
-                                    {% set background = '#00547F' %}
-                                {% elseif match.previsionalNbGoals < 3.2 %}
-                                    {% set background = '#007FBF' %}
-                                {% elseif match.previsionalNbGoals < 4 %}
-                                    {% set background = '#0098E5' %}
-                                {% else %}
-                                    {% set background = '#00A9FF' %}
-                                {% endif %}
-                                <li class="list-group-item list-group-item-action small">
-                                    {% include "/partial/_momentForm.html.twig" %}
-                                    {{ match.date | date('H:i') }} : {{ match.homeTeam.name }} - {{ match.awayTeam.name }}
-                                    <span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2)  }} {{ 'translations.bets.goals'|trans }}</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <li class="list-group-item list-group-item-action">
-                            <span class="badge badge-pill" style="background: red; color: white;">{{ 'translations.bets.no_games'|trans }}</span>
-                        </li>
-                    {% endif %}
                 </div>
-            </div>
+            {% endif %}
+            {% if (overNbGoalsMatches | length < 1) and (underNbGoalsMatches | length < 1) %}
+                <div class="mt-5 pt-5 text-center">
+                    <h1><span  class="badge badge-danger">No games today</span></h1>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

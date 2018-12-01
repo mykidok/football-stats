@@ -85,6 +85,30 @@ class Game
     private $momentForm;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(type="float", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $odd;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(type="float", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $percentage;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $nbMatchForTeams;
+
+    /**
      * @var int
      *
      * @ORM\Column(type="integer", nullable=false, unique=true)
@@ -231,4 +255,51 @@ class Game
 
         return $this;
     }
+
+    public function getOdd(): ?float
+    {
+        return $this->odd;
+    }
+
+    /**
+     * @return Game
+     */
+    public function setOdd(?float $odd): self
+    {
+        $this->odd = $odd;
+
+        return $this;
+    }
+
+    public function getPercentage(): ?float
+    {
+        return $this->percentage;
+    }
+
+    /**
+     * @return Game
+     */
+    public function setPercentage(?float $percentage): self
+    {
+        $this->percentage = $percentage;
+
+        return $this;
+    }
+
+    public function getNbMatchForTeams(): ?int
+    {
+        return $this->nbMatchForTeams;
+    }
+
+    /**
+     * @return Game
+     */
+    public function setNbMatchForTeams(?int $nbMatchForTeams): self
+    {
+        $this->nbMatchForTeams = $nbMatchForTeams;
+
+        return $this;
+    }
+
+
 }

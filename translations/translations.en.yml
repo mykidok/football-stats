@@ -6,9 +6,12 @@ translations:
     goals: GOALS
     no_games: NO GAMES
     game: Game
+    games: Games
     hour: Hour
     form: Form
-    cote: Cote
+    under_over: Under / Over
+    odd: Odd
+    predictional_goals: Predictional goals
     legend: Indicates you if the form of the teams agrees with the prediction
   home:
     welcome: Welcome to My Football Bets!
@@ -21,8 +24,9 @@ translations:
     click: Click here to see the bets!
   sidebar:
     home: Home
-    bets: Bets
+    bets: Predictions
     statistics: Statistics
+    combination: Combination
   statistics:
     championship_statistics: Championship Statistics
     played_games: Played games
@@ -32,3 +36,10 @@ translations:
   form:
     submit: Submit
     goals: Goals
+  combination:
+    combination_of_the_day: Combination of the day
+    possible_win: Possible win :
+    bet: Bet :
+    combination_of: Combination of
+    not_enough: Not enough games today for a combination
+    win: Win
