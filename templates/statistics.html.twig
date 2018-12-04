@@ -73,7 +73,7 @@
                                             <th class="small" scope="row">{{ loop.index }}</th>
                                             <td class="small">{{ team.name }}</td>
                                             <td class="text-center small">{{ team.teamNbMatch }}</td>
-                                            <td class="small"><span class="badge badge-pill" style="color: white;background: {{ background }}">{{ team.percentage }}%</span></td>
+                                            <td class="small"><span class="badge badge-pill" style="color: white;background: {{ background }}">{{ team.percentage | round(2) }}%</span></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
