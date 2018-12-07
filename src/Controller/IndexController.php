@@ -10,7 +10,6 @@ use App\Form\Type\CompetitionType;
 use App\Repository\ChampionshipRepository;
 use App\Repository\CombinationRepository;
 use App\Repository\GameRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -168,12 +167,31 @@ class IndexController extends Controller
      */
     public function combinationAction()
     {
-        $combination = $this->combinationRepository->findCombinationOfTheDay(new \DateTime());
+        $combinationDay = $this->combinationRepository->findCombinationOfTheDay(new \DateTime());
         $lastCombinations = $this->combinationRepository->findLastFiveCombinations();
 
+        $combinations = $this->combinationRepository->findCombinationFinished();
+
+        $payroll = [0];
+        $amout = 0;
+        $dates = [''];
+        /** @var Combination $combination */
+        foreach ($combinations as $combination) {
+            $dates[] = $combination->getDate()->format('d/m');
+
+            if ($combination->isSuccess()) {
+                $amout = $amout + ($combination->getGeneralOdd() - 10);
+            } else {
+                $amout = $amout - 10;
+            }
+            $payroll[] = round($amout, 2);
+        }
+
         return [
-            'combination' => $combination,
+            'combination' => $combinationDay,
             'lastCombinations' => $lastCombinations,
+            'dates' => $dates,
+            'payroll' => $payroll
         ];
     }
 }
