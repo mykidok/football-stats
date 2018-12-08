@@ -10,7 +10,6 @@ use App\Form\Type\CompetitionType;
 use App\Repository\ChampionshipRepository;
 use App\Repository\CombinationRepository;
 use App\Repository\GameRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -132,13 +131,14 @@ class IndexController extends Controller
                 'teamNbMatch' => $championship['teamNbMatch'],
                 'percentage' => round($championship['teamPercentage'], 3),
             ];
-            if (array_key_exists($championship['name'], $memo)) {
+            if (!array_key_exists($championship['name'], $memo)) {
 
                 $memo[$championship['name']][] = [
                     'name' => $championship['name'],
                     'nbMatch' => $championship['nbMatch'],
                     'logo' => $championship['logo'],
                     'championshipPercentage' => round($championship['championshipPercentage'], 2),
+                    'championshipPercentageWithForm' => round($championship['championshipPercentageWithForm'], 2),
                     'team' => $teamData,
                 ];
             }
@@ -148,6 +148,7 @@ class IndexController extends Controller
             $memo[$championship['name']]['nbMatch'] = $championship['nbMatch'];
             $memo[$championship['name']]['logo'] = $championship['logo'];
             $memo[$championship['name']]['championshipPercentage'] = round($championship['championshipPercentage'], 2);
+            $memo[$championship['name']]['championshipPercentageWithForm'] = round($championship['championshipPercentageWithForm'], 2);
 
             return $memo;
         }, []);
@@ -168,12 +169,31 @@ class IndexController extends Controller
      */
     public function combinationAction()
     {
-        $combination = $this->combinationRepository->findCombinationOfTheDay(new \DateTime());
+        $combinationDay = $this->combinationRepository->findCombinationOfTheDay(new \DateTime());
         $lastCombinations = $this->combinationRepository->findLastFiveCombinations();
 
+        $combinations = $this->combinationRepository->findCombinationFinished();
+
+        $payroll = [0];
+        $amout = 0;
+        $dates = [''];
+        /** @var Combination $combination */
+        foreach ($combinations as $combination) {
+            $dates[] = $combination->getDate()->format('d/m');
+
+            if ($combination->isSuccess()) {
+                $amout = $amout + ($combination->getGeneralOdd() - 10);
+            } else {
+                $amout = $amout - 10;
+            }
+            $payroll[] = round($amout, 2);
+        }
+
         return [
-            'combination' => $combination,
+            'combination' => $combinationDay,
             'lastCombinations' => $lastCombinations,
+            'dates' => $dates,
+            'payroll' => $payroll
         ];
     }
 }

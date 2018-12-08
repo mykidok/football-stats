@@ -25,21 +25,27 @@
                                 <div class="text-center">
                                     <img class="img-thumbnail img-fluid" width="170" src="{{ championship.logo }}">
                                 </div>
-                                <h3 class="mt-4">
+                                <h5 class="mt-4">
                                     {{ 'translations.statistics.played_games'|trans }}: {{ championship.nbMatch }}
-                                </h3>
-                                <h3 class="mt-4">
+                                </h5>
+                                <h5 class="mt-4">
                                     {{ 'translations.statistics.success'|trans }}:
-                                </h3>
+                                </h5>
                                 <div class="progress mt-4" style="height: 25px">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                    <div class="progress-bar  font-weight-bold"
                                          role="progressbar" aria-valuenow="{{ championship.championshipPercentage }}"
-                                         aria-valuemin="0" aria-valuemax="100" style="width: {{ championship.championshipPercentage }}%"></div>
+                                         aria-valuemin="0" aria-valuemax="100" style="width: {{ championship.championshipPercentage }}%">{{ championship.championshipPercentage }}%</div>
                                 </div>
-                                <div class="text-center mt-4">
-                                    <h1>
-                                        <span class="badge badge-pill badge-primary">{{ championship.championshipPercentage }}%</span>
-                                    </h1>
+                                <h5 class="mt-4">
+                                    {{ 'translations.statistics.success_with_form'|trans }}
+                                    <button class="badge btn-green">
+                                        <span class="fa fa-sort-up" style="color: white"></span>
+                                    </button>  :
+                                </h5>
+                                <div class="progress mt-4" style="height: 25px">
+                                    <div class="progress-bar font-weight-bold"
+                                         role="progressbar" aria-valuenow="{{ championship.championshipPercentageWithForm }}"
+                                         aria-valuemin="0" aria-valuemax="100" style="width: {{ championship.championshipPercentageWithForm }}%">{{ championship.championshipPercentageWithForm }}%</div>
                                 </div>
                             </div>
                         </div>
@@ -73,7 +79,7 @@
                                             <th class="small" scope="row">{{ loop.index }}</th>
                                             <td class="small">{{ team.name }}</td>
                                             <td class="text-center small">{{ team.teamNbMatch }}</td>
-                                            <td class="small"><span class="badge badge-pill" style="color: white;background: {{ background }}">{{ team.percentage }}%</span></td>
+                                            <td class="small"><span class="badge badge-pill" style="color: white;background: {{ background }}">{{ team.percentage | round(2) }}%</span></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>

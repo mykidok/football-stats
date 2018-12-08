@@ -35,8 +35,20 @@ class CombinationRepository extends ServiceEntityRepository
 
         $qb
             ->where($qb->expr()->isNotNull('c.success'))
-            ->orderBy('c.id', 'ASC')
+            ->orderBy('c.id', 'DESC')
             ->setMaxResults(5)
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findCombinationFinished()
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb
+            ->where($qb->expr()->isNotNull('c.success'))
+            ->orderBy('c.id', 'ASC')
         ;
 
         return $qb->getQuery()->getResult();

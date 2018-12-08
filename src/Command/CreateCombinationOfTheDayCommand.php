@@ -53,6 +53,7 @@ class CreateCombinationOfTheDayCommand extends Command
 
         $this->gameManager->setPercentageForGamesOfTheDay($teams);
 
+        /** @var Game[] $games */
         $games = $this->gameRepository->findGamesOfTheDayOrderByOddAndPercentage(new \DateTime('now'));
 
         if (count($games) < 6) {

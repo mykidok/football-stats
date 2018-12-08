@@ -62,6 +62,7 @@ class GameRepository extends ServiceEntityRepository
             ->select('g')
             ->where('g.date > :date_start')
             ->andWhere('g.date < :date_end')
+            ->andWhere($qb->expr()->isNotNull('g.odd'))
             ->orderBy('g.momentForm', 'DESC')
             ->addOrderBy('g.percentage', 'DESC')
             ->addOrderBy('g.nbMatchForTeams', 'DESC')

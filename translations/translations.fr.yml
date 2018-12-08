@@ -16,7 +16,8 @@ translations.home.enjoy: Hope you'll enjoy it!
 translations.home.click: Clique ici pour voir les prédictions !
 translations.statistics.championship_statistics: Statistiques du Championnat
 translations.statistics.played_games: Matchs joués
-translations.statistics.success: Réussite
+translations.statistics.success: Réussite globale
+translations.statistics.success_with_form: Réussite avec forme du moment
 translations.statistics.name: Nom
 translations.statistics.percentage: Pourcentage
 translations.form.goals: Buts
@@ -24,6 +25,7 @@ translations.form.submit: Envoyer
 translations.bets.hour: Heure
 translations.bets.game: Match
 translations.bets.odd: Cote
+translations.bets.result: Resultat
 translations.bets.form: Forme
 translations.bets.predictional_goals: Nombre de buts prévisionnel
 translations.combination.combination_of_the_day: Ticket du jour
@@ -34,3 +36,5 @@ translations.combination.win: Gain :
 translations.combination.possible_win: Gain possible :
 translations.combination.not_enough: Pas assez de matchs aujourd'hui pour générer un ticket
 translations.combination.combination_of: Ticket du
+translations.combination.payroll_evolution: Evolution du budget
+translations.combination.payroll: Budget
