@@ -131,13 +131,14 @@ class IndexController extends Controller
                 'teamNbMatch' => $championship['teamNbMatch'],
                 'percentage' => round($championship['teamPercentage'], 3),
             ];
-            if (array_key_exists($championship['name'], $memo)) {
+            if (!array_key_exists($championship['name'], $memo)) {
 
                 $memo[$championship['name']][] = [
                     'name' => $championship['name'],
                     'nbMatch' => $championship['nbMatch'],
                     'logo' => $championship['logo'],
                     'championshipPercentage' => round($championship['championshipPercentage'], 2),
+                    'championshipPercentageWithForm' => round($championship['championshipPercentageWithForm'], 2),
                     'team' => $teamData,
                 ];
             }
@@ -147,6 +148,7 @@ class IndexController extends Controller
             $memo[$championship['name']]['nbMatch'] = $championship['nbMatch'];
             $memo[$championship['name']]['logo'] = $championship['logo'];
             $memo[$championship['name']]['championshipPercentage'] = round($championship['championshipPercentage'], 2);
+            $memo[$championship['name']]['championshipPercentageWithForm'] = round($championship['championshipPercentageWithForm'], 2);
 
             return $memo;
         }, []);

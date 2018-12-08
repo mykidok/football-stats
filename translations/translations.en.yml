@@ -11,6 +11,7 @@ translations:
     form: Form
     under_over: Under / Over
     odd: Odd
+    result: Result
     predictional_goals: Predictional goals
     legend: Indicates you if the form of the teams agrees with the prediction
   home:
@@ -30,7 +31,8 @@ translations:
   statistics:
     championship_statistics: Championship Statistics
     played_games: Played games
-    success: Success
+    success: General Success
+    success_with_form: Success with form
     name: Name
     percentage: Percentage
   form:

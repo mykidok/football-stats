@@ -50,6 +50,7 @@
                                     <th class="small font-weight-bold" scope="col">{{ 'translations.bets.odd'|trans }}</th>
                                     <th class="small font-weight-bold" scope="col">{{ 'translations.bets.form'|trans }}</th>
                                     <th class="small font-weight-bold" scope="col">{{ 'translations.bets.predictional_goals'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.result'|trans }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -68,9 +69,14 @@
                                     <tr>
                                         <th class="small" scope="row">{{ match.date | date('H:i') }}</th>
                                         <td class="small text-left" scope="row">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</td>
-                                        <td class="small" scope="row">{{ match.odd }}</td>
+                                        <td class="small" scope="row">{% if match.odd is not same as(null) %}{{ match.odd }}{% else %}N/D{% endif %}</td>
                                         <td class="small" scope="row">{% include ('/partial/_momentForm.html.twig') %}</td>
                                         <td scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
+                                        {% if match.goodResult is not same as(null) %}
+                                            <td scope="row" class="small text-center">
+                                            <span class="{% if match.goodResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.goodResult %}green{% else %}red{% endif %}"></span>
+                                            </td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -94,6 +100,7 @@
                                     <th class="small font-weight-bold" scope="col">{{ 'translations.bets.odd'|trans }}</th>
                                     <th class="small font-weight-bold" scope="col">{{ 'translations.bets.form'|trans }}</th>
                                     <th class="small font-weight-bold" scope="col">{{ 'translations.bets.predictional_goals'|trans }}</th>
+                                    <th class="small font-weight-bold" scope="col">{{ 'translations.bets.result'|trans }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -112,9 +119,14 @@
                                     <tr>
                                         <th class="small" scope="row">{{ match.date | date('H:i') }}</th>
                                         <td class="small text-left" scope="row">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</td>
-                                        <td class="small" scope="row">{{ match.odd }}</td>
+                                        <td class="small" scope="row">{% if match.odd is not same as(null) %}{{ match.odd }}{% else %}N/D{% endif %}</td>
                                         <td class="small" scope="row">{% include ('/partial/_momentForm.html.twig') %}</td>
                                         <td scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
+                                        {% if match.goodResult is not same as(null) %}
+                                            <td scope="row" class="small text-center">
+                                                <span class="{% if match.goodResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.goodResult %}green{% else %}red{% endif %}"></span>
+                                            </td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                                 </tbody>
