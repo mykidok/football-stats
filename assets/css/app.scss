@@ -10,6 +10,7 @@ body {
 }
 
 #sidebar {
+  position: fixed;
   min-height: 100vh;
   background: #00a9ff;
   color: #fff;
@@ -22,6 +23,7 @@ hr {
 
 #sidebar .nav-link {
   color: white;
+  padding: 0.5rem;
 }
 
 #sidebar .nav-link:hover {
@@ -54,4 +56,18 @@ table {
 
 .btn-green {
   background: green;
+}
+
+@media (max-width: 767px) {
+  #languages {
+    width: 15px;
+  }
+
+  html {
+    font-size: 14px;
+  }
+
+  .table th, .table td {
+    padding: 0.5rem;
+  }
 }

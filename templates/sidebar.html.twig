@@ -6,15 +6,32 @@
             <img class="img-fluid" src="{{ asset('build/images/logo.png') }}">
         </a>
     </div>
-    <div class="nav flex-column mt-5">
+    <div class="nav flex-column mt-5 text-center">
         <a href="{{ path('home') }}" class="mt-2 rounded nav-link font-weight-bold">
-            <span class="fa fa-home"></span>&nbsp;{{ 'translations.sidebar.home'|trans }}</a>
+            <div class="d-flex w-100 align-items-center">
+                <span class="fa fa-home"></span>
+                <span class="d-none d-sm-block">&nbsp;{{ 'translations.sidebar.home'|trans }}</span>
+            </div>
+        </a>
+
         <a href="{{ path('bets') }}" class="mt-2 rounded nav-link font-weight-bold">
-            <span class="fa fa-gamepad"></span>&nbsp;{{ 'translations.sidebar.bets'|trans }}</a>
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-gamepad"></span>
+                <span class="d-none d-sm-block">&nbsp;{{ 'translations.sidebar.bets'|trans }}</span>
+            </div>
+        </a>
         <a href="{{ path('statistics') }}" class="mt-2 rounded nav-link font-weight-bold">
-            <span class="fa fa-chart-bar"></span>&nbsp;{{ 'translations.sidebar.statistics'|trans }}</a>
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-chart-bar"></span>
+                <span class="d-none d-sm-block">&nbsp;{{ 'translations.sidebar.statistics'|trans }}</span>
+            </div>
+        </a>
         <a href="{{ path('combination') }}" class="mt-2 rounded nav-link font-weight-bold">
-            <span class="fa fa-tasks"></span>&nbsp;{{ 'translations.sidebar.combination'|trans }}</a>
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-tasks"></span>
+                <span class="d-none d-sm-block">&nbsp;{{ 'translations.sidebar.combination'|trans }}</span>
+            </div>
+        </a>
     </div>
     <hr>
     {% include "partial/languages.html.twig" %}
