@@ -56,14 +56,14 @@ class CreateCombinationOfTheDayCommand extends Command
         /** @var Game[] $games */
         $games = $this->gameRepository->findGamesOfTheDayOrderByOddAndPercentage(new \DateTime('now'));
 
-        if (count($games) < 6) {
+        if (count($games) < 5) {
             return $output->writeln('Not enough games today to create combination');
         }
 
         $combination = new Combination();
         $combination->setDate(new \DateTime('now'));
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $combination->addGame($games[$i]);
         }
 
