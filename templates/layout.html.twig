@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}My Football Bets{% endblock %}</title>
     {% block stylesheets %}
         <link rel="icon" type="image/x-icon" href="{{ asset('build/images/logo.png') }}" />
@@ -13,7 +14,7 @@
     <div class="container-fluid">
         <div class="row">
             {% include 'sidebar.html.twig' %}
-            <div class="col-10 pl-2 mt-2">
+            <div class="offset-2 col-10 mt-1">
                 {% block content %}
                 {% endblock %}
             </div>

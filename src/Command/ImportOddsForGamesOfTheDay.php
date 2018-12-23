@@ -50,7 +50,7 @@ class ImportOddsForGamesOfTheDay extends Command
         $memo = [];
         foreach ($odds as $datum) {
             foreach ((array) $datum['formules'] as $formule) {
-                if ($formule['marketType'] === "Plus/Moins 2,5 buts (Temps réglementaire)") {
+                if ($formule['marketType'] === "Plus/Moins 2,5 buts (Temps Réglementaire)") {
                     $memo[] = $formule;
                 }
             }

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Combination
 {
-    const BET_AMOUNT = 10;
+    const BET_AMOUNT = 20;
 
     /**
      * @var int

@@ -60,9 +60,9 @@ class Team
     private $apiId;
 
     /**
-     * @var int
+     * @var float
      *
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      * @Assert\NotNull()
      */
     private $momentForm;
@@ -154,7 +154,7 @@ class Team
         return $this;
     }
 
-    public function getMomentForm(): ?int
+    public function getMomentForm(): ?float
     {
         return $this->momentForm;
     }
@@ -162,7 +162,7 @@ class Team
     /**
      * @return Team
      */
-    public function setMomentForm(?int $momentForm): self
+    public function setMomentForm(?float $momentForm): self
     {
         $this->momentForm = $momentForm;
 

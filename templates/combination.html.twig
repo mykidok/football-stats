@@ -38,7 +38,7 @@
                         </table>
                         <hr>
                         <div>
-                            {{ 'translations.combination.bet' | trans }} <span class="badge badge-primary">10 €</span>
+                            {{ 'translations.combination.bet' | trans }} <span class="badge badge-primary">20 €</span>
                         </div>
                         <div class="text-right">
                             {{ 'translations.combination.possible_win' | trans }} <span class="badge badge-primary">{{ combination.generalOdd | round(2) }} €</span>
@@ -51,7 +51,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-12 col-sm-12 col-md-6">
             {% if lastCombinations | length > 0 %}
                 <div id="accordion">
                     {% for combination in lastCombinations %}
@@ -115,9 +115,15 @@
             {% endif %}
         </div>
     </div>
-    <div class="card mt-2">
-        <div id="linechart" style="min-width: 400px; height: 400px;"></div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12">
+            <div class="card mt-2">
+                <div id="linechart"></div>
+            </div>
+        </div>
+
     </div>
+
 {% endblock %}
 
 {% block javascripts %}

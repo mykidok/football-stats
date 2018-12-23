@@ -182,9 +182,9 @@ class IndexController extends Controller
             $dates[] = $combination->getDate()->format('d/m');
 
             if ($combination->isSuccess()) {
-                $amout = $amout + ($combination->getGeneralOdd() - 10);
+                $amout = $amout + ($combination->getGeneralOdd() - Combination::BET_AMOUNT);
             } else {
-                $amout = $amout - 10;
+                $amout = $amout - Combination::BET_AMOUNT;
             }
             $payroll[] = round($amout, 2);
         }
