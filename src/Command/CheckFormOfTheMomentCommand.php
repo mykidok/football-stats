@@ -23,6 +23,7 @@ class CheckFormOfTheMomentCommand extends Command
      * @var GameRepository
      */
     private $gameRepository;
+
     /**
      * @var TeamRepository
      */
@@ -46,13 +47,19 @@ class CheckFormOfTheMomentCommand extends Command
             $output->writeln('No games played today');
         }
 
-        $teamsWithForm = $this->teamRepository->findTeamWithFormOfTheMoment($now);
+        $teamsOfTheDay = $this->teamRepository->findTeamsWithGamesToday($now);
 
-        foreach ($teamsWithForm as $team) {
-            /** @var Team $teamToUpdate */
-            $teamToUpdate = $this->teamRepository->findOneBy(['apiId' => $team['apiId']]);
-            $teamToUpdate->setMomentForm($team['momentForm']);
-            $this->em->persist($teamToUpdate);
+        /** @var Team $team */
+        foreach ($teamsOfTheDay as $team) {
+            $lastGames = $this->gameRepository->findLastFourGamesForTeam($team);
+
+            $goals = 0;
+            foreach ($lastGames as $lastGame) {
+                $goals = $goals + $lastGame['realNbGoals'];
+            }
+
+            $team->setMomentForm($goals/count($lastGames));
+            $this->em->persist($team);
         }
 
         $this->em->flush();

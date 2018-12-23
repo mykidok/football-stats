@@ -95,4 +95,20 @@ class GameRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
+
+    public function findLastFourGamesForTeam(Team $team)
+    {
+        $qb = $this->createQueryBuilder('g');
+
+        $qb
+            ->select('g.realNbGoals')
+            ->where($qb->expr()->orX('g.homeTeam = :team', 'g.awayTeam = :team'))
+            ->andWhere($qb->expr()->isNotNull('g.goodResult'))
+            ->orderBy('g.id', 'DESC')
+            ->setMaxResults(4)
+            ->setParameters(['team' => $team])
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
 }
