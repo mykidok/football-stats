@@ -52,11 +52,38 @@ class Championship
      */
     private $logo;
 
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $averageGoalsHomeFor;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $averageGoalsHomeAgainst;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $averageGoalsAwayFor;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $averageGoalsAwayAgainst;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
     }
-
 
     public function getId(): int
     {
@@ -68,9 +95,6 @@ class Championship
         return $this->name;
     }
 
-    /**
-     * @return Championship
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -83,9 +107,6 @@ class Championship
         return $this->apiId;
     }
 
-    /**
-     * @return Championship
-     */
     public function setApiId(int $apiId): self
     {
         $this->apiId = $apiId;
@@ -98,13 +119,70 @@ class Championship
         return $this->games;
     }
 
-    /**
-     * @return $this
-     */
     public function addGame(Game $game): self
     {
         $this->games->add($game);
 
         return $this;
     }
+
+    public function getLogo(): string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(string $logo)
+    {
+        $this->logo = $logo;
+    }
+
+    public function getAverageGoalsHomeFor(): ?float
+    {
+        return $this->averageGoalsHomeFor;
+    }
+
+    public function setAverageGoalsHomeFor(?float $averageGoalsHomeFor): self
+    {
+        $this->averageGoalsHomeFor = $averageGoalsHomeFor;
+
+        return $this;
+    }
+
+    public function getAverageGoalsHomeAgainst(): ?float
+    {
+        return $this->averageGoalsHomeAgainst;
+    }
+
+    public function setAverageGoalsHomeAgainst(?float $averageGoalsHomeAgainst): self
+    {
+        $this->averageGoalsHomeAgainst = $averageGoalsHomeAgainst;
+
+        return $this;
+    }
+
+    public function getAverageGoalsAwayFor(): ?float
+    {
+        return $this->averageGoalsAwayFor;
+    }
+
+    public function setAverageGoalsAwayFor(?float $averageGoalsAwayFor): self
+    {
+        $this->averageGoalsAwayFor = $averageGoalsAwayFor;
+
+        return $this;
+    }
+
+    public function getAverageGoalsAwayAgainst(): ?float
+    {
+        return $this->averageGoalsAwayAgainst;
+    }
+
+    public function setAverageGoalsAwayAgainst(?float $averageGoalsAwayAgainst): self
+    {
+        $this->averageGoalsAwayAgainst = $averageGoalsAwayAgainst;
+
+        return $this;
+    }
+
+
 }

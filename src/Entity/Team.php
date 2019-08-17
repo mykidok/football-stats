@@ -74,6 +74,48 @@ class Team
      */
     private $shortName;
 
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $homeForceAttack;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $homeForceDefense;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $awayForceAttack;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $awayForceDefense;
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $awayPlayedGames;
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $homePlayedGames;
+
     public function getId(): int
     {
         return $this->id;
@@ -84,9 +126,6 @@ class Team
         return $this->name;
     }
 
-    /**
-     * @return Team
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -99,9 +138,6 @@ class Team
         return $this->nbGoalsPerMatchHome;
     }
 
-    /**
-     * @return Team
-     */
     public function setNbGoalsPerMatchHome(float $nbGoalsPerMatchHome): self
     {
         $this->nbGoalsPerMatchHome = $nbGoalsPerMatchHome;
@@ -114,9 +150,6 @@ class Team
         return $this->nbGoalsPerMatchAway;
     }
 
-    /**
-     * @return Team
-     */
     public function setNbGoalsPerMatchAway(float $nbGoalsPerMatchAway): self
     {
         $this->nbGoalsPerMatchAway = $nbGoalsPerMatchAway;
@@ -129,9 +162,6 @@ class Team
         return $this->apiId;
     }
 
-    /**
-     * @return Team
-     */
     public function setApiId(int $apiId): self
     {
         $this->apiId = $apiId;
@@ -144,9 +174,6 @@ class Team
         return $this->championship;
     }
 
-    /**
-     * @return Team
-     */
     public function setChampionship(Championship $championship): self
     {
         $this->championship = $championship;
@@ -159,9 +186,6 @@ class Team
         return $this->momentForm;
     }
 
-    /**
-     * @return Team
-     */
     public function setMomentForm(?float $momentForm): self
     {
         $this->momentForm = $momentForm;
@@ -174,9 +198,6 @@ class Team
         return $this->shortName;
     }
 
-    /**
-     * @return Team
-     */
     public function setShortName(?string $shortName): self
     {
         $this->shortName = $shortName;
@@ -184,5 +205,75 @@ class Team
         return $this;
     }
 
+    public function getHomeForceAttack(): float
+    {
+        return $this->homeForceAttack;
+    }
 
+    public function setHomeForceAttack(?float $homeForceAttack): self
+    {
+        $this->homeForceAttack = $homeForceAttack;
+
+        return $this;
+    }
+
+    public function getHomeForceDefense(): ?float
+    {
+        return $this->homeForceDefense;
+    }
+
+    public function setHomeForceDefense(?float $homeForceDefense): self
+    {
+        $this->homeForceDefense = $homeForceDefense;
+
+        return $this;
+    }
+
+    public function getAwayForceAttack(): ?float
+    {
+        return $this->awayForceAttack;
+    }
+
+    public function setAwayForceAttack(?float $awayForceAttack): self
+    {
+        $this->awayForceAttack = $awayForceAttack;
+
+        return $this;
+    }
+
+    public function getAwayForceDefense(): ?float
+    {
+        return $this->awayForceDefense;
+    }
+
+    public function setAwayForceDefense(?float $awayForceDefense): self
+    {
+        $this->awayForceDefense = $awayForceDefense;
+
+        return $this;
+    }
+
+    public function getAwayPlayedGames(): ?int
+    {
+        return $this->awayPlayedGames;
+    }
+
+    public function setAwayPlayedGames(?int $awayPlayedGames): self
+    {
+        $this->awayPlayedGames = $awayPlayedGames;
+
+        return $this;
+    }
+
+    public function getHomePlayedGames(): ?int
+    {
+        return $this->homePlayedGames;
+    }
+
+    public function setHomePlayedGames(?int $homePlayedGames): self
+    {
+        $this->homePlayedGames = $homePlayedGames;
+
+        return $this;
+    }
 }

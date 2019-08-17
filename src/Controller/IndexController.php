@@ -101,7 +101,7 @@ class IndexController extends Controller
 
         /** @var Game $match */
         foreach ($matches as $match) {
-            $match->getPrevisionalNbGoals() > $nbLimit ? $overNbGoalsMatches[] = $match : $underNbGoalsMatches[] = $match;
+            $match->getAverageExpectedNbGoals() > $nbLimit ? $overNbGoalsMatches[] = $match : $underNbGoalsMatches[] = $match;
         }
 
         return [

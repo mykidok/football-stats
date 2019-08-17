@@ -16,24 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateCombinationOfTheDayCommand extends Command
 {
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
-
-    /**
-     * @var GameRepository
-     */
     private $gameRepository;
-
-    /**
-     * @var ChampionshipRepository
-     */
     private $championshipRepository;
-
-    /**
-     * @var GameManager
-     */
     private $gameManager;
 
     public function __construct(EntityManagerInterface $em, GameRepository $gameRepository, ChampionshipRepository $championshipRepository, GameManager $gameManager)

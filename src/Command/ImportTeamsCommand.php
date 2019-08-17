@@ -15,19 +15,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class ImportTeamsCommand extends Command
 {
-    /**
-     * @var Client
-     */
     private $client;
-
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
-
-    /**
-     * @var DenormalizerInterface
-     */
     private $denormalizer;
 
     public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer)
@@ -52,8 +41,28 @@ class ImportTeamsCommand extends Command
             $teams = $this->client->get($entrypoint);
 
             $i = 0;
+
+            /** @var Team $item */
             foreach ($teams['teams'] as $item) {
+                $teamRepository = $this->em->getRepository(Team::class);
+
+                /** @var Team|null $alreadyExistsTeam */
+                $alreadyExistsTeam = $teamRepository->findOneBy(['apiId' => $item['id']]);
                 $item['championship'] = $championship;
+
+                if (null !== $alreadyExistsTeam) {
+                    if ($championship->getApiId() === $alreadyExistsTeam->getChampionship()->getApiId()) {
+                        continue;
+                    }
+
+                    $alreadyExistsTeam->setChampionship($championship);
+                    $this->em->persist($alreadyExistsTeam);
+                    $this->em->flush();
+                    $i++;
+
+                    continue;
+                }
+
                 $team = $this->denormalizer->denormalize($item, Team::class, JsonEncoder::FORMAT);
 
                 try {

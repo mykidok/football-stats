@@ -5,6 +5,7 @@ translations:
     over_limit_goals: Over %nbLimit% goals
     goals: GOALS
     no_games: NO GAMES
+    no_games_today: No games today
     game: Game
     games: Games
     hour: Hour

@@ -16,24 +16,9 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class ImportGamesCommand extends Command
 {
-    /**
-     * @var Client
-     */
     private $client;
-
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
-
-    /**
-     * @var DenormalizerInterface
-     */
     private $denormalizer;
-
-    /**
-     * @var GameRepository
-     */
     private $gameRepository;
 
     public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer, GameRepository $gameRepository)
@@ -67,12 +52,22 @@ class ImportGamesCommand extends Command
             $i = 0;
             foreach ($gameDay['matches'] as $item) {
                 $item['championship'] = $championship;
-                /** @var Game $match */
+                /** @var Game|null $match */
                 $match = $this->denormalizer->denormalize($item, Game::class, JsonEncoder::FORMAT);
 
+                if (null === $match) {
+                    continue;
+                }
+
+                /** @var Game $matchExist */
                 $matchExist = $this->gameRepository->findOneBy(['apiId' => $match->getApiId()]);
 
                 if (null !== $matchExist) {
+                    if (null === $matchExist->isGoodResult()) {
+                        $matchExist->setDate((new \DateTime($item['utcDate']))->modify('+ 1 hour'));
+                        $this->em->persist($matchExist);
+                        $this->em->flush();
+                    }
                     continue;
                 }
 

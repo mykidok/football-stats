@@ -12,19 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ImportOddsForGamesOfTheDay extends Command
 {
-    /**
-     * @var OddsClient
-     */
     private $client;
-
-    /**
-     * @var GameRepository
-     */
     private $gameRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
 
     public function __construct(GameRepository $gameRepository, EntityManagerInterface $em, OddsClient $client)
@@ -47,6 +36,7 @@ class ImportOddsForGamesOfTheDay extends Command
             ]
         ]);
 
+
         $memo = [];
         foreach ($odds as $datum) {
             foreach ((array) $datum['formules'] as $formule) {
@@ -66,10 +56,10 @@ class ImportOddsForGamesOfTheDay extends Command
                 continue;
             }
 
-            if ($game->getPrevisionalNbGoals() <= Game::LIMIT) {
+            if ($game->getAverageExpectedNbGoals() <= Game::LIMIT) {
                 $odd = str_replace(',', '.', $bet['outcomes'][1]['cote']);
                 $game->setOdd($odd);
-            } elseif ($game->getPrevisionalNbGoals() > Game::LIMIT) {
+            } elseif ($game->getAverageExpectedNbGoals() > Game::LIMIT) {
                 $odd = str_replace(',', '.', $bet['outcomes'][0]['cote']);
                 $game->setOdd($odd);
             }

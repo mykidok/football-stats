@@ -14,19 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckFormOfTheMomentCommand extends Command
 {
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
-
-    /**
-     * @var GameRepository
-     */
     private $gameRepository;
-
-    /**
-     * @var TeamRepository
-     */
     private $teamRepository;
 
     public function __construct(EntityManagerInterface $em, GameRepository $gameRepository, TeamRepository $teamRepository)
@@ -52,6 +41,10 @@ class CheckFormOfTheMomentCommand extends Command
         /** @var Team $team */
         foreach ($teamsOfTheDay as $team) {
             $lastGames = $this->gameRepository->findLastFourGamesForTeam($team);
+
+            if (count($lastGames) === 0) {
+                continue;
+            }
 
             $goals = 0;
             foreach ($lastGames as $lastGame) {

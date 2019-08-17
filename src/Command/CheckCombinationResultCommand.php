@@ -12,14 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckCombinationResultCommand extends Command
 {
-    /**
-     * @var CombinationRepository
-     */
     private $combinationRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
 
     public function __construct(EntityManagerInterface $em, CombinationRepository $combinationRepository)
