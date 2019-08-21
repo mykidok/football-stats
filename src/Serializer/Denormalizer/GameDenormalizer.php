@@ -160,7 +160,7 @@ class GameDenormalizer implements DenormalizerInterface
         }
 
         if ('HOME' === $type) {
-            if (empty($teamHistorics && ($team->getHomePlayedGames() === 0 || $team->getHomePlayedGames() === null))) {
+            if (empty($teamHistorics) && ($team->getHomePlayedGames() === 0 || $team->getHomePlayedGames() === null)) {
                 return [];
             }
             if ($team->getHomePlayedGames() > 0) {
@@ -177,7 +177,7 @@ class GameDenormalizer implements DenormalizerInterface
                 'averageChampionshipHomeGoals' => $averageChampionshipHomeGoals / $totalCoeff,
             ];
         } else {
-            if (empty($teamHistorics && ($team->getAwayPlayedGames() === 0 || $team->getAwayPlayedGames() === null))) {
+            if (empty($teamHistorics) && ($team->getAwayPlayedGames() === 0 || $team->getAwayPlayedGames() === null)) {
                 return [];
             }
             if ($team->getAwayPlayedGames() > 0) {

@@ -55,13 +55,13 @@
                                 </thead>
                                 <tbody>
                                 {% for match in underNbGoalsMatches %}
-                                    {% if match.previsionalNbGoals < 2.1 %}
+                                    {% if match.averageExpectedNbGoals < 2.1 %}
                                         {% set background = '#002A40' %}
-                                    {% elseif match.previsionalNbGoals < 2.6 %}
+                                    {% elseif match.averageExpectedNbGoals < 2.6 %}
                                         {% set background = '#00547F' %}
-                                    {% elseif match.previsionalNbGoals < 3.2 %}
+                                    {% elseif match.averageExpectedNbGoals < 3.2 %}
                                         {% set background = '#007FBF' %}
-                                    {% elseif match.previsionalNbGoals < 4 %}
+                                    {% elseif match.averageExpectedNbGoals < 4 %}
                                         {% set background = '#0098E5' %}
                                     {% else %}
                                         {% set background = '#00A9FF' %}
@@ -105,13 +105,13 @@
                                 </thead>
                                 <tbody>
                                 {% for match in overNbGoalsMatches %}
-                                    {% if match.previsionalNbGoals < 2.1 %}
+                                    {% if match.averageExpectedNbGoals < 2.1 %}
                                         {% set background = '#002A40' %}
-                                    {% elseif match.previsionalNbGoals < 2.6 %}
+                                    {% elseif match.averageExpectedNbGoals < 2.6 %}
                                         {% set background = '#00547F' %}
-                                    {% elseif match.previsionalNbGoals < 3.2 %}
+                                    {% elseif match.averageExpectedNbGoals < 3.2 %}
                                         {% set background = '#007FBF' %}
-                                    {% elseif match.previsionalNbGoals < 4 %}
+                                    {% elseif match.averageExpectedNbGoals < 4 %}
                                         {% set background = '#0098E5' %}
                                     {% else %}
                                         {% set background = '#00A9FF' %}
