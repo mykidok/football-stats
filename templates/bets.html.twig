@@ -55,13 +55,13 @@
                                 </thead>
                                 <tbody>
                                 {% for match in underNbGoalsMatches %}
-                                    {% if match.previsionalNbGoals < 2.1 %}
+                                    {% if match.averageExpectedNbGoals < 2.1 %}
                                         {% set background = '#002A40' %}
-                                    {% elseif match.previsionalNbGoals < 2.6 %}
+                                    {% elseif match.averageExpectedNbGoals < 2.6 %}
                                         {% set background = '#00547F' %}
-                                    {% elseif match.previsionalNbGoals < 3.2 %}
+                                    {% elseif match.averageExpectedNbGoals < 3.2 %}
                                         {% set background = '#007FBF' %}
-                                    {% elseif match.previsionalNbGoals < 4 %}
+                                    {% elseif match.averageExpectedNbGoals < 4 %}
                                         {% set background = '#0098E5' %}
                                     {% else %}
                                         {% set background = '#00A9FF' %}
@@ -71,7 +71,7 @@
                                         <td class="small text-left" scope="row">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</td>
                                         <td class="small" scope="row">{% if match.odd is not same as(null) %}{{ match.odd }}{% else %}N/D{% endif %}</td>
                                         <td class="small" scope="row">{% include ('/partial/_momentForm.html.twig') %}</td>
-                                        <td class="small" scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
+                                        <td class="small" scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.averageExpectedNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
                                         {% if match.goodResult is not same as(null) %}
                                             <td scope="row" class="d-none d-sm-block small text-center">
                                             <span class="{% if match.goodResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.goodResult %}green{% else %}red{% endif %}"></span>
@@ -105,13 +105,13 @@
                                 </thead>
                                 <tbody>
                                 {% for match in overNbGoalsMatches %}
-                                    {% if match.previsionalNbGoals < 2.1 %}
+                                    {% if match.averageExpectedNbGoals < 2.1 %}
                                         {% set background = '#002A40' %}
-                                    {% elseif match.previsionalNbGoals < 2.6 %}
+                                    {% elseif match.averageExpectedNbGoals < 2.6 %}
                                         {% set background = '#00547F' %}
-                                    {% elseif match.previsionalNbGoals < 3.2 %}
+                                    {% elseif match.averageExpectedNbGoals < 3.2 %}
                                         {% set background = '#007FBF' %}
-                                    {% elseif match.previsionalNbGoals < 4 %}
+                                    {% elseif match.averageExpectedNbGoals < 4 %}
                                         {% set background = '#0098E5' %}
                                     {% else %}
                                         {% set background = '#00A9FF' %}
@@ -121,7 +121,7 @@
                                         <td class="small text-left" scope="row">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</td>
                                         <td class="small" scope="row">{% if match.odd is not same as(null) %}{{ match.odd }}{% else %}N/D{% endif %}</td>
                                         <td class="small" scope="row">{% include ('/partial/_momentForm.html.twig') %}</td>
-                                        <td class="small" scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.previsionalNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
+                                        <td class="small" scope="row"><span class="float-right badge badge-pill" style="background: {{ background }}; color: white;">{{ match.averageExpectedNbGoals | round(2) }} {{ 'translations.bets.goals'|trans }}</span></td>
                                         {% if match.goodResult is not same as(null) %}
                                             <td scope="row" class="d-none d-sm-block small text-center">
                                                 <span class="{% if match.goodResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.goodResult %}green{% else %}red{% endif %}"></span>
@@ -137,7 +137,7 @@
             {% endif %}
             {% if (overNbGoalsMatches | length < 1) and (underNbGoalsMatches | length < 1) %}
                 <div class="mt-5 pt-5 text-center">
-                    <h1><span  class="badge badge-danger">No games today</span></h1>
+                    <h1><span  class="badge badge-danger">{{ 'translations.bets.no_games_today'|trans }}</span></h1>
                 </div>
             {% endif %}
         </div>

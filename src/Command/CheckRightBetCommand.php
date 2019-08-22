@@ -13,19 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckRightBetCommand extends Command
 {
-    /**
-     * @var Client
-     */
     private $client;
-
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
-
-    /**
-     * @var GameRepository
-     */
     private $gameRepository;
 
     public function __construct(Client $client, EntityManagerInterface $em, GameRepository $gameRepository)

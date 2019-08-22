@@ -2,6 +2,7 @@ translations.bets.bets_alert: Choisis un championnat, une date et clique sur env
 translations.bets.under_limit_goals: Moins de %nbLimit% buts
 translations.bets.goals: BUTS
 translations.bets.no_games: PAS DE MATCHS
+translations.bets.no_games_today: Pas de matchs
 translations.bets.over_limit_goals: Plus de %nbLimit% buts
 translations.bets.legend: Cela t'indiques si la forme du moment des équipes est en accord avec la prédiction
 translations.sidebar.home: Accueil

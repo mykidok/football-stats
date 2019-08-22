@@ -31,7 +31,7 @@ class GameRepository extends ServiceEntityRepository
                 'date_start' => $date->format('Y-m-d 00:00:00'),
                 'date_end' => $date->format('Y-m-d 23:59:59'),
             ])
-            ->orderBy('g.previsionalNbGoals', 'ASC')
+            ->orderBy('g.averageExpectedNbGoals', 'ASC')
         ;
 
         return $qb->getQuery()->getResult();
@@ -63,10 +63,12 @@ class GameRepository extends ServiceEntityRepository
             ->where('g.date > :date_start')
             ->andWhere('g.date < :date_end')
             ->andWhere($qb->expr()->isNotNull('g.odd'))
-            ->orderBy('g.momentForm', 'DESC')
+            ->orderBy('g.previsionIsSameAsExpected', 'DESC')
+            ->addOrderBy('g.momentForm', 'DESC')
             ->addOrderBy('g.percentage', 'DESC')
             ->addOrderBy('g.nbMatchForTeams', 'DESC')
             ->addOrderBy('g.odd', 'DESC')
+            ->addOrderBy('g.myOdd', 'ASC')
             ->setParameters([
                 'date_start' => $date->format('Y-m-d 00:00:00'),
                 'date_end' => $date->format('Y-m-d 23:59:59'),
