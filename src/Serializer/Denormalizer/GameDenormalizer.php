@@ -84,7 +84,7 @@ class GameDenormalizer implements DenormalizerInterface
         }
 
         if ($homeTeam->getHomePlayedGames() !== 0 && $awayTeam->getAwayPlayedGames() !== 0) {
-            $averageExpectedNbGoals = round(($nbGoalsExpectedMost + $previsionalNbGoals /2), 3);
+            $averageExpectedNbGoals = round(($nbGoalsExpectedMost + ($previsionalNbGoals /2)), 3);
         } else {
             $averageExpectedNbGoals = $nbGoalsExpectedMost;
         }

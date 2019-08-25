@@ -37,8 +37,8 @@ class CheckRightBetCommand extends Command
             $gameDay = $this->client->get('matches', [
                     'query' => [
                         'competitions' => $championship->getApiId(),
-                        'dateTo' => (new \DateTime('now'))->format('Y-m-d'),
-                        'dateFrom' => (new \DateTime('now'))->format('Y-m-d'),
+                        'dateTo' => (new \DateTime('yesterday'))->format('Y-m-d'),
+                        'dateFrom' => (new \DateTime('yesterday'))->format('Y-m-d'),
                     ]
                 ]
             );
@@ -51,20 +51,23 @@ class CheckRightBetCommand extends Command
             $i = 0;
             foreach ($gameDay['matches'] as $item) {
                 if ('FINISHED' === $item['status']) {
-                    /** @var Game $game */
+                    /** @var Game|null $game */
                     $game = $this->gameRepository->findOneBy(['apiId' => $item['id']]);
-                    $realNbGoals = $item['score']['fullTime']['homeTeam'] + $item['score']['fullTime']['awayTeam'];
-                    if (($game->getPrevisionalNbGoals() > Game::LIMIT && $realNbGoals > Game::LIMIT)
-                        || $game->getPrevisionalNbGoals() <= Game::LIMIT && $realNbGoals <= Game::LIMIT ) {
-                        $game->setGoodResult(true);
-                    } else {
-                        $game->setGoodResult(false);
-                    }
 
-                    $game->setRealNbGoals($realNbGoals);
-                    $this->em->persist($game);
-                    $this->em->flush();
-                    $i++;
+                    if (null !== $game) {
+                        $realNbGoals = $item['score']['fullTime']['homeTeam'] + $item['score']['fullTime']['awayTeam'];
+                        if (($game->getAverageExpectedNbGoals() > Game::LIMIT && $realNbGoals > Game::LIMIT)
+                            || $game->getAverageExpectedNbGoals() <= Game::LIMIT && $realNbGoals <= Game::LIMIT ) {
+                            $game->setGoodResult(true);
+                        } else {
+                            $game->setGoodResult(false);
+                        }
+
+                        $game->setRealNbGoals($realNbGoals);
+                        $this->em->persist($game);
+                        $this->em->flush();
+                        $i++;
+                    }
                 }
             }
             $output->writeln(sprintf('------ %d matches updated for %s ------', $i, $championship->getName()));
