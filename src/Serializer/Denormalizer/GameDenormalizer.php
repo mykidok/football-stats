@@ -40,7 +40,6 @@ class GameDenormalizer implements DenormalizerInterface
         $nbGoalsExpectedMost = null;
         $nbGoalsIsSameAsExpected = null;
 
-
         if ($homeTeam->getNbGoalsPerMatchHome() !== 0 || $awayTeam->getNbGoalsPerMatchAway() !== 0) {
             $previsionalNbGoals = ($homeTeam->getNbGoalsPerMatchHome() + $awayTeam->getNbGoalsPerMatchAway()) / 2;
         } else {
@@ -72,8 +71,22 @@ class GameDenormalizer implements DenormalizerInterface
                 if ($percentage > $maxResult) {
                     $maxResult = $percentage;
                     $nbGoalsExpectedMost = $totalGoals;
+
+                    if ($homeTeamScore > $awayTeamScore) {
+                        $previsionalWinner = $homeTeam;
+                    } elseif ($homeTeamScore < $awayTeamScore) {
+                        $previsionalWinner = $awayTeam;
+                    } elseif ($homeTeamScore === $awayTeamScore) {
+                        $previsionalWinner = null;
+                    }
                 }
             }
+        }
+
+        if ($nbGoalsExpectedMost > 2.5) {
+            $myOdd = $moreThanPercentage;
+        } else {
+            $myOdd = $lessThanPercentage;
         }
 
         if (($previsionalNbGoals > 2.5 && $nbGoalsExpectedMost > 2.5)
@@ -84,7 +97,7 @@ class GameDenormalizer implements DenormalizerInterface
         }
 
         if ($homeTeam->getHomePlayedGames() !== 0 && $awayTeam->getAwayPlayedGames() !== 0) {
-            $averageExpectedNbGoals = round(($nbGoalsExpectedMost + ($previsionalNbGoals /2)), 3);
+            $averageExpectedNbGoals = round((($nbGoalsExpectedMost + $previsionalNbGoals) /2), 3);
         } else {
             $averageExpectedNbGoals = $nbGoalsExpectedMost;
         }
@@ -99,7 +112,8 @@ class GameDenormalizer implements DenormalizerInterface
                         ->setExpectedNbGoals($nbGoalsExpectedMost)
                         ->setAverageExpectedNbGoals($averageExpectedNbGoals)
                         ->setPrevisionIsSameAsExpected($nbGoalsIsSameAsExpected)
-                        ->setMyOdd(100/(max($lessThanPercentage, $moreThanPercentage)))
+                        ->setMyOdd(100/$myOdd)
+                        ->setPrevisionalWinner($previsionalWinner)
         ;
 
         return $game;

@@ -144,6 +144,21 @@ class Game
      */
     private $myOdd;
 
+    /**
+     * @var Team|null
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $previsionalWinner;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $winnerResult;
+
     public function getId(): int
     {
         return $this->id;
@@ -337,6 +352,30 @@ class Game
     public function setMyOdd(?float $myOdd): self
     {
         $this->myOdd = $myOdd;
+
+        return $this;
+    }
+
+    public function getPrevisionalWinner(): ?Team
+    {
+        return $this->previsionalWinner;
+    }
+
+    public function setPrevisionalWinner(?Team $previsionalWinner): self
+    {
+        $this->previsionalWinner = $previsionalWinner;
+
+        return $this;
+    }
+
+    public function getWinnerResult(): ?boolean
+    {
+        return $this->winnerResult;
+    }
+
+    public function setWinnerResult(?bool $winnerResult): self
+    {
+        $this->winnerResult = $winnerResult;
 
         return $this;
     }
