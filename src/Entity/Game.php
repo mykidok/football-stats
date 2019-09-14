@@ -153,10 +153,9 @@ class Game
     private $previsionalWinner;
 
     /**
-     * @var Team|null
+     * @var boolean
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Team")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      */
     private $winnerResult;
 
@@ -362,19 +361,19 @@ class Game
         return $this->previsionalWinner;
     }
 
-    public function setPrevisionalWinner($previsionalWinner): self
+    public function setPrevisionalWinner(?Team $previsionalWinner): self
     {
         $this->previsionalWinner = $previsionalWinner;
 
         return $this;
     }
 
-    public function getWinnerResult(): ?Team
+    public function getWinnerResult(): ?boolean
     {
         return $this->winnerResult;
     }
 
-    public function setWinnerResult($winnerResult): self
+    public function setWinnerResult(?bool $winnerResult): self
     {
         $this->winnerResult = $winnerResult;
 
