@@ -79,8 +79,8 @@ class CheckFormOfTheMomentCommand extends Command
                 continue;
             }
 
-            if (($formForMatch > Game::LIMIT && $game->getPrevisionalNbGoals() > Game::LIMIT)
-            || ($formForMatch < Game::LIMIT && $game->getPrevisionalNbGoals() < Game::LIMIT)) {
+            if (($formForMatch > Game::LIMIT && $game->getAverageExpectedNbGoals() > Game::LIMIT)
+            || ($formForMatch < Game::LIMIT && $game->getAverageExpectedNbGoals() < Game::LIMIT)) {
                 $game->setMomentForm(true);
             } else {
                 $game->setMomentForm(false);
