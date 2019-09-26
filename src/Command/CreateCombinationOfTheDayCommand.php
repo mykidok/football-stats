@@ -38,7 +38,6 @@ class CreateCombinationOfTheDayCommand extends Command
 
         $this->gameManager->setPercentageForGamesOfTheDay($teams);
 
-        /** @var Game[] $games */
         $games = $this->gameRepository->findGamesOfTheDayOrderByOddAndPercentage(new \DateTime('now'));
 
         if (count($games) < 5) {
@@ -49,7 +48,11 @@ class CreateCombinationOfTheDayCommand extends Command
         $combination->setDate(new \DateTime('now'));
 
         for ($i = 0; $i < 2; $i++) {
-            $combination->addGame($games[$i]);
+            /** @var Game|null $gameToAdd */
+            $gameToAdd = $this->gameRepository->findOneBy(['apiId' => $games[$i]['api_id']]);
+            if ($gameToAdd !== null) {
+                $combination->addGame($gameToAdd);
+            }
         }
 
         /** @var Game $game */

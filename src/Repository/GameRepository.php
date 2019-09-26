@@ -56,26 +56,30 @@ class GameRepository extends ServiceEntityRepository
 
     public function findGamesOfTheDayOrderByOddAndPercentage(\DateTime $date)
     {
-        $qb = $this->createQueryBuilder('g');
+        $dateStart = $date->format('Y-m-d 00:00:00');
+        $dateEnd = $date->format('Y-m-d 23:59:59');
+        $query = <<<SQL
+SELECT * 
+FROM game g
+    WHERE g.date > '$dateStart'
+    AND g.date < '$dateEnd'
+    AND g.odd IS NOT NULL
+ORDER BY 
+      g.prevision_is_same_as_expected DESC,
+      g.moment_form DESC,
+      CASE 
+        WHEN (g.my_odd - g.odd) > 0 THEN (g.my_odd - g.odd)
+        WHEN (g.odd - g.my_odd) > 0 THEN (g.odd - g.my_odd) 
+      END ASC,
+      g.percentage DESC,
+      g.nb_match_for_teams DESC,
+      g.odd DESC,
+      g.my_odd DESC
+SQL;
 
-        $qb
-            ->select('g')
-            ->where('g.date > :date_start')
-            ->andWhere('g.date < :date_end')
-            ->andWhere($qb->expr()->isNotNull('g.odd'))
-            ->orderBy('g.previsionIsSameAsExpected', 'DESC')
-            ->addOrderBy('g.momentForm', 'DESC')
-            ->addOrderBy('g.percentage', 'DESC')
-            ->addOrderBy('g.nbMatchForTeams', 'DESC')
-            ->addOrderBy('g.odd', 'DESC')
-            ->addOrderBy('g.myOdd', 'ASC')
-            ->setParameters([
-                'date_start' => $date->format('Y-m-d 00:00:00'),
-                'date_end' => $date->format('Y-m-d 23:59:59'),
-            ])
-        ;
 
-        return $qb->getQuery()->getResult();
+        $em = $this->getEntityManager();
+        return $em->getConnection()->executeQuery($query)->fetchAll();
     }
 
     public function findOneByHomeTeamShortName(\DateTime $date, string $shortName)

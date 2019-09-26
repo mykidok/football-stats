@@ -36,6 +36,9 @@ class GameDenormalizer implements DenormalizerInterface
         $maxResult = 0;
         $lessThanPercentage = 0;
         $moreThanPercentage = 0;
+        $homeTeamWinningPercentage = 0;
+        $awayTeamWinningPercentage = 0;
+        $drawPercentage = 0;
 
         $nbGoalsExpectedMost = null;
         $nbGoalsIsSameAsExpected = null;
@@ -61,6 +64,14 @@ class GameDenormalizer implements DenormalizerInterface
                 $percentage = $this->poissonDistribution($expectedHomeGoals, $expectedAwayGoals, $homeTeamScore, $awayTeamScore);
                 $scoreTable[$homeTeamScore][$awayTeamScore] = $percentage;
 
+                if ($homeTeamScore > $awayTeamScore) {
+                    $homeTeamWinningPercentage += $percentage;
+                } elseif ($homeTeamScore < $awayTeamScore) {
+                    $awayTeamWinningPercentage += $percentage;
+                } elseif ($homeTeamScore === $awayTeamScore) {
+                    $drawPercentage += $percentage;
+                }
+
                 $totalGoals = $homeTeamScore+$awayTeamScore;
                 if ($totalGoals > 2.5) {
                     $moreThanPercentage += $percentage;
@@ -71,16 +82,17 @@ class GameDenormalizer implements DenormalizerInterface
                 if ($percentage > $maxResult) {
                     $maxResult = $percentage;
                     $nbGoalsExpectedMost = $totalGoals;
-
-                    if ($homeTeamScore > $awayTeamScore) {
-                        $previsionalWinner = $homeTeam;
-                    } elseif ($homeTeamScore < $awayTeamScore) {
-                        $previsionalWinner = $awayTeam;
-                    } elseif ($homeTeamScore === $awayTeamScore) {
-                        $previsionalWinner = null;
-                    }
                 }
             }
+        }
+
+        $winningPercentages = [$homeTeamWinningPercentage, $awayTeamWinningPercentage, $drawPercentage];
+        if (max($winningPercentages) === $homeTeamWinningPercentage) {
+            $previsionalWinner = $homeTeam;
+        } elseif (max($winningPercentages) === $awayTeamWinningPercentage) {
+            $previsionalWinner = $awayTeam;
+        } else {
+            $previsionalWinner = null;
         }
 
         if ($nbGoalsExpectedMost > 2.5) {
