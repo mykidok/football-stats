@@ -66,9 +66,9 @@ class CheckRightBetCommand extends Command
                         $game->setRealNbGoals($realNbGoals);
 
                         if (
-                            ($item['score']['WINNER'] === 'HOME_TEAM' && $game->getPrevisionalWinner() === $game->getHomeTeam())
-                             || ($item['score']['WINNER'] === 'AWAY_TEAM' && $game->getPrevisionalWinner() === $game->getAwayTeam())
-                             || ($item['score']['WINNER'] === 'DRAW' && null === $game->getPrevisionalWinner())
+                            ($item['score']['winner'] === 'HOME_TEAM' && $game->getPrevisionalWinner() === $game->getHomeTeam())
+                             || ($item['score']['winner'] === 'AWAY_TEAM' && $game->getPrevisionalWinner() === $game->getAwayTeam())
+                             || ($item['score']['winner'] === 'DRAW' && null === $game->getPrevisionalWinner())
                         ) {
                             $game->setWinnerResult(true);
                         } else {
