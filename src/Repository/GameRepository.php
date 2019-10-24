@@ -67,10 +67,6 @@ FROM game g
 ORDER BY 
       g.prevision_is_same_as_expected DESC,
       g.moment_form DESC,
-      CASE 
-        WHEN (g.my_odd - g.odd) > 0 THEN (g.my_odd - g.odd)
-        WHEN (g.odd - g.my_odd) > 0 THEN (g.odd - g.my_odd) 
-      END ASC,
       g.percentage DESC,
       g.nb_match_for_teams DESC,
       g.odd DESC,
