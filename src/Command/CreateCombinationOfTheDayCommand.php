@@ -47,12 +47,26 @@ class CreateCombinationOfTheDayCommand extends Command
         $combination = new Combination();
         $combination->setDate(new \DateTime('now'));
 
+        /** @var Game|null $previousGame */
+        $previousGame = null;
         for ($i = 0; $i < 2; $i++) {
             /** @var Game|null $gameToAdd */
             $gameToAdd = $this->gameRepository->findOneBy(['apiId' => $games[$i]['api_id']]);
             if ($gameToAdd !== null) {
+                if (
+                    (null !== $previousGame && $previousGame->getChampionship() === $gameToAdd->getChampionship())
+                    || $gameToAdd->getOdd() < 1.25
+                ) {
+                    continue;
+                }
+
                 $combination->addGame($gameToAdd);
+                $previousGame = $gameToAdd;
             }
+        }
+
+        if ($combination->getGames()->count() < 2) {
+            return $output->writeln('Not enough games today to create combination');
         }
 
         /** @var Game $game */
@@ -67,6 +81,6 @@ class CreateCombinationOfTheDayCommand extends Command
         $this->em->persist($combination);
         $this->em->flush();
 
-        $output->writeln('Combination created');
+        return $output->writeln('Combination created');
     }
 }

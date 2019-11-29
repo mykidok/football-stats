@@ -25,7 +25,7 @@
                                 <tr>
                                     <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
                                     <td class="small">
-                                        {% if game.previsionalNbGoals < 2.5 %}
+                                        {% if game.previsionalNbGoals <= 2.5 %}
                                             - 2.5
                                         {% elseif game.previsionalNbGoals > 2.5 %}
                                             + 2.5
