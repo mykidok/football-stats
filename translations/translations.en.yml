@@ -10,9 +10,7 @@ translations:
     games: Games
     hour: Hour
     form: Form
-    under_over: Under / Over
     odd: Odd
-    result: Result
     predictional_goals: Predictional goals
     legend: Indicates you if the form of the teams agrees with the prediction
   home:

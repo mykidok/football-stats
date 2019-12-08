@@ -2,7 +2,6 @@
 
 namespace App\Handler;
 
-
 class ChampionshipHandler
 {
     public function handleChampionshipGoals(array $data): array

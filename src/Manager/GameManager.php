@@ -2,21 +2,13 @@
 
 namespace App\Manager;
 
-
 use App\Entity\Game;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GameManager
 {
-    /**
-     * @var GameRepository
-     */
     private $gameRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
 
     public function __construct(GameRepository $gameRepository, EntityManagerInterface $em)
@@ -59,5 +51,45 @@ class GameManager
         }
 
         $this->em->flush();
+    }
+
+    public function setOddsForGamesOfTheDay(array $clientOdds): array
+    {
+        $games = [];
+        foreach ($clientOdds as $clientOdd) {
+            $homeTeamName = explode('-', $clientOdd['label'])[0];
+
+            /** @var Game $game */
+            $game = $this->gameRepository->findOneByHomeTeamShortName(new \DateTime('now'), $homeTeamName);
+
+            if (null === $game) {
+                continue;
+            }
+
+            if ($game->getAverageExpectedNbGoals() <= Game::LIMIT) {
+                $odd = str_replace(',', '.', $clientOdd['outcomes'][1]['cote']);
+                $game->setOdd($odd);
+            } elseif ($game->getAverageExpectedNbGoals() > Game::LIMIT) {
+                $odd = str_replace(',', '.', $clientOdd['outcomes'][0]['cote']);
+                $game->setOdd($odd);
+            }
+
+            if ($game->getPrevisionalWinner() === $game->getHomeTeam()) {
+                $winnerOdd = $clientOdd['winnerOdd'][0]['cote'];
+            } elseif ($game->getPrevisionalWinner() === $game->getAwayTeam()) {
+                $winnerOdd = $clientOdd['winnerOdd'][2]['cote'];
+            } else {
+                $winnerOdd = $clientOdd['winnerOdd'][1]['cote'];
+            }
+
+            $game->setWinnerOdd($winnerOdd);
+
+            $games[] = $game;
+            $this->em->persist($game);
+        }
+
+        $this->em->flush();
+
+        return $games;
     }
 }

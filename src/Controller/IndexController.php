@@ -18,29 +18,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends Controller
 {
-    /**
-     * @var Client $client
-     */
     private $client;
-
-    /**
-     * @var FormFactoryInterface $formFactory
-     */
     private $formFactory;
-
-    /**
-     * @var GameRepository
-     */
     private $gameRepository;
-
-    /**
-     * @var ChampionshipRepository
-     */
     private $championshipRepository;
-
-    /**
-     * @var CombinationRepository
-     */
     private $combinationRepository;
 
     public function __construct(Client $client, FormFactoryInterface $formFactory, GameRepository $gameRepository, ChampionshipRepository $championshipRepository, CombinationRepository $combinationRepository)
@@ -106,8 +87,7 @@ class IndexController extends Controller
 
         return [
             'nbLimit' => $nbLimit,
-            'overNbGoalsMatches' => $overNbGoalsMatches,
-            'underNbGoalsMatches' => $underNbGoalsMatches,
+            'matches' => $matches,
             'form' => $form->createView(),
         ];
     }
