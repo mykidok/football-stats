@@ -64,6 +64,7 @@ FROM game g
     WHERE g.date > '$dateStart'
     AND g.date < '$dateEnd'
     AND g.odd IS NOT NULL
+    AND g.odd > 1.25
 ORDER BY 
       g.moment_form DESC,
       g.prevision_is_same_as_expected DESC,

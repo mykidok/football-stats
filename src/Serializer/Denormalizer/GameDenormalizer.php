@@ -10,9 +10,6 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class GameDenormalizer implements DenormalizerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
     private $em;
 
     public function __construct(EntityManagerInterface $em)

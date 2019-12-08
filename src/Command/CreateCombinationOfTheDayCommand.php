@@ -49,14 +49,12 @@ class CreateCombinationOfTheDayCommand extends Command
 
         /** @var Game|null $previousGame */
         $previousGame = null;
-        for ($i = 0; $i < 2; $i++) {
+        foreach ($games as $game) {
             /** @var Game|null $gameToAdd */
-            $gameToAdd = $this->gameRepository->findOneBy(['apiId' => $games[$i]['api_id']]);
+            $gameToAdd = $this->gameRepository->findOneBy(['apiId' => $game['api_id']]);
             if ($gameToAdd !== null) {
-                if (
-                    (null !== $previousGame && $previousGame->getChampionship() === $gameToAdd->getChampionship())
-                    || $gameToAdd->getOdd() < 1.25
-                ) {
+                if ((null !== $previousGame && $previousGame->getChampionship() === $gameToAdd->getChampionship())
+                || $combination->getGames()->count() === 2) {
                     continue;
                 }
 

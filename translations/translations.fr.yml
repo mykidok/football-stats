@@ -26,15 +26,16 @@ translations.form.submit: Envoyer
 translations.bets.hour: Heure
 translations.bets.game: Match
 translations.bets.odd: Cote
-translations.bets.result: Resultat
 translations.bets.form: Forme
 translations.bets.predictional_goals: Prévision
 translations.combination.combination_of_the_day: Ticket du jour
 translations.bets.games: Match
-translations.bets.under_over: Plus / Moins
-translations.combination.bet: Mise :
-translations.combination.win: Gain :
-translations.combination.possible_win: Gain possible :
+translations.combination.bet: |
+  Mise :
+translations.combination.win: |
+  Gain :
+translations.combination.possible_win: |
+  Gain possible :
 translations.combination.not_enough: Pas assez de matchs aujourd'hui pour générer un ticket
 translations.combination.combination_of: Ticket du
 translations.combination.payroll_evolution: Evolution du budget

@@ -159,6 +159,13 @@ class Game
      */
     private $winnerResult;
 
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $winnerOdd;
+
     public function getId(): int
     {
         return $this->id;
@@ -368,7 +375,7 @@ class Game
         return $this;
     }
 
-    public function getWinnerResult(): ?boolean
+    public function getWinnerResult(): ?bool
     {
         return $this->winnerResult;
     }
@@ -376,6 +383,18 @@ class Game
     public function setWinnerResult(?bool $winnerResult): self
     {
         $this->winnerResult = $winnerResult;
+
+        return $this;
+    }
+
+    public function getWinnerOdd(): ?float
+    {
+        return $this->winnerOdd;
+    }
+
+    public function setWinnerOdd(?float $winnerOdd): self
+    {
+        $this->winnerOdd = $winnerOdd;
 
         return $this;
     }
