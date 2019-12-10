@@ -75,14 +75,14 @@ class GameManager
             }
 
             if ($game->getPrevisionalWinner() === $game->getHomeTeam()) {
-                $winnerOdd = $clientOdd['winnerOdd'][0]['cote'];
+                $winnerOdd = $clientOdd['winnerOdds'][0]['cote'];
             } elseif ($game->getPrevisionalWinner() === $game->getAwayTeam()) {
-                $winnerOdd = $clientOdd['winnerOdd'][2]['cote'];
+                $winnerOdd = $clientOdd['winnerOdds'][2]['cote'];
             } else {
-                $winnerOdd = $clientOdd['winnerOdd'][1]['cote'];
+                $winnerOdd = $clientOdd['winnerOdds'][1]['cote'];
             }
 
-            $game->setWinnerOdd($winnerOdd);
+            $game->setWinnerOdd((float) str_replace(',', '.', $winnerOdd));
 
             $games[] = $game;
             $this->em->persist($game);
