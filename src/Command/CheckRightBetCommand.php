@@ -65,6 +65,12 @@ class CheckRightBetCommand extends Command
 
                         $game->setRealNbGoals($realNbGoals);
 
+                        if ($item['score']['winner'] === 'HOME_TEAM') {
+                            $game->setWinner($game->getHomeTeam());
+                        } elseif ($item['score']['winner'] === 'AWAY_TEAM') {
+                            $game->setWinner($game->getAwayTeam());
+                        }
+
                         if (
                             ($item['score']['winner'] === 'HOME_TEAM' && $game->getPrevisionalWinner() === $game->getHomeTeam())
                              || ($item['score']['winner'] === 'AWAY_TEAM' && $game->getPrevisionalWinner() === $game->getAwayTeam())

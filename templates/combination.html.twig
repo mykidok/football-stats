@@ -16,7 +16,7 @@
                             <thead>
                             <tr>
                                 <th>{{ 'translations.bets.games' | trans }}</th>
-                                <th>+ / -</th>
+                                <th>+/-</th>
                                 <th>{{ 'translations.bets.odd' | trans }}</th>
                             </tr>
                             </thead>
@@ -26,9 +26,9 @@
                                     <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
                                     <td class="small">
                                         {% if game.averageExpectedNbGoals <= 2.5 %}
-                                            - 2.5
+                                            -2.5
                                         {% elseif game.averageExpectedNbGoals > 2.5 %}
-                                            + 2.5
+                                            +2.5
                                         {% endif %}
                                     </td>
                                     <td class="small">{{ game.odd }}</td>
@@ -83,9 +83,9 @@
                                                 <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
                                                 <td class="small">
                                                     {% if game.averageExpectedNbGoals <= 2.5 %}
-                                                        - 2.5
+                                                        -2.5
                                                     {% elseif game.averageExpectedNbGoals > 2.5 %}
-                                                        + 2.5
+                                                        +2.5
                                                     {% endif %}
                                                 </td>
                                                 <td class="small">{{ game.odd }}</td>

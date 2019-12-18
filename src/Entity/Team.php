@@ -116,6 +116,14 @@ class Team
      */
     private $homePlayedGames;
 
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $pointsMomentForm;
+
     public function getId(): int
     {
         return $this->id;
@@ -273,6 +281,18 @@ class Team
     public function setHomePlayedGames(?int $homePlayedGames): self
     {
         $this->homePlayedGames = $homePlayedGames;
+
+        return $this;
+    }
+
+    public function getPointsMomentForm(): ?int
+    {
+        return $this->pointsMomentForm;
+    }
+
+    public function setPointsMomentForm(?int $pointsMomentForm): self
+    {
+        $this->pointsMomentForm = $pointsMomentForm;
 
         return $this;
     }

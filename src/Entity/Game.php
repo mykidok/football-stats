@@ -85,6 +85,13 @@ class Game
     private $momentForm;
 
     /**
+     * @var bool|null
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $winnerMomentForm;
+
+    /**
      * @var float|null
      *
      * @ORM\Column(type="float", nullable=true)
@@ -165,6 +172,13 @@ class Game
      * @ORM\Column(type="float", nullable=true)
      */
     private $winnerOdd;
+
+    /**
+     * @var Team|null
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team")
+     */
+    private $winner;
 
     public function getId(): int
     {
@@ -398,4 +412,30 @@ class Game
 
         return $this;
     }
+
+    public function getWinnerMomentForm(): ?bool
+    {
+        return $this->winnerMomentForm;
+    }
+
+    public function setWinnerMomentForm(?bool $winnerMomentForm): self
+    {
+        $this->winnerMomentForm = $winnerMomentForm;
+
+        return $this;
+    }
+
+    public function getWinner(): ?Team
+    {
+        return $this->winner;
+    }
+
+    public function setWinner(?Team $winner): self
+    {
+        $this->winner = $winner;
+
+        return $this;
+    }
+
+
 }
