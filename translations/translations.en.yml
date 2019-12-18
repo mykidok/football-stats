@@ -39,8 +39,10 @@ translations:
     goals: Goals
   combination:
     combination_of_the_day: Combination of the day
-    possible_win: Possible win :
-    bet: Bet :
+    possible_win: |
+      Possible win :
+    bet: |
+      Bet :
     combination_of: Combination of
     not_enough: Not enough games today for a combination
     win: Win

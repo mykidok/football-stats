@@ -40,6 +40,7 @@ class CheckFormOfTheMomentCommand extends Command
 
         /** @var Team $team */
         foreach ($teamsOfTheDay as $team) {
+            /** @var Game[] $lastGames */
             $lastGames = $this->gameRepository->findLastFourGamesForTeam($team);
 
             if (count($lastGames) === 0) {
@@ -47,11 +48,18 @@ class CheckFormOfTheMomentCommand extends Command
             }
 
             $goals = 0;
+            $points = 0;
             foreach ($lastGames as $lastGame) {
-                $goals = $goals + $lastGame['realNbGoals'];
+                $goals += $lastGame->getRealNbGoals();
+                if (null === $lastGame->getWinner()) {
+                    $points += 1;
+                } elseif ($lastGame->getWinner()->getId() === $team->getId()) {
+                    $points += 3;
+                }
             }
 
             $team->setMomentForm($goals/count($lastGames));
+            $team->setPointsMomentForm($points);
             $this->em->persist($team);
         }
 
@@ -84,6 +92,16 @@ class CheckFormOfTheMomentCommand extends Command
                 $game->setMomentForm(true);
             } else {
                 $game->setMomentForm(false);
+            }
+
+            if (
+                ($game->getHomeTeam()->getPointsMomentForm() > $game->getAwayTeam()->getPointsMomentForm() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
+                || ($game->getAwayTeam()->getPointsMomentForm() > $game->getHomeTeam()->getPointsMomentForm() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
+                || ($game->getHomeTeam()->getPointsMomentForm() === $game->getAwayTeam()->getPointsMomentForm() && null === $game->getPrevisionalWinner())
+            ) {
+                $game->setWinnerMomentForm(true);
+            } else {
+                $game->setWinnerMomentForm(false);
             }
 
             $this->em->persist($game);

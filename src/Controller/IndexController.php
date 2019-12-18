@@ -94,8 +94,8 @@ class IndexController extends Controller
 
     /**
      * @Route(
-     *     path="/statistics",
-     *     name="statistics",
+     *     path="/statistics/more-less",
+     *     name="statistics_more_less",
      *     methods={"GET"}
      * )
      *

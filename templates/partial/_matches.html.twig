@@ -23,24 +23,16 @@
                     <div>
                         <p class="mt-1 font-weight-bold" style="font-size: smaller; margin-left: unset">
                             {{ 'translations.bets.odd'|trans }}: {% if match.odd is not null %}{{ match.odd }}{% else %}N/D{% endif %}&nbsp;
-                            {% if match.momentForm is not same as(null) and match.momentForm %}
-                                <button class="badge btn-green ml-1">
-                                    <span class="fa fa-sort-up" style="color: white"></span>
-                                </button>
-                            {% elseif match.momentForm is not same as(null) and match.momentForm is same as(false) %}
-                                <button class="badge badge-danger ml-1">
-                                    <span class="fa fa-sort-down"></span>
-                                </button >
-                            {% endif %}
+                            {% include '/partial/_moment_form.html.twig' with { momentForm: match.momentForm } %}
                         </p>
                     </div>
-
                 </div>
                 <div class="col-6">
                     <form class="form-inline justify-content-end">
                         <span class="btn btn-sm btn-{% if match.homeTeam.id is same as (match.previsionalWinner.id) %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">1</span>
                         <span class="btn btn-sm btn-{% if match.previsionalWinner is null %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">N</span>
                         <span class="btn btn-sm btn-{% if match.awayTeam.id is same as (match.previsionalWinner.id) %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">2</span>
+                        {% include '/partial/_moment_form.html.twig' with { momentForm: match.winnerMomentForm } %}
                         {% if match.winnerResult is not null %}
                             &nbsp;<span class="{% if match.winnerResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.winnerResult %}green{% else %}red{% endif %}"></span>
                         {% endif %}
@@ -48,13 +40,6 @@
                     <p class="text-right mt-1 font-weight-bold" style="font-size: smaller">{{ 'translations.bets.odd'|trans }}: {% if match.winnerOdd is not null %}{{ match.winnerOdd }}{% else %}N/D{% endif %}</p>
                 </div>
             </div>
-
-            <div class="row">
-
-
-            </div>
-
-
         </div>
     </div>
 {% endfor %}
