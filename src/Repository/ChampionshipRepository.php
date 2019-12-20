@@ -16,7 +16,7 @@ class ChampionshipRepository extends ServiceEntityRepository
         parent::__construct($registry, Championship::class);
     }
 
-    public function findChampionshipsWithStatistics()
+    public function findChampionshipsWithStatistics(string $goodResult, string $momentForm): array
     {
         $qb = $this->createQueryBuilder('c');
 
@@ -24,54 +24,54 @@ class ChampionshipRepository extends ServiceEntityRepository
             ->select('c.name, c.logo')
             ->addSelect('t.name as teamName')
             ->addSelect(
-                'SUM(
-                            CASE WHEN (g.goodResult IS NOT NULL AND g.championship = c.id)
+                "SUM(
+                            CASE WHEN (g.$goodResult IS NOT NULL AND g.championship = c.id)
                             THEN 1
                             ELSE 0 END
-                    ) as nbMatch'
+                    ) as nbMatch"
             )
             ->addSelect(
-                'SUM(
-                            CASE WHEN (g.goodResult = 1 AND g.championship = c.id)
+                "SUM(
+                            CASE WHEN (g.$goodResult = 1 AND g.championship = c.id)
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN (g.championship = c.id AND g.goodResult IS NOT NULL)
+                            CASE WHEN (g.championship = c.id AND g.$goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
-                        ) as championshipPercentage'
+                        ) as championshipPercentage"
             )
             ->addSelect(
-                'SUM(
-                            CASE WHEN (g.goodResult = 1 AND g.championship = c.id  AND g.momentForm = 1)
+                "SUM(
+                            CASE WHEN (g.$goodResult = 1 AND g.championship = c.id  AND g.$momentForm = 1)
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN (g.championship = c.id AND g.goodResult IS NOT NULL AND g.momentForm = 1)
+                            CASE WHEN (g.championship = c.id AND g.$goodResult IS NOT NULL AND g.$momentForm = 1)
                             THEN 1
                             ELSE 0 END
-                        ) as championshipPercentageWithForm'
+                        ) as championshipPercentageWithForm"
             )
             ->addSelect(
-                'SUM(
-                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.goodResult IS NOT NULL)
+                "SUM(
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.$goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
-                        ) as teamNbMatch'
+                        ) as teamNbMatch"
             )
             ->addSelect(
-                'SUM(
-                            CASE WHEN (g.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
+                "SUM(
+                            CASE WHEN (g.$goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.goodResult IS NOT NULL)
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.$goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
-                        ) as teamPercentage'
+                        ) as teamPercentage"
             )
             ->leftJoin(Team::class, 't', Join::WITH, 'c.id = t.championship')
             ->leftJoin(Game::class, 'g', Join::WITH, 'c.id = g.championship')
@@ -84,7 +84,7 @@ class ChampionshipRepository extends ServiceEntityRepository
         return $qb->getQuery()->getScalarResult();
     }
 
-    public function findTeamsWithStatistics()
+    public function findTeamsWithStatistics(): array
     {
         $qb = $this->createQueryBuilder('c');
 
