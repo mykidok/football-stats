@@ -95,8 +95,8 @@ class CheckFormOfTheMomentCommand extends Command
             }
 
             if (
-                ($game->getHomeTeam()->getPointsMomentForm() > $game->getAwayTeam()->getPointsMomentForm() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
-                || ($game->getAwayTeam()->getPointsMomentForm() > $game->getHomeTeam()->getPointsMomentForm() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
+                ($game->getHomeTeam()->getPointsMomentForm() > $game->getAwayTeam()->getPointsMomentForm() && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
+                || ($game->getAwayTeam()->getPointsMomentForm() > $game->getHomeTeam()->getPointsMomentForm() && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
                 || ($game->getHomeTeam()->getPointsMomentForm() === $game->getAwayTeam()->getPointsMomentForm() && null === $game->getPrevisionalWinner())
             ) {
                 $game->setWinnerMomentForm(true);
