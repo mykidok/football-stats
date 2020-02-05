@@ -11,10 +11,7 @@ use Symfony\Component\Routing\RouterInterface;
 
 class ExceptionListener
 {
-    /** @var RouterInterface */
     private $router;
-
-    /** @var Session */
     private $session;
 
     public function __construct(RouterInterface $router, Session $session)

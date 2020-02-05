@@ -94,16 +94,29 @@ class IndexController extends Controller
 
     /**
      * @Route(
-     *     path="/statistics/more-less",
-     *     name="statistics_more_less",
+     *     path="/statistics/{id}",
+     *     name="statistics",
      *     methods={"GET"}
      * )
      *
      * @Template(template="statistics.html.twig")
      */
-    public function statisticsAction()
+    public function statisticsMoreLessAction(Request $request)
     {
-        $championships = $this->championshipRepository->findChampionshipsWithStatistics();
+        switch ($request->attributes->get('id')) {
+            case '1n2':
+                $goodResult = 'winnerResult';
+                $momentForm = 'winnerMomentForm';
+                break;
+            case 'more-less':
+                $goodResult = 'goodResult';
+                $momentForm = 'momentForm';
+                break;
+            default:
+
+        }
+
+        $championships = $this->championshipRepository->findChampionshipsWithStatistics($goodResult, $momentForm);
 
         $data = array_reduce($championships, function ($memo, $championship) {
             $teamData = [
