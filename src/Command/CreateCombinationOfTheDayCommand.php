@@ -39,6 +39,8 @@ class CreateCombinationOfTheDayCommand extends Command
         $this->gameManager->setPercentageForGamesOfTheDay($teams);
 
         $games = $this->gameRepository->findGamesOfTheDayOrderByOddAndPercentage(new \DateTime('now'));
+        $winnerOddGames = $this->gameRepository->findGamesOfTheDayWinnerOdds(new \DateTime('now'));
+
 
         if (count($games) < 5) {
             return $output->writeln('Not enough games today to create combination');
@@ -53,6 +55,19 @@ class CreateCombinationOfTheDayCommand extends Command
             /** @var Game|null $gameToAdd */
             $gameToAdd = $this->gameRepository->findOneBy(['apiId' => $game['api_id']]);
             if ($gameToAdd !== null) {
+                if ($combination->getGames()->count() === 1) {
+                    foreach ($winnerOddGames as $winnerOddGame) {
+                        /** @var Game|null $winnerGameToAdd */
+                        $winnerGameToAdd = $this->gameRepository->findOneBy(['apiId' => $winnerOddGame['api_id']]);
+                        if ($winnerGameToAdd->getWinnerPercentage() > $gameToAdd->getPercentage() && $winnerGameToAdd->getWinnerMomentForm()) {
+                            $combination->addGame($winnerGameToAdd);
+                            $previousGame = $winnerGameToAdd;
+                            $winnerGameToAdd->setBetOnWinner(true);
+                            $this->em->persist($winnerGameToAdd);
+                        }
+                    }
+                }
+
                 if ((null !== $previousGame && $previousGame->getChampionship() === $gameToAdd->getChampionship())
                 || $combination->getGames()->count() === 2) {
                     continue;

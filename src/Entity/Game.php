@@ -160,7 +160,7 @@ class Game
     private $previsionalWinner;
 
     /**
-     * @var boolean
+     * @var boolean|null
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
@@ -179,6 +179,21 @@ class Game
      * @ORM\ManyToOne(targetEntity="App\Entity\Team")
      */
     private $winner;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(type="float", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $winnerPercentage;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $betOnWinner = false;
 
     public function getId(): int
     {
@@ -437,5 +452,27 @@ class Game
         return $this;
     }
 
+    public function getWinnerPercentage(): ?float
+    {
+        return $this->winnerPercentage;
+    }
 
+    public function setWinnerPercentage(?float $winnerPercentage): self
+    {
+        $this->winnerPercentage = $winnerPercentage;
+
+        return $this;
+    }
+
+    public function isBetOnWinner(): bool
+    {
+        return $this->betOnWinner;
+    }
+
+    public function setBetOnWinner(bool $betOnWinner): self
+    {
+        $this->betOnWinner = $betOnWinner;
+
+        return $this;
+    }
 }

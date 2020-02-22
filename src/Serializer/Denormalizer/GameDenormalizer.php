@@ -177,7 +177,7 @@ class GameDenormalizer implements DenormalizerInterface
                 return [];
             }
             if ($team->getHomePlayedGames() > 0) {
-                $averageChampionshipHomeGoals += $team->getChampionship()->getAverageGoalsHomeFor() * 5;
+                $averageChampionshipHomeGoals += $team->getChampionship()->getAverageGoalsHomeFor() * $currentYearCoeff;
                 $averageHomeForceAttack += $team->getHomeForceAttack() * $currentYearCoeff;
                 $averageHomeForceDefense += $team->getHomeForceDefense() * $currentYearCoeff;
 
@@ -194,7 +194,7 @@ class GameDenormalizer implements DenormalizerInterface
                 return [];
             }
             if ($team->getAwayPlayedGames() > 0) {
-                $averageChampionshipAwayGoals += $team->getChampionship()->getAverageGoalsAwayFor() * 5;
+                $averageChampionshipAwayGoals += $team->getChampionship()->getAverageGoalsAwayFor() * $currentYearCoeff;
                 $averageAwayForceAttack += $team->getAwayForceAttack() * $currentYearCoeff;
                 $averageAwayForceDefense += $team->getAwayForceDefense() * $currentYearCoeff;
 

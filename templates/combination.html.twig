@@ -24,14 +24,27 @@
                             {% for game in combination.games %}
                                 <tr>
                                     <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
-                                    <td class="small">
-                                        {% if game.averageExpectedNbGoals <= 2.5 %}
-                                            -2.5
-                                        {% elseif game.averageExpectedNbGoals > 2.5 %}
-                                            +2.5
-                                        {% endif %}
-                                    </td>
-                                    <td class="small">{{ game.odd }}</td>
+                                    {% if game.betOnWinner is same as(false) %}
+                                        <td class="small">
+                                            {% if game.averageExpectedNbGoals <= 2.5 %}
+                                                -2.5
+                                            {% elseif game.averageExpectedNbGoals > 2.5 %}
+                                                +2.5
+                                            {% endif %}
+                                        </td>
+                                        <td class="small">{{ game.odd }}</td>
+                                    {% else %}
+                                        <td class="small">
+                                            {% if game.homeTeam.id is same as(game.previsionalWinner.id) %}
+                                                1
+                                            {% elseif game.awayTeam.id is same as(game.awayTeam.id) %}
+                                                2
+                                            {% else %}
+                                                N
+                                            {% endif %}
+                                        </td>
+                                        <td class="small">{{ game.winnerOdd }}</td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -81,15 +94,29 @@
                                         {% for game in combination.games %}
                                             <tr>
                                                 <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
-                                                <td class="small">
-                                                    {% if game.averageExpectedNbGoals <= 2.5 %}
-                                                        -2.5
-                                                    {% elseif game.averageExpectedNbGoals > 2.5 %}
-                                                        +2.5
-                                                    {% endif %}
-                                                </td>
-                                                <td class="small">{{ game.odd }}</td>
-                                                {% if game.goodResult %}
+                                                {% if game.betOnWinner is same as(false) %}
+                                                    <td class="small">
+                                                        {% if game.averageExpectedNbGoals <= 2.5 %}
+                                                            -2.5
+                                                        {% elseif game.averageExpectedNbGoals > 2.5 %}
+                                                            +2.5
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="small">{{ game.odd }}</td>
+                                                {% else %}
+                                                    <td class="small">
+                                                        {% if game.homeTeam.id is same as(game.previsionalWinner.id) %}
+                                                            1
+                                                        {% elseif game.awayTeam.id is same as(game.awayTeam.id) %}
+                                                            2
+                                                        {% else %}
+                                                            N
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="small">{{ game.winnerOdd }}</td>
+                                                {% endif %}
+                                                {% set result = game.betOnWinner ? game.winnerResult : game.goodResult %}
+                                                {% if result %}
                                                     {% set colorGame = "green" %}
                                                     {% set iconGame = "fa fa-check" %}
                                                 {% else %}

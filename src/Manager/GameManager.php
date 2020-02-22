@@ -26,23 +26,28 @@ class GameManager
             $i = 0;
             $percentageAway = null;
             $percentageHome = null;
+            $percentageWinnerAway = null;
+            $percentageWinnerHome = null;
             $nbMatchHome = null;
             $nbMatchAway = null;
             foreach ($teams as $team) {
                 if ($team['teamName'] === $game->getHomeTeam()->getName()) {
                     $nbMatchHome = $team['teamNbMatch'];
                     $percentageHome = $team['teamPercentage'];
+                    $percentageWinnerHome = $team['teamWinnerPercentage'];
                     $i++;
                 }
                 if ($team['teamName'] === $game->getAwayTeam()->getName()) {
                     $nbMatchAway = $team['teamNbMatch'];
                     $percentageAway = $team['teamPercentage'];
+                    $percentageWinnerAway = $team['teamWinnerPercentage'];
                     $i++;
                 }
                 if ($i === 2) {
                     $game->setNbMatchForTeams($nbMatchAway+$nbMatchHome);
                     if ($nbMatchAway+$nbMatchHome !== 0) {
                         $game->setPercentage(((($nbMatchHome*$percentageHome)+($nbMatchAway*$percentageAway))/($nbMatchAway+$nbMatchHome)));
+                        $game->setWinnerPercentage(((($nbMatchHome*$percentageWinnerHome)+($nbMatchAway*$percentageWinnerAway))/($nbMatchAway+$nbMatchHome)));
                     }
 
                     $this->em->persist($game);

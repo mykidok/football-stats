@@ -36,6 +36,9 @@ class CheckCombinationResultCommand extends Command
         $i = 0;
         /** @var Game $game */
         foreach ($lastCombination->getGames() as $game) {
+            if (null === $game->isGoodResult()) {
+                return $output->writeln('One match has not been played.');
+            }
             if ($game->isGoodResult()) {
                 $i++;
             }

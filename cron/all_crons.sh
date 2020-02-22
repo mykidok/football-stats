@@ -1,14 +1,14 @@
 #!/bin/bash
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:check:bet
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:check:bet
 sleep 60
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:update:teams
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:update:teams
 sleep 60
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:import:games
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:import:games
 sleep 5
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:import:odds
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:import:odds
 sleep 5
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:check:form
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:check:form
 sleep 5
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:check:combination
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:check:combination
 sleep 5
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:create:combination
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:create:combination
