@@ -83,6 +83,28 @@ SQL;
         return $em->getConnection()->executeQuery($query)->fetchAll();
     }
 
+    public function findGamesOfTheDayWinnerOdds(\DateTime $date)
+    {
+        $dateStart = $date->format('Y-m-d 00:00:00');
+        $dateEnd = $date->format('Y-m-d 23:59:59');
+        $query = <<<SQL
+SELECT * 
+FROM game g
+    WHERE g.date > '$dateStart'
+    AND g.date < '$dateEnd'
+    AND g.winner_odd IS NOT NULL
+    AND g.winner_odd > 1.40
+ORDER BY 
+      g.winner_moment_form DESC,
+      g.percentage DESC,
+      g.nb_match_for_teams DESC,
+      g.winner_odd DESC
+SQL;
+
+        $em = $this->getEntityManager();
+        return $em->getConnection()->executeQuery($query)->fetchAll();
+    }
+
     public function findOneByHomeTeamShortName(\DateTime $date, string $shortName)
     {
         $qb = $this->createQueryBuilder('g');
