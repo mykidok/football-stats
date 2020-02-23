@@ -64,16 +64,12 @@ class CreateCombinationOfTheDayCommand extends Command
                         if ($winnerGameToAdd->getWinnerPercentage() > $gameToAdd->getPercentage()
                             && $winnerGameToAdd->getWinnerMomentForm()
                             && $winnerGameToAdd->getId() !== $previousGame->getId()
+                            && $combination->getGames()->count() === 1
                         ) {
-                            try {
-                                $combination->addGame($winnerGameToAdd);
-                                $previousGame = $winnerGameToAdd;
-                                $winnerGameToAdd->setBetOnWinner(true);
-                                $this->em->persist($winnerGameToAdd);
-                            } catch (ConstraintViolationException $e) {
-                                continue;
-                            }
-
+                            $combination->addGame($winnerGameToAdd);
+                            $previousGame = $winnerGameToAdd;
+                            $winnerGameToAdd->setBetOnWinner(true);
+                            $this->em->persist($winnerGameToAdd);
                         }
                     }
                 }
@@ -83,12 +79,8 @@ class CreateCombinationOfTheDayCommand extends Command
                     continue;
                 }
 
-                try {
-                    $combination->addGame($gameToAdd);
-                    $previousGame = $gameToAdd;
-                } catch (ConstraintViolationException $e) {
-                    //do nothing
-                }
+                $combination->addGame($gameToAdd);
+                $previousGame = $gameToAdd;
             }
         }
 
@@ -98,10 +90,16 @@ class CreateCombinationOfTheDayCommand extends Command
 
         /** @var Game $game */
         foreach ($combination->getGames() as $game) {
-            if (null === $combinationOdd = $combination->getGeneralOdd()) {
-                $combination->setGeneralOdd($game->getOdd() * Combination::BET_AMOUNT);
+            if ($game->isBetOnWinner()) {
+                $odd = $game->getWinnerOdd();
             } else {
-                $combination->setGeneralOdd($combinationOdd * $game->getOdd());
+                $odd = $game->getOdd();
+            }
+
+            if (null === $combinationOdd = $combination->getGeneralOdd()) {
+                $combination->setGeneralOdd($odd * Combination::BET_AMOUNT);
+            } else {
+                $combination->setGeneralOdd($combinationOdd * $odd);
             }
         }
 
