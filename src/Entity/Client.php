@@ -9,7 +9,7 @@ class Client
     /** @var GuzzleClient */
     private $client;
 
-    public function __construct(GuzzleClient $client, $apiKey)
+    public function __construct(GuzzleClient $client)
     {
         $this->client = $client;
     }

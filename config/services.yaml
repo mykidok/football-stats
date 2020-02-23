@@ -34,7 +34,6 @@ services:
         public: true
         arguments:
             $client: '@csa_guzzle.client.football_api'
-            $apiKey: '%api_key%'
 
     App\Entity\OddsClient:
         public: true
