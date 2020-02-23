@@ -9,6 +9,7 @@ use App\Entity\Team;
 use App\Manager\GameManager;
 use App\Repository\ChampionshipRepository;
 use App\Repository\GameRepository;
+use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,10 +65,15 @@ class CreateCombinationOfTheDayCommand extends Command
                             && $winnerGameToAdd->getWinnerMomentForm()
                             && $winnerGameToAdd->getId() !== $previousGame->getId()
                         ) {
-                            $combination->addGame($winnerGameToAdd);
-                            $previousGame = $winnerGameToAdd;
-                            $winnerGameToAdd->setBetOnWinner(true);
-                            $this->em->persist($winnerGameToAdd);
+                            try {
+                                $combination->addGame($winnerGameToAdd);
+                                $previousGame = $winnerGameToAdd;
+                                $winnerGameToAdd->setBetOnWinner(true);
+                                $this->em->persist($winnerGameToAdd);
+                            } catch (ConstraintViolationException $e) {
+                                continue;
+                            }
+
                         }
                     }
                 }
@@ -77,8 +83,12 @@ class CreateCombinationOfTheDayCommand extends Command
                     continue;
                 }
 
-                $combination->addGame($gameToAdd);
-                $previousGame = $gameToAdd;
+                try {
+                    $combination->addGame($gameToAdd);
+                    $previousGame = $gameToAdd;
+                } catch (ConstraintViolationException $e) {
+                    //do nothing
+                }
             }
         }
 
