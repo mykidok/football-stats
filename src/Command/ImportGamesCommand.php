@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-
 use App\Entity\Championship;
 use App\Entity\Client;
 use App\Entity\Game;
