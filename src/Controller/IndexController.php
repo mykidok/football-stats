@@ -11,12 +11,12 @@ use App\Repository\ChampionshipRepository;
 use App\Repository\CombinationRepository;
 use App\Repository\GameRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class IndexController extends Controller
+class IndexController extends AbstractController
 {
     private $client;
     private $formFactory;
@@ -34,10 +34,7 @@ class IndexController extends Controller
     }
 
     /**
-     * @Route(
-     *     path="",
-     *     name="home"
-     * )
+     * @Route( path="", name="home")
      */
     public function homeAction()
     {
@@ -45,12 +42,7 @@ class IndexController extends Controller
     }
 
     /**
-     * @Route(
-     *     path="/bets",
-     *     name="bets",
-     *     methods={"GET|POST"}
-     * )
-     *
+     * @Route(path="/bets", name="bets", methods="GET|POST")
      * @Template(template="bets.html.twig")
      */
     public function betsAction(Request $request)
@@ -93,12 +85,7 @@ class IndexController extends Controller
     }
 
     /**
-     * @Route(
-     *     path="/statistics/{id}",
-     *     name="statistics",
-     *     methods={"GET"}
-     * )
-     *
+     * @Route(path="/statistics/{id}", name="statistics", methods="GET")
      * @Template(template="statistics.html.twig")
      */
     public function statisticsMoreLessAction(Request $request)
@@ -152,12 +139,7 @@ class IndexController extends Controller
     }
 
     /**
-     * @Route(
-     *     path="/combination",
-     *     name="combination",
-     *     methods={"GET"}
-     * )
-     *
+     * @Route(path="/combination", name="combination", methods="GET")
      * @Template(template="combination.html.twig")
      */
     public function combinationAction()

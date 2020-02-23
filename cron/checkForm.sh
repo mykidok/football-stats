@@ -1,2 +1,2 @@
 #!/bin/bash
-/usr/local/php7.2/bin/php /home/myfootbamx/bin/console api:check:form
+/usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:check:form

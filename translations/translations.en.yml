@@ -1,4 +1,5 @@
 translations:
+  footer: Developed by
   bets:
     bets_alert: Choose a championship, pick a date and then submit !
     under_limit_goals: Under %nbLimit% goals
@@ -13,6 +14,7 @@ translations:
     odd: Odd
     predictional_goals: Predictional goals
     legend: Indicates you if the form of the teams agrees with the prediction
+    bet: Bet
   home:
     welcome: Welcome to My Football Bets!
     advises: Here, you will be given advises to help you make your bets better.

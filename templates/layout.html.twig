@@ -11,7 +11,7 @@
 </head>
 <body>
 {% block body %}
-    <div class="container-fluid">
+    <div class="container-fluid" style="min-height: 100vh">
         <div class="row">
             {% include 'sidebar.html.twig' %}
             <div class="offset-2 col-10 mt-1">
@@ -19,6 +19,9 @@
                 {% endblock %}
             </div>
         </div>
+    </div>
+    <div class="small text-center mt-3" style="position: relative; bottom: 0; background: #00a9ff; color: white; margin: 0; z-index: 999">
+        {{ 'translations.footer' | trans({}, 'translations') }} <a style="animation: none; color: white" href="https://mickaelpegn.in">Mickael Pegnin</a>
     </div>
 {% endblock %}
 {% block javascripts %}

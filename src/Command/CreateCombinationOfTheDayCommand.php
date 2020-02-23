@@ -59,7 +59,11 @@ class CreateCombinationOfTheDayCommand extends Command
                     foreach ($winnerOddGames as $winnerOddGame) {
                         /** @var Game|null $winnerGameToAdd */
                         $winnerGameToAdd = $this->gameRepository->findOneBy(['apiId' => $winnerOddGame['api_id']]);
-                        if ($winnerGameToAdd->getWinnerPercentage() > $gameToAdd->getPercentage() && $winnerGameToAdd->getWinnerMomentForm()) {
+
+                        if ($winnerGameToAdd->getWinnerPercentage() > $gameToAdd->getPercentage()
+                            && $winnerGameToAdd->getWinnerMomentForm()
+                            && $winnerGameToAdd->getId() !== $previousGame->getId()
+                        ) {
                             $combination->addGame($winnerGameToAdd);
                             $previousGame = $winnerGameToAdd;
                             $winnerGameToAdd->setBetOnWinner(true);
