@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Championship;
 use App\Entity\Client;
+use App\Entity\DataClient;
 use App\Entity\Team;
 use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +20,7 @@ class ImportTeamsCommand extends Command
     private $em;
     private $denormalizer;
 
-    public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer)
+    public function __construct(DataClient $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer)
     {
         parent::__construct('api:import:teams');
         $this
@@ -37,17 +38,20 @@ class ImportTeamsCommand extends Command
 
         /** @var Championship $championship */
         foreach ($championships as $championship) {
-            $entrypoint = sprintf('competitions/%d/teams', $championship->getApiId());
-            $teams = $this->client->get($entrypoint);
+            $teams = $this->client->get('teams', [
+                'query' => [
+                    'league' =>$championship->getApiId(),
+                    'season' => 2020,
+                ]
+            ]);
 
             $i = 0;
 
-            /** @var Team $item */
-            foreach ($teams['teams'] as $item) {
+            foreach ($teams['response'] as $item) {
                 $teamRepository = $this->em->getRepository(Team::class);
 
                 /** @var Team|null $alreadyExistsTeam */
-                $alreadyExistsTeam = $teamRepository->findOneBy(['apiId' => $item['id']]);
+                $alreadyExistsTeam = $teamRepository->findOneBy(['apiId' => $item['team']['id']]);
                 $item['championship'] = $championship;
 
                 if (null !== $alreadyExistsTeam) {

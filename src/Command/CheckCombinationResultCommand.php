@@ -39,7 +39,7 @@ class CheckCombinationResultCommand extends Command
             if (null === $game->isGoodResult()) {
                 return $output->writeln('One match has not been played.');
             }
-            if ($game->isGoodResult()) {
+            if (($game->isGoodResult() && !$game->isBetOnWinner()) || ($game->getWinnerResult() && $game->isBetOnWinner()) ) {
                 $i++;
             }
         }

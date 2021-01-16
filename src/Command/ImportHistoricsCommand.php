@@ -5,11 +5,13 @@ namespace App\Command;
 use App\Entity\Championship;
 use App\Entity\ChampionshipHistoric;
 use App\Entity\Client;
+use App\Entity\DataClient;
 use App\Entity\Team;
 use App\Entity\TeamHistoric;
 use App\Handler\ChampionshipHandler;
 use App\Handler\TeamHistoricHandler;
 use App\Repository\TeamRepository;
+use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,7 +26,7 @@ class ImportHistoricsCommand extends Command
     private $teamRepository;
 
     public function __construct(
-        Client $client,
+        DataClient $client,
         EntityManagerInterface $em,
         ChampionshipHandler $championshipHandler,
         TeamHistoricHandler $teamHistoricHandler,
@@ -49,15 +51,15 @@ class ImportHistoricsCommand extends Command
         $championships = $championshipRepository->findAll();
 
         foreach ($championships as $championship) {
-            for ($i = 2018; $i >= 2017; $i--) {
-                $entrypoint = sprintf('competitions/%d/standings', $championship->getApiId());
-                $standings = $this->client->get($entrypoint, [
+            for ($i = 2019; $i >= 2017; $i--) {
+                $standings = $this->client->get('standings', [
                     'query' => [
+                        'league' => $championship->getApiId(),
                         'season' => $i,
                     ]
                 ]);
 
-                $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings);
+                $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings['response'][0]);
 
                 $championshipHistoric = (new ChampionshipHistoric())
                     ->setChampionship($championship)
@@ -68,9 +70,13 @@ class ImportHistoricsCommand extends Command
                     ->setAverageGoalsHomeAgainst($championshipGoals['totalHomeGoalsAgainst']/$championshipGoals['totalHomePlayedGames'])
                 ;
 
-                $this->em->persist($championshipHistoric);
+                try {
+                    $this->em->persist($championshipHistoric);
+                } catch(ConstraintViolationException $e) {
+                    // do nothing
+                }
 
-                $teamsHistorics = $this->teamHistoricHandler->handleTeamsHistorics($standings);
+                $teamsHistorics = $this->teamHistoricHandler->handleTeamsHistorics($standings['response'][0]);
 
                 foreach ($teamsHistorics as $apiId => $historic) {
                     /** @var Team|null $team */
@@ -90,13 +96,15 @@ class ImportHistoricsCommand extends Command
                         ->setAwayForceDefense(($historic['awayGoalsAgainst']/$historic['awayPlayedGames'])/($championshipGoals['totalAwayGoalsAgainst']/$championshipGoals['totalAwayPlayedGames']))
                     ;
 
-                    $this->em->persist($teamHistoric);
+                    try {
+                        $this->em->persist($teamHistoric);
+                    } catch (ConstraintViolationException $e) {
+                        continue;
+                    }
                 }
 
                 $this->em->flush();
             }
-            sleep(20);
         }
-
     }
 }

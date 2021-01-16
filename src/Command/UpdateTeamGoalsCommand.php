@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Championship;
 use App\Entity\Client;
+use App\Entity\DataClient;
 use App\Handler\ChampionshipHandler;
 use App\Handler\TeamHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,7 +19,7 @@ class UpdateTeamGoalsCommand extends Command
     private $teamHandler;
     private $championshipHandler;
 
-    public function __construct(Client $client, EntityManagerInterface $em, TeamHandler $teamHandler, ChampionshipHandler $championshipHandler)
+    public function __construct(DataClient $client, EntityManagerInterface $em, TeamHandler $teamHandler, ChampionshipHandler $championshipHandler)
     {
         parent::__construct('api:update:teams');
         $this->setDescription('Update team away and home goals');
@@ -36,17 +37,17 @@ class UpdateTeamGoalsCommand extends Command
 
         /** @var Championship $championship */
         foreach ($championships as $championship) {
-            $entrypoint = sprintf('competitions/%s/standings', $championship->getApiId());
-            $standings = $this->client->get($entrypoint);
+            $standings = $this->client->get('standings', [
+                'query' => [
+                    'league' => $championship->getApiId(),
+                    'season' => 2020,
+                ]
+            ]);
 
-            $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings);
+            $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings['response'][0]);
 
-            foreach ($standings['standings'] as $item) {
-                if ('TOTAL' === $item['type']) {
-                    continue;
-                }
-
-                $this->teamHandler->handleTeamUpdate($item, ['type' => $item['type']], $championshipGoals);
+            foreach ($standings['response'][0] as $standing) {
+                $this->teamHandler->handleTeamUpdate($standing, $championshipGoals);
             }
 
             if ($championshipGoals['totalAwayPlayedGames'] !== 0 || $championshipGoals['totalHomePlayedGames'] !== 0) {

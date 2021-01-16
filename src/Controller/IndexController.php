@@ -47,13 +47,7 @@ class IndexController extends AbstractController
      */
     public function betsAction(Request $request)
     {
-        $form = $this->formFactory
-            ->createNamed(
-                '',
-                CompetitionType::class,
-                [],
-                []
-            );
+        $form = $this->formFactory->createNamed('', CompetitionType::class, [], []);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

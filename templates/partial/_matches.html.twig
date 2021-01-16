@@ -26,6 +26,11 @@
                             {% include '/partial/_moment_form.html.twig' with { momentForm: match.momentForm } %}
                         </p>
                     </div>
+                    <div>
+                        <p class="mt-1 font-weight-bold" style="font-size: smaller; margin-left: unset">
+                            <span class="fa fa-info-circle"></span>: {{ match.percentage // 10 }}
+                        </p>
+                    </div>
                 </div>
                 <div class="col-6">
                     <form class="form-inline justify-content-end">
@@ -36,10 +41,17 @@
                             &nbsp;<span class="{% if match.winnerResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.winnerResult %}green{% else %}red{% endif %}"></span>
                         {% endif %}
                     </form>
-                    <p class="text-right mt-1 font-weight-bold" style="font-size: smaller">
-                        {{ 'translations.bets.odd'|trans }}: {% if match.winnerOdd is not null %}{{ match.winnerOdd }}{% else %}N/D{% endif %}
-                        {% include '/partial/_moment_form.html.twig' with { momentForm: match.winnerMomentForm } %}
-                    </p>
+                    <div>
+                        <p class="text-right mt-1 font-weight-bold" style="font-size: smaller">
+                            {{ 'translations.bets.odd'|trans }}: {% if match.winnerOdd is not null %}{{ match.winnerOdd }}{% else %}N/D{% endif %}
+                            {% include '/partial/_moment_form.html.twig' with { momentForm: match.winnerMomentForm } %}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-right mt-1 font-weight-bold" style="font-size: smaller">
+                            <span class="fa fa-info-circle"></span>: {{ match.winnerPercentage // 10 }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

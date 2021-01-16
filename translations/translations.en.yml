@@ -15,6 +15,7 @@ translations:
     predictional_goals: Predictional goals
     legend: Indicates you if the form of the teams agrees with the prediction
     bet: Bet
+    confidence: Trust index
   home:
     welcome: Welcome to My Football Bets!
     advises: Here, you will be given advises to help you make your bets better.

@@ -130,4 +130,22 @@ class ChampionshipRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getScalarResult();
     }
+
+    public function championshipsWithGamesWithoutOdds()
+    {
+        $dateStart = (new \DateTime())->format('Y-m-d 00:00:00');
+        $dateEnd = (new \DateTime())->format('Y-m-d 23:59:59');
+        $query = <<<SQL
+SELECT * 
+FROM championship c
+    WHERE (SELECT COUNT(g.id) FROM game g 
+                        WHERE g.date < '$dateEnd'
+                        AND g.date > '$dateStart'
+                        AND g.championship_id = c.id
+                        AND odd IS NULL) > 0
+SQL;
+
+        $em = $this->getEntityManager();
+        return $em->getConnection()->executeQuery($query)->fetchAll();
+    }
 }

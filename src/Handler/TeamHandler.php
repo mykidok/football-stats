@@ -17,51 +17,59 @@ class TeamHandler
         $this->teamRepository = $teamRepository;
     }
 
-    public function handleTeamUpdate(array $data, array $context, array $championshipGoals)
+    public function handleTeamUpdate(array $data, array $championshipGoals)
     {
-        foreach ($data['table'] as $datum) {
-            if ($datum['playedGames'] === 0) {
-                continue;
-            }
-
-            if ($datum['goalsFor'] === 0 && $datum['goalsAgainst'] === 0) {
-                $nbGoalsPerMatch = 0;
-            } else {
-                $nbGoalsPerMatch = ($datum['goalsFor'] + $datum['goalsAgainst']) / $datum['playedGames'];
-            }
-
+        foreach ($data['standings'][0] as $datum) {
             /** @var Team $team */
             $team = $this->teamRepository->findOneBy(['apiId' => $datum['team']['id']]);
 
-            if ('HOME' === $context['type']) {
-                if ($datum['goalsFor'] !== 0 && $datum['goalsAgainst'] !== 0) {
-                    $forceAttack = ($datum['goalsFor']/$datum['playedGames'])/($championshipGoals['totalHomeGoalsFor']/$championshipGoals['totalHomePlayedGames']);
-                    $forceDefense = ($datum['goalsAgainst']/$datum['playedGames'])/($championshipGoals['totalHomeGoalsAgainst']/$championshipGoals['totalHomePlayedGames']);
-                } else {
-                    $forceAttack = 0;
-                    $forceDefense = 0;
+            $homeForceAttack = 0;
+            $homeForceDefense = 0;
+            $awayForceAttack = 0;
+            $awayForceDefense = 0;
+            $nbGoalsPerMatchHome = 0;
+            $nbGoalsPerMatchAway  =0;
+
+            if (($homePlayedGames = $datum['home']['played']) !== 0) {
+                $homeGoalsFor = $datum['home']['goals']['for'];
+                $homeGoalsAgainst =  $datum['home']['goals']['against'];
+
+                if ($homeGoalsFor > 0 || $homeGoalsAgainst > 0) {
+                    $nbGoalsPerMatchHome = ($homeGoalsFor + $homeGoalsAgainst) / $homePlayedGames;
                 }
-                $team
-                    ->setNbGoalsPerMatchHome($nbGoalsPerMatch)
-                    ->setHomePlayedGames($datum['playedGames'])
-                    ->setHomeForceAttack($forceAttack)
-                    ->setHomeForceDefense($forceDefense)
-                ;
-            } else {
-                if ($datum['goalsFor'] !== 0 && $datum['goalsAgainst'] !== 0) {
-                    $forceAttack = ($datum['goalsFor']/$datum['playedGames'])/($championshipGoals['totalAwayGoalsFor']/$championshipGoals['totalAwayPlayedGames']);
-                    $forceDefense = ($datum['goalsAgainst']/$datum['playedGames'])/($championshipGoals['totalAwayGoalsAgainst']/$championshipGoals['totalAwayPlayedGames']);
-                } else {
-                    $forceAttack = 0;
-                    $forceDefense = 0;
+
+                if ($homeGoalsFor !== 0 && $homeGoalsAgainst !== 0) {
+                    $homeForceAttack = ($homeGoalsFor/$homePlayedGames)/($championshipGoals['totalHomeGoalsFor']/$championshipGoals['totalHomePlayedGames']);
+                    $homeForceDefense = ($homeGoalsAgainst/$homePlayedGames)/($championshipGoals['totalHomeGoalsAgainst']/$championshipGoals['totalHomePlayedGames']);
                 }
-                $team
-                    ->setNbGoalsPerMatchAway($nbGoalsPerMatch)
-                    ->setAwayPlayedGames($datum['playedGames'])
-                    ->setAwayForceAttack($forceAttack)
-                    ->setAwayForceDefense($forceDefense)
-                ;
+
+
             }
+
+            if (($awayPlayedGames = $datum['away']['played']) !== 0) {
+                $awayGoalsFor = $datum['away']['goals']['for'];
+                $awayGoalsAgainst =  $datum['away']['goals']['against'];
+
+                if ($awayGoalsFor > 0 || $awayGoalsAgainst > 0) {
+                    $nbGoalsPerMatchAway = ($awayGoalsFor + $awayGoalsAgainst) / $awayPlayedGames;
+                }
+
+                if ($awayGoalsFor !== 0 && $awayGoalsAgainst !== 0) {
+                    $awayForceAttack = ($awayGoalsFor/$awayPlayedGames)/($championshipGoals['totalAwayGoalsFor']/$championshipGoals['totalAwayPlayedGames']);
+                    $awayForceDefense = ($awayGoalsAgainst/$awayPlayedGames)/($championshipGoals['totalAwayGoalsAgainst']/$championshipGoals['totalAwayPlayedGames']);
+                }
+            }
+
+            $team
+                ->setNbGoalsPerMatchHome($nbGoalsPerMatchHome)
+                ->setHomePlayedGames($homePlayedGames)
+                ->setHomeForceAttack($homeForceAttack)
+                ->setHomeForceDefense($homeForceDefense)
+                ->setNbGoalsPerMatchAway($nbGoalsPerMatchAway)
+                ->setAwayPlayedGames($awayPlayedGames)
+                ->setAwayForceAttack($awayForceAttack)
+                ->setAwayForceDefense($awayForceDefense)
+            ;
 
             $this->em->persist($team);
         }
