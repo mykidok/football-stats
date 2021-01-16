@@ -13,8 +13,8 @@ class TeamDenormalizer implements DenormalizerInterface
     public function denormalize($data, $class, $format = null, array $context = array())
     {
         $team = (new Team())
-                    ->setName($data['name'])
-                    ->setApiId($data['id'])
+                    ->setName($data['team']['name'])
+                    ->setApiId($data['team']['id'])
                     ->setChampionship($data['championship'])
         ;
 

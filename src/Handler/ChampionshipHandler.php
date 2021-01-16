@@ -15,22 +15,13 @@ class ChampionshipHandler
             'totalHomePlayedGames' => 0,
         ];
 
-        foreach ($data['standings'] as $standing) {
-            if ('HOME' === $standing['type']) {
-                foreach ($standing['table'] as $team) {
-                    $championshipGoals['totalHomeGoalsFor'] += $team['goalsFor'];
-                    $championshipGoals['totalHomeGoalsAgainst'] += $team['goalsAgainst'];
-                    $championshipGoals['totalHomePlayedGames'] += $team['playedGames'];
-                }
-            }
-
-            if ('AWAY' === $standing['type']) {
-                foreach ($standing['table'] as $team) {
-                    $championshipGoals['totalAwayGoalsFor'] += $team['goalsFor'];
-                    $championshipGoals['totalAwayGoalsAgainst'] += $team['goalsAgainst'];
-                    $championshipGoals['totalAwayPlayedGames'] += $team['playedGames'];
-                }
-            }
+        foreach ($data['league']['standings'][0] as $teamResult) {
+            $championshipGoals['totalHomeGoalsFor'] += $teamResult['home']['goals']['for'];
+            $championshipGoals['totalHomeGoalsAgainst'] += $teamResult['home']['goals']['against'];
+            $championshipGoals['totalHomePlayedGames'] += $teamResult['home']['played'];
+            $championshipGoals['totalAwayGoalsFor'] += $teamResult['away']['goals']['for'];
+            $championshipGoals['totalAwayGoalsAgainst'] += $teamResult['away']['goals']['against'];
+            $championshipGoals['totalAwayPlayedGames'] += $teamResult['away']['played'];
         }
 
         return $championshipGoals;

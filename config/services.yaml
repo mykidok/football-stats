@@ -7,6 +7,9 @@ parameters:
     locale: 'fr'
     api_uri: 'https://api.football-data.org/v2/'
     api_key: '%env(API_KEY)%'
+    data_uri: 'https://v3.football.api-sports.io/'
+    data_host: 'v3.football.api-sports.io'
+    data_key: '%env(DATA_KEY)%'
     ps_api_uri: 'https://www.parionssport.fr/api/'
 
 services:
@@ -39,5 +42,10 @@ services:
         public: true
         arguments:
             $client: '@csa_guzzle.client.ps_client'
+
+    App\Entity\DataClient:
+        public: true
+        arguments:
+            $client: '@csa_guzzle.client.data_client'
 
     App\EventListener\LocaleListener:

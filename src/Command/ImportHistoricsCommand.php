@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\Championship;
 use App\Entity\ChampionshipHistoric;
 use App\Entity\Client;
+use App\Entity\DataClient;
 use App\Entity\Team;
 use App\Entity\TeamHistoric;
 use App\Handler\ChampionshipHandler;
@@ -25,7 +26,7 @@ class ImportHistoricsCommand extends Command
     private $teamRepository;
 
     public function __construct(
-        Client $client,
+        DataClient $client,
         EntityManagerInterface $em,
         ChampionshipHandler $championshipHandler,
         TeamHistoricHandler $teamHistoricHandler,
@@ -50,15 +51,15 @@ class ImportHistoricsCommand extends Command
         $championships = $championshipRepository->findAll();
 
         foreach ($championships as $championship) {
-            for ($i = 2019; $i >= 2018; $i--) {
-                $entrypoint = sprintf('competitions/%d/standings', $championship->getApiId());
-                $standings = $this->client->get($entrypoint, [
+            for ($i = 2019; $i >= 2017; $i--) {
+                $standings = $this->client->get('standings', [
                     'query' => [
+                        'league' => $championship->getApiId(),
                         'season' => $i,
                     ]
                 ]);
 
-                $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings);
+                $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings['response'][0]);
 
                 $championshipHistoric = (new ChampionshipHistoric())
                     ->setChampionship($championship)
@@ -75,7 +76,7 @@ class ImportHistoricsCommand extends Command
                     // do nothing
                 }
 
-                $teamsHistorics = $this->teamHistoricHandler->handleTeamsHistorics($standings);
+                $teamsHistorics = $this->teamHistoricHandler->handleTeamsHistorics($standings['response'][0]);
 
                 foreach ($teamsHistorics as $apiId => $historic) {
                     /** @var Team|null $team */
@@ -104,8 +105,6 @@ class ImportHistoricsCommand extends Command
 
                 $this->em->flush();
             }
-            sleep(20);
         }
-
     }
 }

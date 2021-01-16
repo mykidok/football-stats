@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Championship;
 use App\Entity\Client;
+use App\Entity\DataClient;
 use App\Entity\Game;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +21,7 @@ class ImportGamesCommand extends Command
     private $denormalizer;
     private $gameRepository;
 
-    public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer, GameRepository $gameRepository)
+    public function __construct(DataClient $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer, GameRepository $gameRepository)
     {
         parent::__construct('api:import:games');
         $this->setDescription('Import games of the day from API Football Data');
@@ -39,17 +40,18 @@ class ImportGamesCommand extends Command
         $championships = $championshipRepository->findAll();
 
         foreach ($championships as $championship) {
-            $gameDay = $this->client->get('matches', [
+            $gameDay = $this->client->get('fixtures', [
                     'query' => [
-                        'competitions' => $championship->getApiId(),
-                        'dateTo' => (new \DateTime('now'))->format('Y-m-d'),
-                        'dateFrom' => (new \DateTime('now'))->format('Y-m-d'),
+                        'league' => $championship->getApiId(),
+                        'season' => 2020,
+                        'date' => (new \DateTime('now'))->format('Y-m-d'),
                     ]
                 ]
             );
 
             $i = 0;
-            foreach ($gameDay['matches'] as $item) {
+
+            foreach ($gameDay['response'] as $item) {
                 $item['championship'] = $championship;
                 /** @var Game|null $match */
                 $match = $this->denormalizer->denormalize($item, Game::class, JsonEncoder::FORMAT);
@@ -63,7 +65,7 @@ class ImportGamesCommand extends Command
 
                 if (null !== $matchExist) {
                     if (null === $matchExist->isGoodResult()) {
-                        $matchExist->setDate((new \DateTime($item['utcDate']))->modify('+ 1 hour'));
+                        $matchExist->setDate((new \DateTime($item['fixture']['date']))->modify('+ 1 hour'));
                         $this->em->persist($matchExist);
                         $this->em->flush();
                     }

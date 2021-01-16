@@ -17,26 +17,13 @@ class TeamHistoricHandler
     public function handleTeamsHistorics(array $data): array
     {
         $teamsHistorics = [];
-        foreach ($data['standings'] as $standing) {
-            if ('TOTAL' === $standing['type']) {
-                continue;
-            }
-
-            if ('HOME' === $standing['type']) {
-                foreach ($standing['table'] as $team) {
-                    $teamsHistorics[$team['team']['id']]['homeGoalsFor'] = $team['goalsFor'];
-                    $teamsHistorics[$team['team']['id']]['homeGoalsAgainst'] = $team['goalsAgainst'];
-                    $teamsHistorics[$team['team']['id']]['homePlayedGames'] = $team['playedGames'];
-                }
-            }
-
-            if ('AWAY' === $standing['type']) {
-                foreach ($standing['table'] as $team) {
-                    $teamsHistorics[$team['team']['id']]['awayGoalsFor'] = $team['goalsFor'];
-                    $teamsHistorics[$team['team']['id']]['awayGoalsAgainst'] = $team['goalsAgainst'];
-                    $teamsHistorics[$team['team']['id']]['awayPlayedGames'] = $team['playedGames'];
-                }
-            }
+        foreach ($data['league']['standings'][0] as $teamResult) {
+            $teamsHistorics[$teamResult['team']['id']]['homeGoalsFor'] = $teamResult['home']['goals']['for'];
+            $teamsHistorics[$teamResult['team']['id']]['homeGoalsAgainst'] = $teamResult['home']['goals']['against'];
+            $teamsHistorics[$teamResult['team']['id']]['homePlayedGames'] = $teamResult['home']['played'];
+            $teamsHistorics[$teamResult['team']['id']]['awayGoalsFor'] = $teamResult['away']['goals']['for'];
+            $teamsHistorics[$teamResult['team']['id']]['awayGoalsAgainst'] = $teamResult['away']['goals']['against'];
+            $teamsHistorics[$teamResult['team']['id']]['awayPlayedGames'] = $teamResult['away']['played'];
         }
 
         return $teamsHistorics;

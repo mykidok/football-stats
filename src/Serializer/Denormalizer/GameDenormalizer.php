@@ -24,10 +24,10 @@ class GameDenormalizer implements DenormalizerInterface
     {
         $teamRepository = $this->em->getRepository(Team::class);
         /** @var Team $homeTeam */
-        $homeTeam = $teamRepository->findOneBy(['apiId' => $data['homeTeam']['id']]);
+        $homeTeam = $teamRepository->findOneBy(['apiId' => $data['teams']['home']['id']]);
 
         /** @var Team $awayTeam */
-        $awayTeam = $teamRepository->findOneBy(['apiId' => $data['awayTeam']['id']]);
+        $awayTeam = $teamRepository->findOneBy(['apiId' => $data['teams']['away']['id']]);
 
         $scoreTable = [];
         $maxResult = 0;
@@ -102,10 +102,10 @@ class GameDenormalizer implements DenormalizerInterface
         }
 
         $game = (new Game())
-                        ->setApiId($data['id'])
+                        ->setApiId($data['fixture']['id'])
                         ->setHomeTeam($homeTeam)
                         ->setAwayTeam($awayTeam)
-                        ->setDate((new \DateTime($data['utcDate']))->modify('+ 1 hour'))
+                        ->setDate((new \DateTime($data['fixture']['date']))->modify('+ 1 hour'))
                         ->setChampionship($data['championship'])
                         ->setPrevisionalNbGoals(round($previsionalNbGoals, 3))
                         ->setExpectedNbGoals($nbGoalsExpectedMost)
@@ -153,11 +153,12 @@ class GameDenormalizer implements DenormalizerInterface
         /** @var TeamHistoric[] $teamHistorics */
         $teamHistorics = $teamHistoricRepository->findBy(['team' => $team], ['season' => 'ASC']);
 
-        // 5 is current year coeff
-        $currentYearCoeff = 5;
+        // 8 is current year coeff
+        $currentYearCoeff = 8;
         $coeffs = [
             2017 => 1,
             2018 => 3,
+            2019 => 5,
         ];
 
         foreach ($teamHistorics as $teamHistoric) {
