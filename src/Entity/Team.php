@@ -30,14 +30,14 @@ class Team
     private $name;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(type="float", nullable=true, options={"default":0})
      */
     private $nbGoalsPerMatchHome;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(type="float", nullable=true, options={"default":0})
      */
@@ -60,7 +60,7 @@ class Team
     private $apiId;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(type="float", nullable=true)
      * @Assert\NotNull()
@@ -68,7 +68,7 @@ class Team
     private $momentForm;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(type="string", nullable=true, unique=true)
      */
@@ -141,24 +141,24 @@ class Team
         return $this;
     }
 
-    public function getNbGoalsPerMatchHome(): float
+    public function getNbGoalsPerMatchHome(): ?float
     {
         return $this->nbGoalsPerMatchHome;
     }
 
-    public function setNbGoalsPerMatchHome(float $nbGoalsPerMatchHome): self
+    public function setNbGoalsPerMatchHome(?float $nbGoalsPerMatchHome): self
     {
         $this->nbGoalsPerMatchHome = $nbGoalsPerMatchHome;
 
         return $this;
     }
 
-    public function getNbGoalsPerMatchAway(): float
+    public function getNbGoalsPerMatchAway(): ?float
     {
         return $this->nbGoalsPerMatchAway;
     }
 
-    public function setNbGoalsPerMatchAway(float $nbGoalsPerMatchAway): self
+    public function setNbGoalsPerMatchAway(?float $nbGoalsPerMatchAway): self
     {
         $this->nbGoalsPerMatchAway = $nbGoalsPerMatchAway;
 
@@ -177,12 +177,12 @@ class Team
         return $this;
     }
 
-    public function getChampionship(): Championship
+    public function getChampionship(): ?Championship
     {
         return $this->championship;
     }
 
-    public function setChampionship(Championship $championship): self
+    public function setChampionship(?Championship $championship): self
     {
         $this->championship = $championship;
 
@@ -213,7 +213,7 @@ class Team
         return $this;
     }
 
-    public function getHomeForceAttack(): float
+    public function getHomeForceAttack(): ?float
     {
         return $this->homeForceAttack;
     }

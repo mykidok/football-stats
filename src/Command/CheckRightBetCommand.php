@@ -51,7 +51,7 @@ class CheckRightBetCommand extends Command
 
             $i = 0;
             foreach ($gameDay['response'] as $item) {
-                if ('Match Finished' === $item['status']['long']) {
+                if ('Match Finished' === $item['fixture']['status']['long']) {
                     /** @var Game|null $game */
                     $game = $this->gameRepository->findOneBy(['apiId' => $item['fixture']['id']]);
 

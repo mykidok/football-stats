@@ -142,7 +142,7 @@ FROM championship c
                         WHERE g.date < '$dateEnd'
                         AND g.date > '$dateStart'
                         AND g.championship_id = c.id
-                        AND odd IS NULL) > 0
+                        AND (odd IS NULL OR winner_odd IS NULL)) > 0
 SQL;
 
         $em = $this->getEntityManager();

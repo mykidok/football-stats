@@ -38,7 +38,9 @@ class GameDenormalizer implements DenormalizerInterface
         $nbGoalsExpectedMost = null;
         $nbGoalsIsSameAsExpected = null;
 
-        if ($homeTeam->getNbGoalsPerMatchHome() !== 0 || $awayTeam->getNbGoalsPerMatchAway() !== 0) {
+        if (null === $homeTeam->getNbGoalsPerMatchHome() || $awayTeam->getNbGoalsPerMatchAway()) {
+            $previsionalNbGoals = 0;
+        } elseif ($homeTeam->getNbGoalsPerMatchHome() > 0 || $awayTeam->getNbGoalsPerMatchAway() > 0) {
             $previsionalNbGoals = ($homeTeam->getNbGoalsPerMatchHome() + $awayTeam->getNbGoalsPerMatchAway()) / 2;
         } else {
             $previsionalNbGoals = 0;
