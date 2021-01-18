@@ -61,7 +61,8 @@ class ImportOddsForGamesOfTheDay extends Command
                     'query' => [
                         'league' => $championship['api_id'],
                         'season' => 2020,
-                        'bookmaker' => 6
+                        'bookmaker' => 6,
+                        'date' => (new \DateTime())->format('Y-m-d'),
                     ]
                 ]
             );
@@ -81,7 +82,7 @@ class ImportOddsForGamesOfTheDay extends Command
                                 case $gameToUpdate->getPrevisionalWinner() === $gameToUpdate->getHomeTeam():
                                     $odd = $this->getOdd($bet['values'], 'Home');
                                     break;
-                                case $gameToUpdate->getPrevisionalWinner() === $gameToUpdate->getExpectedNbGoals();
+                                case $gameToUpdate->getPrevisionalWinner() === $gameToUpdate->getAwayTeam();
                                     $odd = $this->getOdd($bet['values'], 'Away');
                                     break;
                                 case null === $gameToUpdate->getPrevisionalWinner();
