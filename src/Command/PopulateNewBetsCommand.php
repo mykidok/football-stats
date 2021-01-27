@@ -28,36 +28,6 @@ class PopulateNewBetsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $gameRepository = $this->em->getRepository(Game::class);
-
-        /** @var Game $game */
-        foreach ($gameRepository->findAll() as $game) {
-            $type = $game->getAverageExpectedNbGoals() <= UnderOverBet::LIMIT_2_5 ? UnderOverBet::LESS_TWO_AND_A_HALF : UnderOverBet::PLUS_TWO_AND_A_HALF;
-            $underOverBet = (new UnderOverBet())
-                ->setGoodResult($game->isGoodResult())
-                ->setType($type)
-                ->setForm($game->isMomentForm())
-                ->setOdd($game->getOdd())
-                ->setPercentage($game->getPercentage())
-                ->setPrevisionIsSameAsExpected($game->isPrevisionIsSameAsExpected())
-            ;
-
-            $winnerBet = (new WinnerBet())
-                ->setMyOdd($game->getMyOdd())
-                ->setPercentage($game->getWinnerPercentage())
-                ->setForm($game->getWinnerMomentForm())
-                ->setOdd($game->getWinnerOdd())
-                ->setGoodResult($game->getWinnerResult())
-                ->setWinner($game->getPrevisionalWinner())
-                ->setType(WinnerBet::WINNER_TYPE);
-
-            $game->addBet($underOverBet)->addBet($winnerBet);
-
-            $this->em->persist($game);
-        }
-
-        $this->em->flush();
-
         $combinationRepository = $this->em->getRepository(Combination::class);
 
         foreach ($combinationRepository->findAll() as $combination) {
@@ -71,11 +41,15 @@ class PopulateNewBetsCommand extends Command
                 foreach ($combinationGame->getBets() as $bet) {
                     if ($combinationGame->isBetOnWinner() && $bet instanceof WinnerBet) {
                         $newCombination->addBet($bet);
-                    } else {
+                    }
+
+                    if (!$combinationGame->isBetOnWinner() && $bet instanceof UnderOverBet){
                         $newCombination->addBet($bet);
                     }
                 }
+            }
 
+            if ($newCombination->getBets()->count() === 2) {
                 $this->em->persist($newCombination);
             }
         }

@@ -55,7 +55,7 @@ class Combination
     /**
      * @var Bet[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\Bet", mappedBy="combination")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Bet")
      */
     private $bets;
 
@@ -129,7 +129,6 @@ class Combination
     public function addBet(Bet $bet): self
     {
         $this->bets->add($bet);
-        $bet->setCombination($this);
 
         return $this;
     }

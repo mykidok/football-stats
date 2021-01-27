@@ -59,12 +59,6 @@ abstract class Bet
     protected $game;
 
     /**
-     * @var Combination
-     * @ORM\ManyToOne(targetEntity="App\Entity\Combination", inversedBy="bets")
-     */
-    protected $combination;
-
-    /**
      * @var float|null
      * @ORM\Column(type="float", nullable=true)
      */
