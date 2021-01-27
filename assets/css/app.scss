@@ -1,20 +1,50 @@
 $blue : #00a9ff;
+$darkblue : #0077B3;
 @import "~bootstrap/scss/bootstrap";
-//
+
 html {
-  min-height: 100%;
-  position: relative;
+  scroll-behavior: smooth;
+}
+
+#scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+#scrollable {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 body {
-    height: 100%;
+  background-color: white;
+  font-family: "Roboto", sans-serif !important;
 }
 
-#sidebar {
-  position: fixed;
-  min-height: 100vh;
-  background: #00a9ff;
+#image-accueil {
+  width: 110px;
+}
+
+#myTab.nav {
+  white-space: nowrap;
+  overflow-x: auto;
+  display: block;
+}
+
+#myTab.nav li {
+  display: inline-block;
+  float: none;
+}
+
+#menu {
+  background: $blue;
   color: #fff;
+  transition: all 0.3s;
+  border-bottom: 20px solid $darkblue;
+}
+
+.dropdown-menu {
+  color: $blue;
+  background: #fff;
   transition: all 0.3s;
 }
 
@@ -22,19 +52,42 @@ hr {
   background-color: white;
 }
 
-#sidebar .nav-link {
+.nav-link, .dropdown-menu .dropdown-item {
+  font-family: "Oswald", Helvetica, sans-serif;
+  font-weight: bold;
+}
+
+.dropdown-item {
+  color: $blue;
+}
+
+.nav-link {
   color: white;
+}
+
+#myTab .nav-link {
+  color: $blue;
+}
+
+
+.nav-link {
   padding: 0.5rem;
 }
 
-#sidebar .nav-link:hover {
-  background-color: white;
+#menu .nav-link:hover {
+  text-decoration: none;
+  color: white;
+  border-bottom: 3px solid $darkblue;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: $blue;
   background-image: none;
-  color: #00a9ff;
+  color: white;
 }
 
 #myTab .nav-link:hover {
-  background-color: #00a9ff;
+  background-color: $blue;
   background-image: none;
   color: white;
 }
@@ -47,29 +100,39 @@ table {
 }
 
 .jumbotron {
-  background: #00a9ff;
+  background: $blue;
   color: #fff;
 }
 
 #home_button {
-  color: #00a9ff;
+  color: $blue;
 }
 
-.btn-green {
+img, a {
+  transition: 0.4s all;
+  -moz-transition: .4s all;
+  -webkit-transition: .4s all;
+  -o-transition: .4s all;
+}
+
+.btn-green, .badge-green {
   background: green;
+  color: white;
+  border: white solid 1px;
+}
+
+.btn-darkblue {
+  background: $darkblue;
+  color: white;
+}
+
+.btn-darkblue:hover {
+  color: white;
 }
 
 @media (max-width: 767px) {
   #languages {
     width: 15px;
-  }
-
-  #sidebar #icon {
-    font-size: 1.5rem;
-  }
-
-  #sidebar .nav-link {
-    padding: 0.5rem;
   }
 
   html {

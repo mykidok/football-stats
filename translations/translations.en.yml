@@ -1,7 +1,6 @@
 translations:
   footer: Developed by
   bets:
-    bets_alert: Choose a championship, pick a date and then submit !
     under_limit_goals: Under %nbLimit% goals
     over_limit_goals: Over %nbLimit% goals
     goals: GOALS
@@ -21,7 +20,7 @@ translations:
     advises: Here, you will be given advises to help you make your bets better.
     explanation: |
      On this website, you will be able to choose which number of goals you want to bet on (under/over) and you will
-     see what the predictions are saying for each match of 8 championships (Bundesliga, Liga, Premier League, Championship, Ligue 1, Serie A, Primeira Liga and Eredivisie).
+     see what the predictions are saying for each match of 18 championships.
     statistics: You can also have some help on the statistics page where you can see all succeded bets for each championship and for each team.
     enjoy: Hope you'll enjoy it!
     click: Click here to see the bets!
@@ -51,3 +50,20 @@ translations:
     win: Win
     payroll_evolution: Payroll Evolution
     payroll: Payroll
+  country:
+    france: France
+    england: England
+    turkey: Turkey
+    czech_republic: Czech Republic
+    portugal: Portugal
+    spain: Spain
+    germany: Germany
+    italy: Italy
+    austria: Austria
+    scotland: Scotland
+    netherlands: Netherlands
+    belgium: Belgium
+    romania: Romania
+    greece: Greece
+  menu:
+    useful_links: Useful links

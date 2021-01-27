@@ -2,14 +2,11 @@
 
 namespace App\Command;
 
-
+use App\Entity\Bet;
+use App\Entity\Championship;
 use App\Entity\Combination;
 use App\Entity\Game;
-use App\Entity\Team;
 use App\Manager\GameManager;
-use App\Repository\ChampionshipRepository;
-use App\Repository\GameRepository;
-use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,88 +15,55 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreateCombinationOfTheDayCommand extends Command
 {
     private $em;
-    private $gameRepository;
-    private $championshipRepository;
     private $gameManager;
 
-    public function __construct(EntityManagerInterface $em, GameRepository $gameRepository, ChampionshipRepository $championshipRepository, GameManager $gameManager)
+    public function __construct(EntityManagerInterface $em, GameManager $gameManager)
     {
         parent::__construct('api:create:combination');
         $this->setDescription('Check results of the day to check if bets were right');
 
         $this->em = $em;
-        $this->gameRepository = $gameRepository;
-        $this->championshipRepository = $championshipRepository;
         $this->gameManager = $gameManager;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $teams = $this->championshipRepository->findTeamsWithStatistics();
+        $championshipRepository = $this->em->getRepository(Championship::class);
+        $teams = $championshipRepository->findTeamsWithStatistics();
 
         $this->gameManager->setPercentageForGamesOfTheDay($teams);
 
-        $games = $this->gameRepository->findGamesOfTheDayOrderByOddAndPercentage(new \DateTime('now'));
-        $winnerOddGames = $this->gameRepository->findGamesOfTheDayWinnerOdds(new \DateTime('now'));
+        $betRepository = $this->em->getRepository(Bet::class);
+        $bets = $betRepository->findBetsOfTheDayOrderByOddAndPercentage();
 
-
-        if (count($games) < 5) {
+        if (count($bets) < 15) {
             return $output->writeln('Not enough games today to create combination');
         }
 
         $combination = new Combination();
         $combination->setDate(new \DateTime('now'));
 
-        /** @var Game|null $previousGame */
-        $previousGame = null;
-        foreach ($games as $game) {
-            /** @var Game|null $gameToAdd */
-            $gameToAdd = $this->gameRepository->findOneBy(['apiId' => $game['api_id']]);
-            if ($gameToAdd !== null) {
-                if ($combination->getGames()->count() === 1) {
-                    foreach ($winnerOddGames as $winnerOddGame) {
-                        /** @var Game|null $winnerGameToAdd */
-                        $winnerGameToAdd = $this->gameRepository->findOneBy(['apiId' => $winnerOddGame['api_id']]);
+        foreach ($bets as $bet) {
+            /** @var Bet|null $betToAdd */
+            $betToAdd = $betRepository->find($bet['id']);
 
-                        if ($winnerGameToAdd->getWinnerPercentage() > $gameToAdd->getPercentage()
-                            && $winnerGameToAdd->getWinnerMomentForm()
-                            && $winnerGameToAdd->getId() !== $previousGame->getId()
-                            && $combination->getGames()->count() === 1
-                        ) {
-                            $combination->addGame($winnerGameToAdd);
-                            $previousGame = $winnerGameToAdd;
-                            $winnerGameToAdd->setBetOnWinner(true);
-                            $this->em->persist($winnerGameToAdd);
-                        }
-                    }
-                }
-
-                if ((null !== $previousGame && $previousGame->getChampionship() === $gameToAdd->getChampionship())
-                || $combination->getGames()->count() === 2) {
+            if (null !== $betToAdd) {
+                if ($combination->getBets()->count() === 2) {
                     continue;
                 }
-
-                $combination->addGame($gameToAdd);
-                $previousGame = $gameToAdd;
+                $combination->addBet($betToAdd);
             }
         }
 
-        if ($combination->getGames()->count() < 2) {
+        if ($combination->getBets()->count() < 2) {
             return $output->writeln('Not enough games today to create combination');
         }
 
-        /** @var Game $game */
-        foreach ($combination->getGames() as $game) {
-            if ($game->isBetOnWinner()) {
-                $odd = $game->getWinnerOdd();
-            } else {
-                $odd = $game->getOdd();
-            }
-
+        foreach ($combination->getBets() as $bet) {
             if (null === $combinationOdd = $combination->getGeneralOdd()) {
-                $combination->setGeneralOdd($odd * Combination::BET_AMOUNT);
+                $combination->setGeneralOdd($bet->getOdd() * Combination::BET_AMOUNT);
             } else {
-                $combination->setGeneralOdd($combinationOdd * $odd);
+                $combination->setGeneralOdd($combinationOdd * $bet->getOdd());
             }
         }
 

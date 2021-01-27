@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -195,6 +197,18 @@ class Game
      */
     private $betOnWinner = false;
 
+    /**
+     * @var Bet[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Bet", mappedBy="game", cascade={"persist"})
+     */
+    private $bets;
+
+    public function __construct()
+    {
+        $this->bets = new ArrayCollection();
+    }
+
     public function getId(): int
     {
         return $this->id;
@@ -248,7 +262,7 @@ class Game
         return $this;
     }
 
-    public function getRealNbGoals(): int
+    public function getRealNbGoals(): ?int
     {
         return $this->realNbGoals;
     }
@@ -472,6 +486,22 @@ class Game
     public function setBetOnWinner(bool $betOnWinner): self
     {
         $this->betOnWinner = $betOnWinner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bet[]
+     */
+    public function getBets(): Collection
+    {
+        return $this->bets;
+    }
+
+    public function addBet(Bet $bet): self
+    {
+        $this->bets->add($bet);
+        $bet->setGame($this);
 
         return $this;
     }

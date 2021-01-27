@@ -45,7 +45,7 @@ class UpdateTeamGoalsCommand extends Command
             ]);
 
             if (empty($standings['response'])) {
-                return;
+                continue;
             }
 
             $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings['response'][0]);

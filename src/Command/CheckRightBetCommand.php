@@ -3,10 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Championship;
-use App\Entity\Client;
 use App\Entity\DataClient;
 use App\Entity\Game;
-use App\Repository\GameRepository;
+use App\Entity\UnderOverBet;
+use App\Entity\WinnerBet;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,16 +16,14 @@ class CheckRightBetCommand extends Command
 {
     private $client;
     private $em;
-    private $gameRepository;
 
-    public function __construct(DataClient $client, EntityManagerInterface $em, GameRepository $gameRepository)
+    public function __construct(DataClient $client, EntityManagerInterface $em)
     {
         parent::__construct('api:check:bet');
         $this->setDescription('Check results of the day to check if bets were right');
 
         $this->client = $client;
         $this->em = $em;
-        $this->gameRepository = $gameRepository;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -50,36 +48,35 @@ class CheckRightBetCommand extends Command
             }
 
             $i = 0;
+            $gameRepository = $this->em->getRepository(Game::class);
             foreach ($gameDay['response'] as $item) {
                 if ('Match Finished' === $item['fixture']['status']['long']) {
                     /** @var Game|null $game */
-                    $game = $this->gameRepository->findOneBy(['apiId' => $item['fixture']['id']]);
+                    $game = $gameRepository->findOneBy(['apiId' => $item['fixture']['id']]);
 
                     if (null !== $game) {
                         $realNbGoals = $item['goals']['home'] + $item['goals']['away'];
-                        if (($game->getAverageExpectedNbGoals() > Game::LIMIT && $realNbGoals > Game::LIMIT)
-                            || $game->getAverageExpectedNbGoals() <= Game::LIMIT && $realNbGoals <= Game::LIMIT ) {
-                            $game->setGoodResult(true);
-                        } else {
-                            $game->setGoodResult(false);
+                        foreach ($game->getBets() as $bet) {
+                            if (
+                                (UnderOverBet::LESS_TWO_AND_A_HALF ===  $bet->getType() && $realNbGoals < UnderOverBet::LIMIT_2_5)
+                                || (UnderOverBet::LESS_THREE_AND_A_HALF ===  $bet->getType() && $realNbGoals < UnderOverBet::LIMIT_3_5)
+                                || (UnderOverBet::PLUS_TWO_AND_A_HALF ===  $bet->getType() && $realNbGoals > UnderOverBet::LIMIT_2_5)
+                                || (UnderOverBet::PLUS_THREE_AND_A_HALF ===  $bet->getType() && $realNbGoals > UnderOverBet::LIMIT_3_5)
+                                || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getHomeTeam() && $item['teams']['home']['winner'])
+                                || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getAwayTeam() && $item['teams']['away']['winner'])
+                                || ($bet instanceof WinnerBet && null === $bet->getWinner() && !$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])
+                            ) {
+                                $bet->setGoodResult(true);
+                            } else {
+                                $bet->setGoodResult(false);
+                            }
                         }
 
                         $game->setRealNbGoals($realNbGoals);
-
                         if ($item['teams']['home']['winner']) {
                             $game->setWinner($game->getHomeTeam());
                         } elseif ($item['teams']['away']['winner']) {
                             $game->setWinner($game->getAwayTeam());
-                        }
-
-                        if (
-                            ($item['teams']['home']['winner'] && $game->getPrevisionalWinner() === $game->getHomeTeam())
-                             || ($item['teams']['away']['winner'] && $game->getPrevisionalWinner() === $game->getAwayTeam())
-                             || (!$item['teams']['home']['winner'] && !$item['teams']['away']['winner'] && null === $game->getPrevisionalWinner())
-                        ) {
-                            $game->setWinnerResult(true);
-                        } else {
-                            $game->setWinnerResult(false);
                         }
 
                         $this->em->persist($game);

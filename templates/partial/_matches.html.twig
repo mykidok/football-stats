@@ -1,59 +1,40 @@
 {% trans_default_domain 'translations' %}
 
-{% for match in matches %}
-    <div class="col-md-4 card">
-        <div>
-            <p class="small text-center font-weight-bold" style="margin-bottom: unset">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</p>
-            <p class="mt-0 small text-center">{{ match.date | date('H:i') }}</p>
+{% for match in championship.matches %}
+    <div class="col-md-3 card mt-1 mb-1">
+        <p class="small text-center font-weight-bold" style="margin-bottom: unset">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</p>
+        <p class="mt-0 small text-center">{{ match.date | date('H:i') }}</p>
 
-            <div class="row">
-                <div class="col-6">
-                    <form class="form-inline">
-                        {% if match.averageExpectedNbGoals > 2.5 %}
-                            {% set color = 'primary' %}
-                        {% else %}
-                            {% set color = 'light' %}
-                        {% endif %}
-                        <span class="btn btn-sm btn-{% if match.averageExpectedNbGoals <= 2.5 %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">- 2.5</span>
-                        <span class="btn btn-sm btn-{% if match.averageExpectedNbGoals > 2.5 %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">+ 2.5</span>
-                        {% if match.goodResult is not null %}
-                            &nbsp;<span class="{% if match.goodResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.goodResult %}green{% else %}red{% endif %}"></span>
-                        {% endif %}
-                    </form>
-                    <div>
-                        <p class="mt-1 font-weight-bold" style="font-size: smaller; margin-left: unset">
-                            {{ 'translations.bets.odd'|trans }}: {% if match.odd is not null %}{{ match.odd }}{% else %}N/D{% endif %}&nbsp;
-                            {% include '/partial/_moment_form.html.twig' with { momentForm: match.momentForm } %}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="mt-1 font-weight-bold" style="font-size: smaller; margin-left: unset">
-                            <span class="fa fa-info-circle"></span>: {{ match.percentage // 10 }}
-                        </p>
-                    </div>
+        {% for bet in match.bets %}
+            <div class="row" {% if bet.goodResult is null and bet.percentage > 70 and bet.form %}style="background-color: #00a9ff; color: white;" {% endif %}>
+                <div class="col-md-5 col-sm-5 col-5 mt-2">
+                    {% if bet.type == '- 2.5' or bet.type == '+ 2.5' or bet.type == '- 3.5' or bet.type == '+ 3.5' %}
+                        {% set value = bet.type %}
+                    {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw == false %}
+                        {% set value = '1' %}
+                    {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw %}
+                        {% set value = '1N' %}
+                    {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw == false %}
+                        {% set value = '2' %}
+                    {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw %}
+                        {% set value = 'N2' %}
+                    {% elseif bet.type == 'winner' and bet.winner is null %}
+                        {% set value = 'N' %}
+                    {% endif %}
+                    <span class="btn btn-sm btn-{% if bet.goodResult is null %}light{% elseif bet.goodResult %}green{% elseif bet.goodResult == false %}danger{% endif %}" style="{% if bet.goodResult is null %}border: 1px grey solid;{% endif %} font-size: smaller">{{ value }}</span>
                 </div>
-                <div class="col-6">
-                    <form class="form-inline justify-content-end">
-                        <span class="btn btn-sm btn-{% if match.homeTeam.id is same as (match.previsionalWinner.id) %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">1</span>
-                        <span class="btn btn-sm btn-{% if match.previsionalWinner is null %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">N</span>
-                        <span class="btn btn-sm btn-{% if match.awayTeam.id is same as (match.previsionalWinner.id) %}primary{% else %}light{% endif %}" style="border: 1px grey solid; font-size: smaller">2</span>
-                        {% if match.winnerResult is not null %}
-                            &nbsp;<span class="{% if match.winnerResult %}fa fa-check{% else %}fa fa-times{% endif %}" style="color: {% if match.winnerResult %}green{% else %}red{% endif %}"></span>
-                        {% endif %}
-                    </form>
-                    <div>
-                        <p class="text-right mt-1 font-weight-bold" style="font-size: smaller">
-                            {{ 'translations.bets.odd'|trans }}: {% if match.winnerOdd is not null %}{{ match.winnerOdd }}{% else %}N/D{% endif %}
-                            {% include '/partial/_moment_form.html.twig' with { momentForm: match.winnerMomentForm } %}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="text-right mt-1 font-weight-bold" style="font-size: smaller">
-                            <span class="fa fa-info-circle"></span>: {{ match.winnerPercentage // 10 }}
-                        </p>
-                    </div>
+                <div class="col-md-4 col-sm-4 col-4 mt-3">
+                    <p class="font-weight-bold" style="font-size: smaller; margin-left: unset">
+                        {% if bet.odd is not null %}{{ bet.odd }}{% else %}N/D{% endif %}&nbsp;
+                        {% include '/partial/_moment_form.html.twig' with { momentForm: bet.form } %}
+                    </p>
+                </div>
+                <div class="col-md-3 col-sm-3 col-3 mt-3">
+                    <h4 class="font-weight-bold" style="font-size: smaller; margin-left: unset">
+                        <span class="fa fa-info-circle"></span> {{ bet.percentage // 10 }}
+                    </h4>
                 </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
 {% endfor %}

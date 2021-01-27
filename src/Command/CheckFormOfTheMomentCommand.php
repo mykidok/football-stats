@@ -5,6 +5,8 @@ namespace App\Command;
 
 use App\Entity\Game;
 use App\Entity\Team;
+use App\Entity\UnderOverBet;
+use App\Entity\WinnerBet;
 use App\Repository\GameRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,14 +31,13 @@ class CheckFormOfTheMomentCommand extends Command
     }
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $now = new \DateTime('now');
-        $games = $this->gameRepository->findGamesOfTheDay($now);
+        $games = $this->gameRepository->findGamesOfTheDay(new \DateTime());
 
         if (empty($games)) {
             $output->writeln('No games played today');
         }
 
-        $teamsOfTheDay = $this->teamRepository->findTeamsWithGamesToday($now);
+        $teamsOfTheDay = $this->teamRepository->findTeamsWithGamesToday();
 
         /** @var Team $team */
         foreach ($teamsOfTheDay as $team) {
@@ -67,15 +68,8 @@ class CheckFormOfTheMomentCommand extends Command
 
         /** @var Game $game */
         foreach ($games as $game) {
-            $homeTeamForm = null;
-            $awayTeamForm = null;
-            if (null !== $game->getHomeTeam()->getMomentForm()) {
-                $homeTeamForm = $game->getHomeTeam()->getMomentForm();
-            }
-
-            if (null !== $game->getAwayTeam()->getMomentForm()){
-                $awayTeamForm = $game->getAwayTeam()->getMomentForm();
-            }
+            $homeTeamForm =  $game->getHomeTeam()->getMomentForm();
+            $awayTeamForm = $game->getAwayTeam()->getMomentForm();
 
             if (null !== $awayTeamForm && null !== $homeTeamForm) {
                 $formForMatch = ($game->getHomeTeam()->getMomentForm() + $game->getAwayTeam()->getMomentForm())/2;
@@ -87,21 +81,46 @@ class CheckFormOfTheMomentCommand extends Command
                 continue;
             }
 
-            if (($formForMatch > Game::LIMIT && $game->getAverageExpectedNbGoals() > Game::LIMIT)
-            || ($formForMatch < Game::LIMIT && $game->getAverageExpectedNbGoals() < Game::LIMIT)) {
-                $game->setMomentForm(true);
-            } else {
-                $game->setMomentForm(false);
-            }
+            foreach ($game->getBets() as $bet) {
+                $form = false;
+                $homePointMomentForm = $game->getHomeTeam()->getPointsMomentForm();
+                $awayPointMomentForm = $game->getAwayTeam()->getPointsMomentForm();
+                if ($bet instanceof WinnerBet && $bet->isWinOrDraw()) {
+                    if (
+                        (($homePointMomentForm > $awayPointMomentForm || $homePointMomentForm === $awayPointMomentForm) && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
+                        || (($awayPointMomentForm > $homePointMomentForm || $homePointMomentForm === $awayPointMomentForm) && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
+                    ) {
+                        $form = true;
+                    }
+                }
 
-            if (
-                ($game->getHomeTeam()->getPointsMomentForm() > $game->getAwayTeam()->getPointsMomentForm() && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
-                || ($game->getAwayTeam()->getPointsMomentForm() > $game->getHomeTeam()->getPointsMomentForm() && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
-                || ($game->getHomeTeam()->getPointsMomentForm() === $game->getAwayTeam()->getPointsMomentForm() && null === $game->getPrevisionalWinner())
-            ) {
-                $game->setWinnerMomentForm(true);
-            } else {
-                $game->setWinnerMomentForm(false);
+                if ($bet instanceof WinnerBet && !$bet->isWinOrDraw()) {
+                    if (
+                        ($homePointMomentForm > $awayPointMomentForm && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
+                        || ($awayPointMomentForm > $homePointMomentForm && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
+                        || ($homePointMomentForm === $awayPointMomentForm && null === $game->getPrevisionalWinner())
+                    ) {
+                        $form = true;
+                    }
+                }
+
+                if ($bet instanceof UnderOverBet) {
+                    if (UnderOverBet::LESS_TWO_AND_A_HALF === $bet->getType() || UnderOverBet::PLUS_TWO_AND_A_HALF === $bet->getType()) {
+                        if (($formForMatch > UnderOverBet::LIMIT_2_5 && $game->getAverageExpectedNbGoals() > UnderOverBet::LIMIT_2_5)
+                            || ($formForMatch < UnderOverBet::LIMIT_2_5 && $game->getAverageExpectedNbGoals() < UnderOverBet::LIMIT_2_5)) {
+                            $form = true;
+                        }
+                    }
+                    if (UnderOverBet::LESS_THREE_AND_A_HALF === $bet->getType() || UnderOverBet::PLUS_THREE_AND_A_HALF === $bet->getType()) {
+                        if (($formForMatch > UnderOverBet::LIMIT_3_5 && $game->getAverageExpectedNbGoals() > UnderOverBet::LIMIT_3_5)
+                            || ($formForMatch < UnderOverBet::LIMIT_3_5 && $game->getAverageExpectedNbGoals() < UnderOverBet::LIMIT_3_5)) {
+                            $form = true;
+                        }
+                    }
+                }
+
+                $bet->setForm($form);
+                $this->em->persist($bet);
             }
 
             $this->em->persist($game);

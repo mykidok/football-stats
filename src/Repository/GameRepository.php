@@ -16,27 +16,6 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
-    public function findGamesOfTheDayForChampionship(Championship $championship, \DateTime $date)
-    {
-        $qb = $this->createQueryBuilder('g');
-
-        $qb
-            ->select('g')
-            ->leftJoin(Championship::class, 'ch', Join::WITH, 'g.championship = ch.id')
-            ->where('ch.id = :championship')
-            ->andWhere('g.date > :date_start')
-            ->andWhere('g.date < :date_end')
-            ->setParameters([
-                'championship' => $championship->getId(),
-                'date_start' => $date->format('Y-m-d 00:00:00'),
-                'date_end' => $date->format('Y-m-d 23:59:59'),
-            ])
-            ->orderBy('g.averageExpectedNbGoals', 'ASC')
-        ;
-
-        return $qb->getQuery()->getResult();
-    }
-
     public function findGamesOfTheDay(\DateTime $date)
     {
         $qb = $this->createQueryBuilder('g');
@@ -52,57 +31,6 @@ class GameRepository extends ServiceEntityRepository
         ;
 
         return $qb->getQuery()->getResult();
-    }
-
-    public function findGamesOfTheDayOrderByOddAndPercentage(\DateTime $date)
-    {
-        $dateStart = $date->format('Y-m-d 00:00:00');
-        $dateEnd = $date->format('Y-m-d 23:59:59');
-        $query = <<<SQL
-SELECT * 
-FROM game g
-    WHERE g.date > '$dateStart'
-    AND g.date < '$dateEnd'
-    AND g.odd IS NOT NULL
-    AND g.odd > 1.35
-ORDER BY 
-      g.moment_form DESC,
-      g.prevision_is_same_as_expected DESC,
-      CASE
-      WHEN (g.my_odd - g.odd) > 0 THEN (g.my_odd - g.odd)
-      WHEN (g.odd - g.my_odd) > 0 THEN (g.odd - g.my_odd)
-      END ASC,
-      g.percentage DESC,
-      g.nb_match_for_teams DESC,
-      g.odd DESC,
-      g.my_odd DESC
-SQL;
-
-
-        $em = $this->getEntityManager();
-        return $em->getConnection()->executeQuery($query)->fetchAll();
-    }
-
-    public function findGamesOfTheDayWinnerOdds(\DateTime $date)
-    {
-        $dateStart = $date->format('Y-m-d 00:00:00');
-        $dateEnd = $date->format('Y-m-d 23:59:59');
-        $query = <<<SQL
-SELECT * 
-FROM game g
-    WHERE g.date > '$dateStart'
-    AND g.date < '$dateEnd'
-    AND g.winner_odd IS NOT NULL
-    AND g.winner_odd > 1.40
-ORDER BY 
-      g.winner_moment_form DESC,
-      g.percentage DESC,
-      g.nb_match_for_teams DESC,
-      g.winner_odd DESC
-SQL;
-
-        $em = $this->getEntityManager();
-        return $em->getConnection()->executeQuery($query)->fetchAll();
     }
 
     public function findOneByHomeTeamShortName(\DateTime $date, string $shortName)

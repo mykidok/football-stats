@@ -2,53 +2,65 @@
 {% trans_default_domain 'translations' %}
 
 {% block content %}
-    <div class="alert alert-primary col-md-12" id="text">
-        {{ 'translations.bets.bets_alert'|trans }}
-    </div>
     <div class="mt-2">
-    {{ form_start(form) }}
-    {{ form_errors(form) }}
         <div class="row">
-            <div class="col-md-4">
-                {{ form_row(form.competition) }}
-            </div>
-            <div class="col-md-3">
-                {{ form_row(form.date) }}
-            </div>
-            <div class="col-md-2">
-                {{ form_row(form.submit) }}
-            </div>
-            {{ form_rest(form) }}
-            {{ form_end(form) }}
-        </div>
-        <hr>
-        <div>
-            <p class="small">
-            <button class="btn btn-sm btn-green">
-                <span class="fa fa-sort-up" style="color: white"></span>
-            </button>
-            <button class="btn btn-sm btn-danger">
-                <span class="fa fa-sort-down"></span>
-            </button > :
-                {{ 'translations.bets.legend' | trans }}
-            </p>
-        </div>
-        <div>
-            <p class="small">
-                <span class="fa fa-info-circle"></span>:
-                {{ 'translations.bets.confidence' | trans }}
-            </p>
-        </div>
-
-        <div class="row m-0">
-            {% if matches | length > 0 %}
-                {% include '/partial/_matches.html.twig' %}
-            {% endif %}
-            {% if matches | length < 1 %}
-                <div class="mt-5 pt-5 text-center">
-                    <h1><span  class="badge badge-danger">{{ 'translations.bets.no_games_today'|trans }}</span></h1>
+            <div class="col-md-5 col-12">
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+                <div class="row">
+                    <div class="col-md-5">
+                        {{ form_row(form.date) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_row(form.submit) }}
+                    </div>
+                    {{ form_rest(form) }}
+                    {{ form_end(form) }}
                 </div>
-            {% endif %}
+            </div>
+            <div class="col-md-7 col-12">
+                <p>
+                    <span class="btn btn-small btn-green"><i class="fa fa-sort-up" style="color: white"></i></span>
+                    <span class="btn btn-small btn-danger"><i class="fa fa-sort-down"></i></span>
+                    &nbsp;{{ 'translations.bets.legend' | trans }}
+                </p>
+                <p class="small">
+                    <span class="fa fa-info-circle"></span>&nbsp;
+                    {{ 'translations.bets.confidence' | trans }}
+                </p>
+            </div>
         </div>
+        <hr class="text-center" style="width: 80%">
+
+        {% if championships | length > 0 %}
+            <div id="accordion">
+                {% for championshipName, championship in championships %}
+                    {% set index = loop.index %}
+                    <div class="card">
+                        <div class="card-header" id="heading{{ index }}">
+                            <h5 class="mb-0">
+                                <b>{{ championshipName }}</b> - {{ championship.country.name | trans }}&nbsp;&nbsp;<img width="20px" src="{{ championship.country.flag }}">
+                                <a class="float-right" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ index }}">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                            </h5>
+                        </div>
+
+                        <div id="collapse{{ index }}" class="collapse" aria-labelledby="heading{{ index }}" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="row">
+                                    {{ include ('/partial/_matches.html.twig', { championship: championship }) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="mt-5 pt-5 text-center">
+                <h1><span  class="badge badge-danger">{{ 'translations.bets.no_games_today'|trans }}</span></h1>
+            </div>
+        {% endif %}
+
     </div>
 {% endblock %}

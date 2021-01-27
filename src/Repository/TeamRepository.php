@@ -15,7 +15,7 @@ class TeamRepository extends ServiceEntityRepository
         parent::__construct($registry, Team::class);
     }
 
-    public function findTeamsWithGamesToday(\DateTime $date)
+    public function findTeamsWithGamesToday()
     {
         $qb = $this->createQueryBuilder('t');
 
@@ -33,8 +33,8 @@ class TeamRepository extends ServiceEntityRepository
             )
             ->groupBy('t.id')
             ->setParameters([
-                'date_start' => $date->format('Y-m-d 00:00:00'),
-                'date_end' => $date->format('Y-m-d 23:59:59'),
+                'date_start' => (new \DateTime())->format('Y-m-d 00:00:00'),
+                'date_end' => (new \DateTime())->format('Y-m-d 23:59:59'),
             ])
         ;
 

@@ -2,10 +2,10 @@
 {% trans_default_domain 'translations' %}
 
 {% block content %}
-    <div class="row">
+    <div class="row mt-2">
         <div class="col-md-6">
             <div class="card">
-                {% if combination is not same as(null) %}
+                {% if combination is not null %}
                     <div class="card-header">
                         <h4>{{ 'translations.combination.combination_of_the_day' | trans }}
                             - {{ combination.date | date('Y/m/d') }}
@@ -21,30 +21,24 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for game in combination.games %}
+                            {% for bet in combination.bets %}
                                 <tr>
-                                    <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
-                                    {% if game.betOnWinner is same as(false) %}
-                                        <td class="small">
-                                            {% if game.averageExpectedNbGoals <= 2.5 %}
-                                                -2.5
-                                            {% elseif game.averageExpectedNbGoals > 2.5 %}
-                                                +2.5
-                                            {% endif %}
-                                        </td>
-                                        <td class="small">{{ game.odd }}</td>
-                                    {% else %}
-                                        <td class="small">
-                                            {% if game.homeTeam.id is same as(game.previsionalWinner.id) %}
-                                                1
-                                            {% elseif game.awayTeam.id is same as(game.awayTeam.id) %}
-                                                2
-                                            {% else %}
-                                                N
-                                            {% endif %}
-                                        </td>
-                                        <td class="small">{{ game.winnerOdd }}</td>
+                                    <td class="small">{{ bet.game.homeTeam.name }} - {{ bet.game.awayTeam.name }}</td>
+                                    {% if bet.type == '- 2.5' or bet.type == '+ 2.5' or bet.type == '- 3.5' or bet.type == '+ 3.5' %}
+                                        {% set value = bet.type %}
+                                    {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw == false %}
+                                        {% set value = '1' %}
+                                    {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw %}
+                                        {% set value = '1N' %}
+                                    {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw == false %}
+                                        {% set value = '2' %}
+                                    {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw %}
+                                        {% set value = 'N2' %}
+                                    {% elseif bet.type == 'winner' and bet.winner is null %}
+                                        {% set value = 'N' %}
                                     {% endif %}
+                                    <td class="small">{{ value }} </td>
+                                    <td class="small">{{ bet.odd }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -91,32 +85,25 @@
                                 <div class="card-body">
                                     <table class="table table-borderless table-striped">
                                         <tbody>
-                                        {% for game in combination.games %}
+                                        {% for bet in combination.bets %}
                                             <tr>
-                                                <td class="small">{{ game.homeTeam.name }} - {{ game.awayTeam.name }}</td>
-                                                {% if game.betOnWinner is same as(false) %}
-                                                    <td class="small">
-                                                        {% if game.averageExpectedNbGoals <= 2.5 %}
-                                                            -2.5
-                                                        {% elseif game.averageExpectedNbGoals > 2.5 %}
-                                                            +2.5
-                                                        {% endif %}
-                                                    </td>
-                                                    <td class="small">{{ game.odd }}</td>
-                                                {% else %}
-                                                    <td class="small">
-                                                        {% if game.homeTeam.id is same as(game.previsionalWinner.id) %}
-                                                            1
-                                                        {% elseif game.awayTeam.id is same as(game.awayTeam.id) %}
-                                                            2
-                                                        {% else %}
-                                                            N
-                                                        {% endif %}
-                                                    </td>
-                                                    <td class="small">{{ game.winnerOdd }}</td>
+                                                <td class="small">{{ bet.game.homeTeam.name }} - {{ bet.game.awayTeam.name }}</td>
+                                                {% if bet.type == '- 2.5' or bet.type == '+ 2.5' or bet.type == '- 3.5' or bet.type == '+ 3.5' %}
+                                                    {% set value = bet.type %}
+                                                {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw == false %}
+                                                    {% set value = '1' %}
+                                                {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw %}
+                                                    {% set value = '1N' %}
+                                                {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw == false %}
+                                                    {% set value = '2' %}
+                                                {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw %}
+                                                    {% set value = 'N2' %}
+                                                {% elseif bet.type == 'winner' and bet.winner is null %}
+                                                    {% set value = 'N' %}
                                                 {% endif %}
-                                                {% set result = game.betOnWinner ? game.winnerResult : game.goodResult %}
-                                                {% if result %}
+                                                <td class="small">{{ value }}</td>
+                                                <td class="small">{{ game.odd }}</td>
+                                                {% if bet.goodResult %}
                                                     {% set colorGame = "green" %}
                                                     {% set iconGame = "fa fa-check" %}
                                                 {% else %}

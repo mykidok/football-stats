@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\CombinationRepository")
  */
 class Combination
 {
@@ -52,9 +52,17 @@ class Combination
      */
     private $generalOdd;
 
+    /**
+     * @var Bet[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Bet", mappedBy="combination")
+     */
+    private $bets;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
+        $this->bets = new ArrayCollection();
     }
 
     public function getId(): int
@@ -67,9 +75,6 @@ class Combination
         return $this->games;
     }
 
-    /**
-     * @return Combination
-     */
     public function addGame(Game $game): self
     {
         $this->games->add($game);
@@ -82,9 +87,6 @@ class Combination
         return $this->date;
     }
 
-    /**
-     * @return Combination
-     */
     public function setDate(\DateTime $date): self
     {
         $this->date = $date;
@@ -97,9 +99,6 @@ class Combination
         return $this->success;
     }
 
-    /**
-     * @return Combination
-     */
     public function setSuccess(?bool $success): self
     {
         $this->success = $success;
@@ -112,13 +111,27 @@ class Combination
         return $this->generalOdd;
     }
 
-    /**
-     * @return Combination
-     */
     public function setGeneralOdd(?float $generalOdd): self
     {
         $this->generalOdd = $generalOdd;
 
         return $this;
     }
+
+    /**
+     * @return Collection|Bet[]
+     */
+    public function getBets(): Collection
+    {
+        return $this->bets;
+    }
+
+    public function addBet(Bet $bet): self
+    {
+        $this->bets->add($bet);
+        $bet->setCombination($this);
+
+        return $this;
+    }
+
 }
