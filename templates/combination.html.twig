@@ -26,13 +26,13 @@
                                     <td class="small">{{ bet.game.homeTeam.name }} - {{ bet.game.awayTeam.name }}</td>
                                     {% if bet.type == '- 2.5' or bet.type == '+ 2.5' or bet.type == '- 3.5' or bet.type == '+ 3.5' %}
                                         {% set value = bet.type %}
-                                    {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw == false %}
+                                    {% elseif bet.type == 'winner' and bet.game.homeTeam == bet.winner and bet.winOrDraw == false %}
                                         {% set value = '1' %}
-                                    {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw %}
+                                    {% elseif bet.type == 'winner' and bet.game.homeTeam == bet.winner and bet.winOrDraw %}
                                         {% set value = '1N' %}
-                                    {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw == false %}
+                                    {% elseif bet.type == 'winner' and bet.game.awayTeam == bet.winner and bet.winOrDraw == false %}
                                         {% set value = '2' %}
-                                    {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw %}
+                                    {% elseif bet.type == 'winner' and bet.game.awayTeam == bet.winner and bet.winOrDraw %}
                                         {% set value = 'N2' %}
                                     {% elseif bet.type == 'winner' and bet.winner is null %}
                                         {% set value = 'N' %}
@@ -90,19 +90,19 @@
                                                 <td class="small">{{ bet.game.homeTeam.name }} - {{ bet.game.awayTeam.name }}</td>
                                                 {% if bet.type == '- 2.5' or bet.type == '+ 2.5' or bet.type == '- 3.5' or bet.type == '+ 3.5' %}
                                                     {% set value = bet.type %}
-                                                {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw == false %}
+                                                {% elseif bet.type == 'winner' and bet.game.homeTeam == bet.winner and bet.winOrDraw == false %}
                                                     {% set value = '1' %}
-                                                {% elseif bet.type == 'winner' and match.homeTeam == bet.winner and bet.winOrDraw %}
+                                                {% elseif bet.type == 'winner' and bet.game.homeTeam == bet.winner and bet.winOrDraw %}
                                                     {% set value = '1N' %}
-                                                {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw == false %}
+                                                {% elseif bet.type == 'winner' and bet.game.awayTeam == bet.winner and bet.winOrDraw == false %}
                                                     {% set value = '2' %}
-                                                {% elseif bet.type == 'winner' and match.awayTeam == bet.winner and bet.winOrDraw %}
+                                                {% elseif bet.type == 'winner' and bet.game.awayTeam == bet.winner and bet.winOrDraw %}
                                                     {% set value = 'N2' %}
                                                 {% elseif bet.type == 'winner' and bet.winner is null %}
                                                     {% set value = 'N' %}
                                                 {% endif %}
                                                 <td class="small">{{ value }}</td>
-                                                <td class="small">{{ game.odd }}</td>
+                                                <td class="small">{{ bet.odd }}</td>
                                                 {% if bet.goodResult %}
                                                     {% set colorGame = "green" %}
                                                     {% set iconGame = "fa fa-check" %}

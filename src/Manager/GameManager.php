@@ -108,7 +108,7 @@ class GameManager
                             $odd = null;
                     }
 
-                    $bet->setOdd(str_replace(',', '.', $odd));
+                    $bet->setOdd((float) str_replace(',', '.', $odd));
                 }
 
                 if ($bet instanceof WinnerBet && !$bet->isWinOrDraw()) {
@@ -123,7 +123,7 @@ class GameManager
                             $winnerOdd = $clientOdd['winner'][1]['cote'];
                     }
 
-                    $bet->setOdd(str_replace(',', '.', $winnerOdd));
+                    $bet->setOdd((float) str_replace(',', '.', $winnerOdd));
                 }
 
                 if ($bet instanceof WinnerBet && $bet->isWinOrDraw()) {
@@ -138,7 +138,7 @@ class GameManager
                             $doubleChanceOdd = null;
                     }
 
-                    $bet->setOdd(str_replace(',', '.', $doubleChanceOdd));
+                    $bet->setOdd((float) str_replace(',', '.', $doubleChanceOdd));
                 }
             }
 

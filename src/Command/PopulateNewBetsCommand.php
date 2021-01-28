@@ -31,27 +31,22 @@ class PopulateNewBetsCommand extends Command
         $combinationRepository = $this->em->getRepository(Combination::class);
 
         foreach ($combinationRepository->findAll() as $combination) {
+
             /** @var Game $combinationGame */
             foreach ($combination->getGames() as $combinationGame) {
-                $newCombination = (new Combination())
-                    ->setGeneralOdd($combination->getGeneralOdd())
-                    ->setSuccess($combination->isSuccess())
-                    ->setDate($combination->getDate());
-
                 foreach ($combinationGame->getBets() as $bet) {
                     if ($combinationGame->isBetOnWinner() && $bet instanceof WinnerBet) {
-                        $newCombination->addBet($bet);
+                        $combination->addBet($bet);
+                        continue;
                     }
 
                     if (!$combinationGame->isBetOnWinner() && $bet instanceof UnderOverBet){
-                        $newCombination->addBet($bet);
+                        $combination->addBet($bet);
                     }
                 }
             }
 
-            if ($newCombination->getBets()->count() === 2) {
-                $this->em->persist($newCombination);
-            }
+            $this->em->persist($combination);
         }
 
         $this->em->flush();

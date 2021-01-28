@@ -63,6 +63,7 @@ class UpdateTeamGoalsCommand extends Command
                 ;
 
                 $this->em->persist($championship);
+                $output->writeln(sprintf('------ Teams data updated for %s ------', $championship->getName()));
             }
         }
 

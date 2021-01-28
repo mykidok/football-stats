@@ -20,7 +20,7 @@ class BetRepository extends ServiceEntityRepository
         $dateStart = (new \DateTime())->format('Y-m-d 00:00:00');
         $dateEnd = (new \DateTime())->format('Y-m-d 23:59:59');
         $query = <<<SQL
-SELECT * 
+SELECT b.* 
 FROM bet b
 LEFT JOIN game g ON b.game_id = g.id
     WHERE g.date > '$dateStart'

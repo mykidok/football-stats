@@ -6,6 +6,7 @@ use App\Entity\Bet;
 use App\Entity\Championship;
 use App\Entity\Combination;
 use App\Entity\Game;
+use App\Entity\UnderOverBet;
 use App\Manager\GameManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -43,6 +44,7 @@ class CreateCombinationOfTheDayCommand extends Command
         $combination = new Combination();
         $combination->setDate(new \DateTime('now'));
 
+        $addedBet = null;
         foreach ($bets as $bet) {
             /** @var Bet|null $betToAdd */
             $betToAdd = $betRepository->find($bet['id']);
@@ -51,12 +53,18 @@ class CreateCombinationOfTheDayCommand extends Command
                 if ($combination->getBets()->count() === 2) {
                     continue;
                 }
+
+                if (null !== $addedBet && $addedBet instanceof UnderOverBet && $betToAdd instanceof UnderOverBet && $betToAdd->getGame() === $addedBet->getGame()) {
+                    continue;
+                }
+
                 $combination->addBet($betToAdd);
+                $addedBet = $betToAdd;
             }
         }
 
         if ($combination->getBets()->count() < 2) {
-            return $output->writeln('Not enough games today to create combination');
+            return $output->writeln('Not enough bets today to create combination');
         }
 
         foreach ($combination->getBets() as $bet) {
