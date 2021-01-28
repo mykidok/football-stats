@@ -49,6 +49,19 @@ class ImportGamesCommand extends Command
                 ]
             );
 
+            if (!empty($gameDay['errors'])) {
+                foreach ($gameDay['errors'] as $key => $error) {
+                    $output->writeln(sprintf('%s : %s', $key, $error));
+                }
+
+                continue;
+            }
+
+            if ($gameDay['results'] === 0) {
+                $output->writeln(sprintf('No matches to import for %s', $championship->getName()));
+                continue;
+            }
+
             $i = 0;
 
             foreach ($gameDay['response'] as $item) {

@@ -1,9 +1,5 @@
-{% if momentForm is not same as(null) and momentForm %}
-    <button class="badge btn-green ml-1">
-        <span class="fa fa-sort-up" style="color: white"></span>
-    </button>
-{% elseif momentForm is not same as(null) and momentForm is same as(false) %}
-    <button class="badge badge-danger ml-1">
-        <span class="fa fa-sort-down"></span>
-    </button >
+{% if momentForm is not null and momentForm %}
+    <span class="badge badge-secondary badge-green ml-1"><i class="fa fa-sort-up" style="color: white"></i></span>
+{% elseif momentForm is not null and momentForm == false %}
+    <span class="badge badge-secondary badge-danger ml-1"><i class="fa fa-sort-down"></i></span>
 {% endif %}

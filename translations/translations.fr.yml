@@ -1,5 +1,4 @@
 translations.footer: Développé par
-translations.bets.bets_alert: Choisis un championnat, une date et clique sur envoyer !
 translations.bets.under_limit_goals: Moins de %nbLimit% buts
 translations.bets.goals: BUTS
 translations.bets.no_games: PAS DE MATCHS
@@ -13,7 +12,7 @@ translations.sidebar.statistics: Statistiques
 translations.sidebar.combination: Ticket du jour
 translations.home.welcome: Bienvenue sur My Football Bets !
 translations.home.advises: Ici, tu vas recevoir des conseils pour t'aider à faire tes paris.
-translations.home.explanation: Sur ce site, tu pourras choisir le nombre de buts sur lequel tu veux parier (under/over) et tu auras accès aux prédictions de chaque match sur 8 championnats (Bundesliga, Liga, Premier League, Championship, Ligue 1, Serie A, Primeira Liga et Eredivisie).
+translations.home.explanation: Sur ce site, tu pourras choisir le nombre de buts sur lequel tu veux parier (under/over) et tu auras accès aux prédictions de chaque match sur 18 championnats.
 translations.home.statistics: Tu peux aussi avoir accès aux statistiques des prédictions, tu pourras donc savoir sur quel championnat ou sur quelle équipe les prédictions sont les plus efficaces.
 translations.home.enjoy: Hope you'll enjoy it!
 translations.home.click: Clique ici pour voir les prédictions !
@@ -43,3 +42,18 @@ translations.combination.combination_of: Ticket du
 translations.combination.payroll_evolution: Evolution du budget
 translations.combination.payroll: Budget
 translations.bets.confidence: Indice de confiance
+translations.country.france: France
+translations.country.england: Angleterre
+translations.country.turkey: Turquie
+translations.country.czech_republic: République Tchèque
+translations.country.portugal: Portugal
+translations.country.spain: Espagne
+translations.country.germany: Allemagne
+translations.country.italy: Italie
+translations.country.austria: Autriche
+translations.country.scotland: Ecosse
+translations.country.netherlands: Pays-Bas
+translations.country.belgium: Belgique
+translations.country.romania: Roumanie
+translations.country.greece: Grèce
+translations.menu.useful_links: Liens utiles

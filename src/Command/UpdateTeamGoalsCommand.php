@@ -45,7 +45,7 @@ class UpdateTeamGoalsCommand extends Command
             ]);
 
             if (empty($standings['response'])) {
-                return;
+                continue;
             }
 
             $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings['response'][0]);
@@ -63,6 +63,7 @@ class UpdateTeamGoalsCommand extends Command
                 ;
 
                 $this->em->persist($championship);
+                $output->writeln(sprintf('------ Teams data updated for %s ------', $championship->getName()));
             }
         }
 

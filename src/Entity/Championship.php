@@ -25,21 +25,18 @@ class Championship
 
     /**
      * @var string
-     *
      * @ORM\Column(type="string", length=30)
      */
     private $name;
 
     /**
      * @var Game[]|Collection
-     *
      * @ORM\OneToMany(targetEntity="App\Entity\Game", mappedBy="championship")
      */
     private $games;
 
     /**
      * @var int
-     *
      * @ORM\Column(type="integer", nullable=false)
      * @Assert\NotNull()
      */
@@ -47,38 +44,39 @@ class Championship
 
     /**
      * @var string
-     *
      * @ORM\Column(type="string", length=150)
      */
     private $logo;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $averageGoalsHomeFor;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $averageGoalsHomeAgainst;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $averageGoalsAwayFor;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $averageGoalsAwayAgainst;
+
+    /**
+     * @var Country
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="championships")
+     */
+    private $country;
 
     public function __construct()
     {
@@ -184,5 +182,15 @@ class Championship
         return $this;
     }
 
+    public function getCountry(): Country
+    {
+        return $this->country;
+    }
 
+    public function setCountry(Country $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
 }

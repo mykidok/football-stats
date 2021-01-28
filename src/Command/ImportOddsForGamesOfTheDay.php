@@ -2,12 +2,14 @@
 
 namespace App\Command;
 
+use App\Entity\Bet;
+use App\Entity\Championship;
 use App\Entity\DataClient;
 use App\Entity\Game;
 use App\Entity\OddsClient;
+use App\Entity\UnderOverBet;
+use App\Entity\WinnerBet;
 use App\Manager\GameManager;
-use App\Repository\ChampionshipRepository;
-use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,11 +20,9 @@ class ImportOddsForGamesOfTheDay extends Command
     private $client;
     private $gameManager;
     private $dataClient;
-    private $championshipRepository;
-    private $gameRepository;
     private $entityManager;
 
-    public function __construct(GameManager $gameManager, OddsClient $client, DataClient $dataClient, ChampionshipRepository $championshipRepository, GameRepository $gameRepository, EntityManagerInterface $entityManager)
+    public function __construct(GameManager $gameManager, OddsClient $client, DataClient $dataClient, EntityManagerInterface $entityManager)
     {
         parent::__construct('api:import:odds');
         $this->setDescription('Import all odds for games of the day');
@@ -30,8 +30,6 @@ class ImportOddsForGamesOfTheDay extends Command
         $this->client = $client;
         $this->gameManager = $gameManager;
         $this->dataClient = $dataClient;
-        $this->championshipRepository = $championshipRepository;
-        $this->gameRepository = $gameRepository;
         $this->entityManager = $entityManager;
     }
 
@@ -45,18 +43,24 @@ class ImportOddsForGamesOfTheDay extends Command
 
         $clientOdds = [];
         foreach ($odds as $data) {
+            $clientOdds[$data['label']]['winner'] = $data['outcomes'];
             foreach ((array) $data['formules'] as $formule) {
                 if ($formule['marketType'] === "Plus/Moins 2,5 buts (Temps Réglementaire)") {
-                    $clientOdds[] = array_merge($formule, ['winnerOdds' => $data['outcomes']]);
+                    $clientOdds[$data['label']]['underOverTwo'] = $formule['outcomes'];
+                }
+                if ($formule['marketType'] === "Plus/Moins 3,5 buts (Temps Réglementaire)") {
+                    $clientOdds[$data['label']]['underOverThree'] = $formule['outcomes'];
+                }
+                if ($formule['marketType'] === "Double chance (Temps Réglementaire") {
+                    $clientOdds[$data['label']]['doubleChance'] = $formule['outcomes'];
                 }
             }
         }
 
         $games = $this->gameManager->setOddsForGamesOfTheDay($clientOdds);
 
-        $championships = $this->championshipRepository->championshipsWithGamesWithoutOdds();
-
-        foreach ($championships as $championship) {
+        $championshipRepository = $this->entityManager->getRepository(Championship::class);
+        foreach ($championshipRepository->championshipsWithGamesWithoutOdds() as $championship) {
             $odds = $this->dataClient->get('odds', [
                     'query' => [
                         'league' => $championship['api_id'],
@@ -67,40 +71,76 @@ class ImportOddsForGamesOfTheDay extends Command
                 ]
             );
 
+            $gameRepository = $this->entityManager->getRepository(Game::class);
             foreach ($odds['response'] as $data) {
                 /** @var Game|null $game */
-                $gameToUpdate = $this->gameRepository->findOneBy(['apiId' => $data['fixture']['id']]);
+                $gameToUpdate = $gameRepository->findOneBy(['apiId' => $data['fixture']['id']]);
 
-                if (null === $gameToUpdate) {
+                if (null === $gameToUpdate || null !==  $gameToUpdate->getRealNbGoals()) {
                     continue;
                 }
 
                 foreach ($data['bookmakers'] as $bookmakerOdd) {
                     foreach ($bookmakerOdd['bets'] as $bet) {
                         if ('Match Winner' === $bet['name']) {
-                            switch (true) {
-                                case $gameToUpdate->getPrevisionalWinner() === $gameToUpdate->getHomeTeam():
-                                    $odd = $this->getOdd($bet['values'], 'Home');
-                                    break;
-                                case $gameToUpdate->getPrevisionalWinner() === $gameToUpdate->getAwayTeam();
-                                    $odd = $this->getOdd($bet['values'], 'Away');
-                                    break;
-                                case null === $gameToUpdate->getPrevisionalWinner();
-                                    $odd = $this->getOdd($bet['values'], 'Draw');
+                            foreach ($gameToUpdate->getBets() as $gameBet) {
+                                if ($gameBet instanceof WinnerBet && !$gameBet->isWinOrDraw()) {
+                                    switch (true) {
+                                        case $gameBet->getWinner() === $gameToUpdate->getHomeTeam():
+                                            $winnerOdd = $this->getOdd($bet['values'], 'Home');
+                                            break;
+                                        case $gameBet->getWinner() === $gameToUpdate->getAwayTeam();
+                                            $winnerOdd = $this->getOdd($bet['values'], 'Away');
+                                            break;
+                                        default:
+                                            $winnerOdd = $this->getOdd($bet['values'], 'Draw');
+                                    }
+                                    $gameBet->setOdd($winnerOdd);
+                                }
                             }
+                        }
 
-                            $gameToUpdate->setWinnerOdd($odd);
+                        if ('Double Chance' === $bet['name']) {
+                            foreach ($gameToUpdate->getBets() as $gameBet) {
+                                if ($gameBet instanceof WinnerBet && $gameBet->isWinOrDraw()) {
+                                    switch (true) {
+                                        case $gameBet->getWinner() === $gameToUpdate->getHomeTeam():
+                                            $doubleChanceOdd = $this->getOdd($bet['values'], 'Home/Draw');
+                                            break;
+                                        case $gameBet->getWinner() === $gameToUpdate->getAwayTeam();
+                                            $doubleChanceOdd = $this->getOdd($bet['values'], 'Draw/Away');
+                                            break;
+                                        default:
+                                            $doubleChanceOdd = null;
+                                    }
+                                    $gameBet->setOdd($doubleChanceOdd);
+                                }
+                            }
                         }
 
                         if ('Goals Over/Under' === $bet['name']) {
-                            $odd = null;
-                            if ($gameToUpdate->getAverageExpectedNbGoals() > Game::LIMIT) {
-                                $odd = $this->getOdd($bet['values'], 'Over 2.5');
-                            } elseif ($gameToUpdate->getAverageExpectedNbGoals() <= Game::LIMIT) {
-                                $odd = $this->getOdd($bet['values'], 'Under 2.5');
-                            }
+                            foreach ($gameToUpdate->getBets() as $gameBet) {
+                                if ($gameBet instanceof UnderOverBet) {
+                                    switch ($gameBet->getType()) {
+                                        case UnderOverBet::LESS_TWO_AND_A_HALF:
+                                            $underOverOdd = $this->getOdd($bet['values'], 'Under 2.5');
+                                            break;
+                                        case UnderOverBet::PLUS_TWO_AND_A_HALF:
+                                            $underOverOdd = $this->getOdd($bet['values'], 'Over 2.5');
+                                            break;
+                                        case UnderOverBet::LESS_THREE_AND_A_HALF:
+                                            $underOverOdd = $this->getOdd($bet['values'], 'Under 3.5');
+                                            break;
+                                        case UnderOverBet::PLUS_THREE_AND_A_HALF:
+                                            $underOverOdd = $this->getOdd($bet['values'], 'Over 3.5');
+                                            break;
+                                        default:
+                                            $underOverOdd = null;
+                                    }
 
-                            $gameToUpdate->setOdd($odd);
+                                    $gameBet->setOdd($underOverOdd);
+                                }
+                            }
                         }
                     }
                 }

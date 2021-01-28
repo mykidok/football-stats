@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Championship;
 use App\Entity\Game;
 use App\Entity\Team;
+use App\Entity\UnderOverBet;
+use App\Entity\WinnerBet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\Expr\Join;
@@ -16,7 +18,7 @@ class ChampionshipRepository extends ServiceEntityRepository
         parent::__construct($registry, Championship::class);
     }
 
-    public function findChampionshipsWithStatistics(string $goodResult, string $momentForm): array
+    public function findChampionshipsWithStatistics(string $type): array
     {
         $qb = $this->createQueryBuilder('c');
 
@@ -25,50 +27,50 @@ class ChampionshipRepository extends ServiceEntityRepository
             ->addSelect('t.name as teamName')
             ->addSelect(
                 "SUM(
-                            CASE WHEN (g.$goodResult IS NOT NULL AND g.championship = c.id)
+                            CASE WHEN (b.goodResult IS NOT NULL AND g.championship = c.id)
                             THEN 1
                             ELSE 0 END
                     ) as nbMatch"
             )
             ->addSelect(
                 "SUM(
-                            CASE WHEN (g.$goodResult = 1 AND g.championship = c.id)
+                            CASE WHEN (b.goodResult = 1 AND g.championship = c.id)
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN (g.championship = c.id AND g.$goodResult IS NOT NULL)
+                            CASE WHEN (g.championship = c.id AND b.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
                         ) as championshipPercentage"
             )
             ->addSelect(
                 "SUM(
-                            CASE WHEN (g.$goodResult = 1 AND g.championship = c.id  AND g.$momentForm = 1)
+                            CASE WHEN (b.goodResult = 1 AND g.championship = c.id  AND b.form = 1)
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN (g.championship = c.id AND g.$goodResult IS NOT NULL AND g.$momentForm = 1)
+                            CASE WHEN (g.championship = c.id AND b.goodResult IS NOT NULL AND b.form = 1)
                             THEN 1
                             ELSE 0 END
                         ) as championshipPercentageWithForm"
             )
             ->addSelect(
                 "SUM(
-                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.$goodResult IS NOT NULL)
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND b.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
                         ) as teamNbMatch"
             )
             ->addSelect(
                 "SUM(
-                            CASE WHEN (g.$goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
+                            CASE WHEN (b.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.$goodResult IS NOT NULL)
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND b.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
                         ) as teamPercentage"
@@ -80,6 +82,14 @@ class ChampionshipRepository extends ServiceEntityRepository
             ->addOrderBy('teamPercentage', 'DESC')
             ->addOrderBy('teamNbMatch', 'DESC')
         ;
+
+        $betAlias = 'b';
+        if ((string)UnderOverBet::LIMIT_2_5 === $type || (string)UnderOverBet::LIMIT_3_5 ===  $type) {
+            $qb->leftJoin(UnderOverBet::class, $betAlias, Join::WITH, sprintf("%s.game = g.id AND (%s.type = '+ %s' OR %s.type = '- %s')", $betAlias, $betAlias, $type, $betAlias, $type));
+        } else {
+            $qb->leftJoin(WinnerBet::class, $betAlias, Join::WITH, sprintf('%s.game = g.id', $betAlias));
+        }
+
 
         return $qb->getQuery()->getScalarResult();
     }
@@ -99,32 +109,47 @@ class ChampionshipRepository extends ServiceEntityRepository
             )
             ->addSelect(
                 'SUM(
-                            CASE WHEN (g.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
+                            CASE WHEN (uob2.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.goodResult IS NOT NULL)
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND uob2.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
-                        ) as teamPercentage'
+                        ) as teamPercentageTwoHalf'
             )
             ->addSelect(
                 'SUM(
-                            CASE WHEN (g.winnerResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
+                            CASE WHEN (uob3.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
                     SUM(
-                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND g.winnerResult IS NOT NULL)
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND uob3.goodResult IS NOT NULL)
+                            THEN 1
+                            ELSE 0 END
+                        ) as teamPercentageThreeHalf'
+            )
+            ->addSelect(
+                'SUM(
+                            CASE WHEN (wb.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
+                            THEN 1
+                            ELSE 0 END
+                    ) * 100 /
+                    SUM(
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND wb.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
                         ) as teamWinnerPercentage'
             )
-            ->leftJoin(Team::class, 't', Join::WITH, 'c.id = t.championship')
             ->leftJoin(Game::class, 'g', Join::WITH, 'c.id = g.championship')
+            ->leftJoin(UnderOverBet::class, 'uob2', Join::WITH, "uob2.game = g.id AND (uob2.type = '+ 2.5' OR uob2.type = '- 2.5')")
+            ->leftJoin(UnderOverBet::class, 'uob3', Join::WITH, "uob3.game = g.id AND (uob3.type = '+ 3.5' OR uob3.type = '- 3.5')")
+            ->leftJoin(WinnerBet::class, 'wb', Join::WITH, 'wb.game = g.id')
+            ->leftJoin(Team::class, 't', Join::WITH, 'c.id = t.championship')
             ->groupBy('c.id, teamName')
-            ->addOrderBy('teamPercentage', 'DESC')
+            ->addOrderBy('teamPercentageTwoHalf', 'DESC')
             ->addOrderBy('teamNbMatch', 'DESC')
         ;
 

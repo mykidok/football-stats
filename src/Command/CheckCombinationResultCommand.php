@@ -12,22 +12,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckCombinationResultCommand extends Command
 {
-    private $combinationRepository;
     private $em;
 
-    public function __construct(EntityManagerInterface $em, CombinationRepository $combinationRepository)
+    public function __construct(EntityManagerInterface $em)
     {
         parent::__construct('api:check:combination');
         $this->setDescription('Check results of the day to check if combination was right');
 
         $this->em = $em;
-        $this->combinationRepository = $combinationRepository;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var CombinationRepository $combinationRepository */
+        $combinationRepository = $this->em->getRepository(Combination::class);
         /** @var Combination|null $lastCombination */
-        $lastCombination = $this->combinationRepository->findCombinationOfTheDay(new \DateTime('1 day ago'));
+        $lastCombination = $combinationRepository->findCombinationOfTheDay(new \DateTime('1 day ago'));
 
         if (null === $lastCombination) {
             return $output->writeln('No combination yesterday');
@@ -35,16 +35,16 @@ class CheckCombinationResultCommand extends Command
 
         $i = 0;
         /** @var Game $game */
-        foreach ($lastCombination->getGames() as $game) {
-            if (null === $game->isGoodResult()) {
+        foreach ($lastCombination->getBets() as $bet) {
+            if (null === $bet->isGoodResult()) {
                 return $output->writeln('One match has not been played.');
             }
-            if (($game->isGoodResult() && !$game->isBetOnWinner()) || ($game->getWinnerResult() && $game->isBetOnWinner()) ) {
+            if ($bet->isGoodResult()) {
                 $i++;
             }
         }
 
-        if ($i !== $lastCombination->getGames()->count()) {
+        if ($i !== $lastCombination->getBets()->count()) {
             $lastCombination->setSuccess(false);
         } else {
             $lastCombination->setSuccess(true);

@@ -2,19 +2,25 @@
 
 namespace App\Serializer\Denormalizer;
 
+use App\Entity\Bet;
 use App\Entity\Game;
 use App\Entity\Team;
 use App\Entity\TeamHistoric;
+use App\Entity\UnderOverBet;
+use App\Entity\WinnerBet;
+use App\Factory\UnderOverBetFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class GameDenormalizer implements DenormalizerInterface
 {
     private $em;
+    private $underOverBetFactory;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, UnderOverBetFactory $underOverBetFactory)
     {
         $this->em = $em;
+        $this->underOverBetFactory = $underOverBetFactory;
     }
 
     /**
@@ -29,18 +35,20 @@ class GameDenormalizer implements DenormalizerInterface
         /** @var Team $awayTeam */
         $awayTeam = $teamRepository->findOneBy(['apiId' => $data['teams']['away']['id']]);
 
-        $scoreTable = [];
         $maxResult = 0;
-        $lessThanPercentage = 0;
-        $moreThanPercentage = 0;
+        $lessThanTwoPercentage = 0;
+        $moreThanTwoPercentage = 0;
+        $lessThanThreePercentage = 0;
+        $moreThanThreePercentage = 0;
+        $hometeamPercentage = 0;
+        $awayteamPercentage = 0;
+        $drawPercentage = 0;
         $previsionalWinner = null;
 
         $nbGoalsExpectedMost = null;
         $nbGoalsIsSameAsExpected = null;
 
-        if (null === $homeTeam->getNbGoalsPerMatchHome() || $awayTeam->getNbGoalsPerMatchAway()) {
-            $previsionalNbGoals = 0;
-        } elseif ($homeTeam->getNbGoalsPerMatchHome() > 0 || $awayTeam->getNbGoalsPerMatchAway() > 0) {
+        if ((null !== $homeTeam->getNbGoalsPerMatchHome() && null !== $awayTeam->getNbGoalsPerMatchAway()) && ($homeTeam->getNbGoalsPerMatchHome() + $awayTeam->getNbGoalsPerMatchAway() > 0)) {
             $previsionalNbGoals = ($homeTeam->getNbGoalsPerMatchHome() + $awayTeam->getNbGoalsPerMatchAway()) / 2;
         } else {
             $previsionalNbGoals = 0;
@@ -59,13 +67,30 @@ class GameDenormalizer implements DenormalizerInterface
         for ($homeTeamScore = 0; $homeTeamScore <= 10; $homeTeamScore++) {
             for ($awayTeamScore = 0; $awayTeamScore <= 10; $awayTeamScore++) {
                 $percentage = $this->poissonDistribution($expectedHomeGoals, $expectedAwayGoals, $homeTeamScore, $awayTeamScore);
-                $scoreTable[$homeTeamScore][$awayTeamScore] = $percentage;
 
                 $totalGoals = $homeTeamScore+$awayTeamScore;
-                if ($totalGoals > 2.5) {
-                    $moreThanPercentage += $percentage;
+                if ($totalGoals > UnderOverBet::LIMIT_2_5) {
+                    $moreThanTwoPercentage += $percentage;
                 } else {
-                    $lessThanPercentage += $percentage;
+                    $lessThanTwoPercentage += $percentage;
+                }
+
+                if ($totalGoals > UnderOverBet::LIMIT_3_5) {
+                    $moreThanThreePercentage += $percentage;
+                } else {
+                    $lessThanThreePercentage += $percentage;
+                }
+
+                if ($homeTeamScore === $awayTeamScore) {
+                    $drawPercentage += $percentage;
+                }
+
+                if ($homeTeamScore > $awayTeamScore) {
+                    $hometeamPercentage += $percentage;
+                }
+
+                if ($awayTeamScore > $homeTeamScore) {
+                    $awayteamPercentage += $percentage;
                 }
 
                 if ($percentage > $maxResult) {
@@ -82,19 +107,14 @@ class GameDenormalizer implements DenormalizerInterface
             }
         }
 
-        if ($nbGoalsExpectedMost > 2.5) {
-            $myOdd = $moreThanPercentage;
-        } else {
-            $myOdd = $lessThanPercentage;
-        }
-
-        if (
-            ($previsionalNbGoals > 2.5 && $nbGoalsExpectedMost > 2.5)
-            || ($previsionalNbGoals <= 2.5 && $nbGoalsExpectedMost <= 2.5)
+        $myWinnerOdd = $previsionalWinner === $homeTeam ? $hometeamPercentage : $awayteamPercentage;
+        $winOrDraw = false;
+        if ((($hometeamPercentage >= $awayteamPercentage && abs($hometeamPercentage-$drawPercentage) <= WinnerBet::WIN_OR_DRAW_DIFFERENCE)
+            || ($awayteamPercentage >= $hometeamPercentage && abs($awayteamPercentage-$drawPercentage) <= WinnerBet::WIN_OR_DRAW_DIFFERENCE))
+            && (null !== $previsionalWinner)
         ) {
-            $nbGoalsIsSameAsExpected = true;
-        } else {
-            $nbGoalsIsSameAsExpected = false;
+            $winOrDraw = true;
+            $myWinnerOdd += $drawPercentage;
         }
 
         if ($homeTeam->getHomePlayedGames() !== 0 && $awayTeam->getAwayPlayedGames() !== 0) {
@@ -102,6 +122,16 @@ class GameDenormalizer implements DenormalizerInterface
         } else {
             $averageExpectedNbGoals = $nbGoalsExpectedMost;
         }
+
+        $winnerBet = (new WinnerBet())
+                ->setWinner($previsionalWinner)
+                ->setWinOrDraw($winOrDraw)
+                ->setMyOdd(100/$myWinnerOdd)
+                ->setType(WinnerBet::WINNER_TYPE)
+        ;
+
+        $underOverTwoBet = $this->underOverBetFactory->constructBet(UnderOverBet::LIMIT_2_5, $averageExpectedNbGoals, $nbGoalsExpectedMost, $moreThanTwoPercentage, $lessThanTwoPercentage, $previsionalNbGoals);
+        $underOverThreeBet = $this->underOverBetFactory->constructBet(UnderOverBet::LIMIT_3_5, $averageExpectedNbGoals, $nbGoalsExpectedMost, $moreThanThreePercentage, $lessThanThreePercentage, $previsionalNbGoals);
 
         $game = (new Game())
                         ->setApiId($data['fixture']['id'])
@@ -112,9 +142,9 @@ class GameDenormalizer implements DenormalizerInterface
                         ->setPrevisionalNbGoals(round($previsionalNbGoals, 3))
                         ->setExpectedNbGoals($nbGoalsExpectedMost)
                         ->setAverageExpectedNbGoals($averageExpectedNbGoals)
-                        ->setPrevisionIsSameAsExpected($nbGoalsIsSameAsExpected)
-                        ->setMyOdd(100/$myOdd)
-                        ->setPrevisionalWinner($previsionalWinner)
+                        ->addBet($winnerBet)
+                        ->addBet($underOverTwoBet)
+                        ->addBet($underOverThreeBet)
         ;
 
         return $game;

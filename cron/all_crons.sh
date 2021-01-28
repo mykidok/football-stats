@@ -1,8 +1,8 @@
 #!/bin/bash
 /usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:check:bet
-sleep 60
+sleep 5
 /usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:update:teams
-sleep 60
+sleep 5
 /usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:import:games
 sleep 5
 /usr/local/php7.3/bin/php /home/myfootbamx/bin/console api:import:odds

@@ -1,3 +1,5 @@
+{% trans_default_domain 'translations' %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,27 +7,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}My Football Bets{% endblock %}</title>
     {% block stylesheets %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('build/images/logo.png') }}" />
-        <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+        <link rel="icon" type="image/x-icon" href="{{ asset('build/images/favicon.ico') }}" />
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Roboto:wght@100;300;700&display=swap" rel="stylesheet">
+        {{ encore_entry_link_tags('app') }}
     {% endblock %}
 </head>
 <body>
 {% block body %}
-    <div class="container-fluid" style="min-height: 100vh">
-        <div class="row">
-            {% include 'sidebar.html.twig' %}
-            <div class="offset-2 col-10 mt-1">
-                {% block content %}
-                {% endblock %}
+    <nav id="menu" class="navbar navbar-expand-lg bg-primary sticky-top">
+        <a class="navbar-brand" href="{{ path('home') }}">
+            <img id="image-accueil" src="{{ asset('build/images/logo.png') }}" class="img-fluid ml-md-3">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon">
+                        <i class="fas fa-bars" style="color: white; font-size:28px;"></i>
+                    </span>
+        </button>
+        <div class="collapse navbar-collapse text-center" id="navbarTogglerDemo02">
+            <div class="navbar-nav mr-auto mt-2 mt-lg-0"></div>
+            <ul class="navbar-nav my-2 my-lg-0">
+                <li class="nav-item mx-md-2">
+                    <a class="nav-link" href="{{ path('home') }}"><i><span class="fa fa-home"></span>&nbsp;&nbsp;</i>{{ 'translations.sidebar.home' | trans }}</a>
+                </li>
+                <li class="nav-item mx-md-2">
+                    <a class="nav-link" href="{{ path('bets') }}"><i><span class="fa fa-gamepad"></span>&nbsp;&nbsp;</i>{{ 'translations.sidebar.bets' | trans }}</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i><span class="fa fa-chart-bar"></span>&nbsp;&nbsp;</i>{{ 'translations.sidebar.statistics' | trans }}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{{ path('statistics', { id: 'under-over-2-5'}) }}">+/- 2.5</a>
+                        <a class="dropdown-item" href="{{ path('statistics', { id: 'under-over-3-5'}) }}">+/- 3.5</a>
+                        <a class="dropdown-item" href="{{ path('statistics', { id: '1n2'}) }}">1/N/2</a>
+                    </div>
+                </li>
+                <li class="nav-item  mx-md-2">
+                    <a class="nav-link" href="{{ path('combination') }}"><i><span class="fa fa-tasks"></span>&nbsp;&nbsp;</i>{{ 'translations.sidebar.combination' | trans }}</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="?_locale=en">&#x1F1EC;&#x1F1E7;</a>
+                        <a class="dropdown-item" href="?_locale=fr">&#x1F1EB;&#x1F1F7;</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid" style="min-height: 75vh;">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% block footer %}
+        <div class="row align-items-center justify-content-between text-center pb-2 pt-2" style="width: 100%; background: #0077B3; position: relative; bottom: 0; margin: 0">
+            <div class="col-12 text-center">
+                <p class="text-white">{{ 'translations.footer' | trans({}, 'translations') }} <a style="animation: none; color: white" href="https://mickaelpegn.in">Mickael Pegnin</a></p>
             </div>
         </div>
-    </div>
-    <div class="small text-center mt-3" style="position: relative; bottom: 0; background: #00a9ff; color: white; margin: 0; z-index: 999">
-        {{ 'translations.footer' | trans({}, 'translations') }} <a style="animation: none; color: white" href="https://mickaelpegn.in">Mickael Pegnin</a>
-    </div>
+    {% endblock %}
 {% endblock %}
+
 {% block javascripts %}
-    <script type="text/javascript" src="{{ asset('build/app.js') }}"></script>
+    {{ encore_entry_script_tags('app') }}
+    <script>
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 45 || document.documentElement.scrollTop > 45) {
+                document.getElementById("image-accueil").style.width = "45px";
+            } else {
+                document.getElementById("image-accueil").style.width = "110px";
+            }
+        }
+    </script>
 {% endblock %}
 </body>
 </html>
+

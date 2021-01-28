@@ -6,35 +6,31 @@ use App\Entity\Championship;
 use App\Entity\Client;
 use App\Entity\Combination;
 use App\Entity\Game;
-use App\Form\Type\CompetitionType;
+use App\Form\Type\DateType;
 use App\Repository\ChampionshipRepository;
 use App\Repository\CombinationRepository;
 use App\Repository\GameRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
     private $client;
-    private $formFactory;
-    private $gameRepository;
-    private $championshipRepository;
-    private $combinationRepository;
+    private $entityManager;
 
-    public function __construct(Client $client, FormFactoryInterface $formFactory, GameRepository $gameRepository, ChampionshipRepository $championshipRepository, CombinationRepository $combinationRepository)
+    public function __construct(Client $client, EntityManagerInterface $entityManager)
     {
         $this->client = $client;
-        $this->formFactory = $formFactory;
-        $this->gameRepository = $gameRepository;
-        $this->championshipRepository = $championshipRepository;
-        $this->combinationRepository = $combinationRepository;
+        $this->entityManager = $entityManager;
     }
 
     /**
-     * @Route( path="", name="home")
+     * @Route("", name="home")
      */
     public function homeAction()
     {
@@ -42,64 +38,60 @@ class IndexController extends AbstractController
     }
 
     /**
-     * @Route(path="/bets", name="bets", methods="GET|POST")
+     * @Route("/bets", name="bets", methods="GET|POST")
      * @Template(template="bets.html.twig")
      */
-    public function betsAction(Request $request)
+    public function bets(Request $request)
     {
-        $form = $this->formFactory->createNamed('', CompetitionType::class, [], []);
+        $form = $this->get('form.factory')->create(DateType::class);
 
+        $date = new \DateTime();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $competition = $data['competition'];
-            $date = $data['date'];
-        } else {
-            /** @var Championship $competition */
-            $competition = $this->championshipRepository->findOneBy(['name' => 'Bundesliga']);
-            $date = new \DateTime('today');
+            $date = $form->get('date')->getData();
         }
 
-        $matches = $this->gameRepository->findGamesOfTheDayForChampionship($competition, $date);
+        $gameRepository = $this->entityManager->getRepository(Game::class);
+        $championshipsWithMatches = array_reduce($gameRepository->findGamesOfTheDay($date), function ($memo, Game $match) {
+            if (!array_key_exists($match->getChampionship()->getName(), $memo)) {
+                $memo[$match->getChampionship()->getName()]['country'] = [
+                    'name' => $match->getChampionship()->getCountry()->getName(),
+                    'flag' => $match->getChampionship()->getCountry()->getFlagPath(),
+                ];
+            }
+            $memo[$match->getChampionship()->getName()]['matches'][] = $match;
 
-        $overNbGoalsMatches = [];
-        $underNbGoalsMatches = [];
-        $nbLimit = Game::LIMIT;
-
-        /** @var Game $match */
-        foreach ($matches as $match) {
-            $match->getAverageExpectedNbGoals() > $nbLimit ? $overNbGoalsMatches[] = $match : $underNbGoalsMatches[] = $match;
-        }
+            return $memo;
+        }, []);
 
         return [
-            'nbLimit' => $nbLimit,
-            'matches' => $matches,
             'form' => $form->createView(),
+            'championships' => $championshipsWithMatches,
         ];
     }
 
     /**
-     * @Route(path="/statistics/{id}", name="statistics", methods="GET")
+     * @Route("/statistics/{id}", name="statistics", methods="GET")
      * @Template(template="statistics.html.twig")
      */
-    public function statisticsMoreLessAction(Request $request)
+    public function statistics(Request $request)
     {
         switch ($request->attributes->get('id')) {
             case '1n2':
-                $goodResult = 'winnerResult';
-                $momentForm = 'winnerMomentForm';
+                $type = 'winner';
                 break;
-            case 'more-less':
-                $goodResult = 'goodResult';
-                $momentForm = 'momentForm';
+            case 'under-over-2-5':
+                $type = '2.5';
                 break;
-            default:
-
+            case 'under-over-3-5':
+                $type = '3.5';
+                break;
+            default :
+                throw new NotFoundHttpException();
         }
 
-        $championships = $this->championshipRepository->findChampionshipsWithStatistics($goodResult, $momentForm);
-
-        $data = array_reduce($championships, function ($memo, $championship) {
+        $championshipRepository = $this->entityManager->getRepository(Championship::class);
+        $data = array_reduce($championshipRepository->findChampionshipsWithStatistics($type), function ($memo, $championship) {
             $teamData = [
                 'name' => $championship['teamName'],
                 'teamNbMatch' => $championship['teamNbMatch'],
@@ -133,34 +125,25 @@ class IndexController extends AbstractController
     }
 
     /**
-     * @Route(path="/combination", name="combination", methods="GET")
+     * @Route("/combination", name="combination", methods="GET")
      * @Template(template="combination.html.twig")
      */
-    public function combinationAction()
+    public function combination()
     {
-        $combinationDay = $this->combinationRepository->findCombinationOfTheDay(new \DateTime());
-        $lastCombinations = $this->combinationRepository->findLastFiveCombinations();
-
-        $combinations = $this->combinationRepository->findCombinationFinished();
-
         $payroll = [0];
-        $amout = 0;
+        $amount = 0;
         $dates = [''];
+        $combinationRepository = $this->entityManager->getRepository(Combination::class);
         /** @var Combination $combination */
-        foreach ($combinations as $combination) {
+        foreach ($combinationRepository->findCombinationFinished() as $combination) {
             $dates[] = $combination->getDate()->format('d/m');
-
-            if ($combination->isSuccess()) {
-                $amout = $amout + ($combination->getGeneralOdd() - Combination::BET_AMOUNT);
-            } else {
-                $amout = $amout - Combination::BET_AMOUNT;
-            }
-            $payroll[] = round($amout, 2);
+            $amount = $combination->isSuccess() ? $amount + ($combination->getGeneralOdd() - Combination::BET_AMOUNT) : $amount - Combination::BET_AMOUNT;
+            $payroll[] = round($amount, 2);
         }
 
         return [
-            'combination' => $combinationDay,
-            'lastCombinations' => $lastCombinations,
+            'combination' => $combinationRepository->findCombinationOfTheDay(new \DateTime()),
+            'lastCombinations' => $combinationRepository->findLastFiveCombinations(),
             'dates' => $dates,
             'payroll' => $payroll
         ];
