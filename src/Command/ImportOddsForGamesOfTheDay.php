@@ -148,6 +148,7 @@ class ImportOddsForGamesOfTheDay extends Command
                 $this->entityManager->persist($gameToUpdate);
                 $this->entityManager->flush();
                 $games[] = $gameToUpdate;
+                sleep(6);
             }
         }
 

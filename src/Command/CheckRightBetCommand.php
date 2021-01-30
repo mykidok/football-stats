@@ -86,6 +86,7 @@ class CheckRightBetCommand extends Command
                 }
             }
             $output->writeln(sprintf('------ %d matches updated for %s ------', $i, $championship->getName()));
+            sleep(6);
         }
     }
 

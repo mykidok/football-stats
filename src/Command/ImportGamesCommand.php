@@ -91,6 +91,7 @@ class ImportGamesCommand extends Command
             }
 
             $output->writeln(sprintf('------ %d games imported for %s ------', $i, $championship->getName()));
+            sleep(6);
         }
     }
 }
