@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Championship;
-use App\Entity\DataClient;
+use App\Entity\Client;
 use App\Entity\Game;
 use App\Entity\UnderOverBet;
 use App\Entity\WinnerBet;
@@ -17,7 +17,7 @@ class CheckRightBetCommand extends Command
     private $client;
     private $em;
 
-    public function __construct(DataClient $client, EntityManagerInterface $em)
+    public function __construct(Client $client, EntityManagerInterface $em)
     {
         parent::__construct('api:check:bet');
         $this->setDescription('Check results of the day to check if bets were right');

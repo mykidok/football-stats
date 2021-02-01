@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Entity\Championship;
 use App\Entity\ChampionshipHistoric;
 use App\Entity\Client;
-use App\Entity\DataClient;
 use App\Entity\Team;
 use App\Entity\TeamHistoric;
 use App\Handler\ChampionshipHandler;
@@ -26,7 +25,7 @@ class ImportHistoricsCommand extends Command
     private $teamRepository;
 
     public function __construct(
-        DataClient $client,
+        Client $client,
         EntityManagerInterface $em,
         ChampionshipHandler $championshipHandler,
         TeamHistoricHandler $teamHistoricHandler,

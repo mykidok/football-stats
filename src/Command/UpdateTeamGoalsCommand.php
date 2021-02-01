@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Entity\Championship;
 use App\Entity\Client;
-use App\Entity\DataClient;
 use App\Handler\ChampionshipHandler;
 use App\Handler\TeamHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +18,7 @@ class UpdateTeamGoalsCommand extends Command
     private $teamHandler;
     private $championshipHandler;
 
-    public function __construct(DataClient $client, EntityManagerInterface $em, TeamHandler $teamHandler, ChampionshipHandler $championshipHandler)
+    public function __construct(Client $client, EntityManagerInterface $em, TeamHandler $teamHandler, ChampionshipHandler $championshipHandler)
     {
         parent::__construct('api:update:teams');
         $this->setDescription('Update team away and home goals');

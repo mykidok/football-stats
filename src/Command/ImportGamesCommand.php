@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Entity\Championship;
 use App\Entity\Client;
-use App\Entity\DataClient;
 use App\Entity\Game;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +20,7 @@ class ImportGamesCommand extends Command
     private $denormalizer;
     private $gameRepository;
 
-    public function __construct(DataClient $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer, GameRepository $gameRepository)
+    public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer, GameRepository $gameRepository)
     {
         parent::__construct('api:import:games');
         $this->setDescription('Import games of the day from API Football Data');

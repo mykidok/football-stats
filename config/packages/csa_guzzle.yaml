@@ -5,17 +5,12 @@ csa_guzzle:
     profiler: '%kernel.debug%'
     clients:
         default: ~
-        football_api:
+        api_football:
              config:
                  base_uri: '%api_uri%'
                  headers:
-                     X-Auth-Token: '%api_key%'
-        data_client:
-             config:
-                 base_uri: '%data_uri%'
-                 headers:
-                     x-rapidapi-host: '%data_host%'
-                     x-rapidapi-key: '%data_key%'
+                     x-rapidapi-host: '%api_host%'
+                     x-rapidapi-key: '%api_key%'
         ps_client:
              config:
                  base_uri: '%ps_api_uri%'

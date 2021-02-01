@@ -2,9 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\Bet;
 use App\Entity\Championship;
-use App\Entity\DataClient;
+use App\Entity\Client;
 use App\Entity\Game;
 use App\Entity\OddsClient;
 use App\Entity\UnderOverBet;
@@ -22,7 +21,7 @@ class ImportOddsForGamesOfTheDay extends Command
     private $dataClient;
     private $entityManager;
 
-    public function __construct(GameManager $gameManager, OddsClient $client, DataClient $dataClient, EntityManagerInterface $entityManager)
+    public function __construct(GameManager $gameManager, OddsClient $client, Client $dataClient, EntityManagerInterface $entityManager)
     {
         parent::__construct('api:import:odds');
         $this->setDescription('Import all odds for games of the day');
