@@ -63,6 +63,8 @@ class CheckRightBetCommand extends Command
                                 || (UnderOverBet::PLUS_TWO_AND_A_HALF ===  $bet->getType() && $realNbGoals > UnderOverBet::LIMIT_2_5)
                                 || (UnderOverBet::PLUS_THREE_AND_A_HALF ===  $bet->getType() && $realNbGoals > UnderOverBet::LIMIT_3_5)
                                 || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getHomeTeam() && $item['teams']['home']['winner'])
+                                || ($bet instanceof WinnerBet && $bet->isWinOrDraw() && $bet->getWinner() === $game->getHomeTeam() && ($item['teams']['home']['winner'] || (!$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])))
+                                || ($bet instanceof WinnerBet && $bet->isWinOrDraw() && $bet->getWinner() === $game->getAwayTeam() && ($item['teams']['away']['winner'] || (!$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])))
                                 || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getAwayTeam() && $item['teams']['away']['winner'])
                                 || ($bet instanceof WinnerBet && null === $bet->getWinner() && !$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])
                             ) {

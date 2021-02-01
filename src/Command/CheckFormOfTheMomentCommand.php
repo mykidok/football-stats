@@ -87,8 +87,8 @@ class CheckFormOfTheMomentCommand extends Command
                 $awayPointMomentForm = $game->getAwayTeam()->getPointsMomentForm();
                 if ($bet instanceof WinnerBet && $bet->isWinOrDraw()) {
                     if (
-                        (($homePointMomentForm > $awayPointMomentForm || $homePointMomentForm === $awayPointMomentForm) && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
-                        || (($awayPointMomentForm > $homePointMomentForm || $homePointMomentForm === $awayPointMomentForm) && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
+                        (($homePointMomentForm > $awayPointMomentForm || $homePointMomentForm === $awayPointMomentForm) && null!== $bet->getWinner() && $bet->getWinner()->getId() === $game->getHomeTeam()->getId())
+                        || (($awayPointMomentForm > $homePointMomentForm || $homePointMomentForm === $awayPointMomentForm) && null!== $bet->getWinner() && $bet->getWinner()->getId() === $game->getAwayTeam()->getId())
                     ) {
                         $form = true;
                     }
@@ -96,9 +96,9 @@ class CheckFormOfTheMomentCommand extends Command
 
                 if ($bet instanceof WinnerBet && !$bet->isWinOrDraw()) {
                     if (
-                        ($homePointMomentForm > $awayPointMomentForm && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getHomeTeam()->getId())
-                        || ($awayPointMomentForm > $homePointMomentForm && null!== $game->getPrevisionalWinner() && $game->getPrevisionalWinner()->getId() === $game->getAwayTeam()->getId())
-                        || ($homePointMomentForm === $awayPointMomentForm && null === $game->getPrevisionalWinner())
+                        ($homePointMomentForm > $awayPointMomentForm && null!== $bet->getWinner() && $bet->getWinner()->getId() === $game->getHomeTeam()->getId())
+                        || ($awayPointMomentForm > $homePointMomentForm && null!== $bet->getWinner() && $bet->getWinner()->getId() === $game->getAwayTeam()->getId())
+                        || ($homePointMomentForm === $awayPointMomentForm && null === $bet->getWinner())
                     ) {
                         $form = true;
                     }
