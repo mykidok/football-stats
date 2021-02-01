@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Championship;
 use App\Entity\Game;
 use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

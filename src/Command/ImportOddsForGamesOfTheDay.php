@@ -50,7 +50,7 @@ class ImportOddsForGamesOfTheDay extends Command
                 if ($formule['marketType'] === "Plus/Moins 3,5 buts (Temps Réglementaire)") {
                     $clientOdds[$data['label']]['underOverThree'] = $formule['outcomes'];
                 }
-                if ($formule['marketType'] === "Double chance (Temps Réglementaire") {
+                if ($formule['marketType'] === "Double chance (Temps Réglementaire)") {
                     $clientOdds[$data['label']]['doubleChance'] = $formule['outcomes'];
                 }
             }

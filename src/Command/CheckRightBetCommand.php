@@ -42,8 +42,18 @@ class CheckRightBetCommand extends Command
                 ]
             );
 
+            if (!empty($gameDay['errors'])) {
+                foreach ($gameDay['errors'] as $key => $error) {
+                    $output->writeln(sprintf('%s : %s', $key, $error));
+                }
+                sleep(6);
+                continue;
+            }
+
+
             if (0 === $gameDay['results']) {
                 $output->writeln(sprintf('------ No match today for %s ------', $championship->getName()));
+                sleep(6);
                 continue;
             }
 
@@ -75,6 +85,7 @@ class CheckRightBetCommand extends Command
                         }
 
                         $game->setRealNbGoals($realNbGoals);
+                        $game->setFinished(true);
                         if ($item['teams']['home']['winner']) {
                             $game->setWinner($game->getHomeTeam());
                         } elseif ($item['teams']['away']['winner']) {

@@ -5,7 +5,7 @@ namespace App\Command;
 use App\Entity\Championship;
 use App\Entity\Client;
 use App\Handler\ChampionshipHandler;
-use App\Handler\TeamHandler;
+use App\Manager\TeamManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,17 +15,17 @@ class UpdateTeamGoalsCommand extends Command
 {
     private $client;
     private $em;
-    private $teamHandler;
+    private $teamManager;
     private $championshipHandler;
 
-    public function __construct(Client $client, EntityManagerInterface $em, TeamHandler $teamHandler, ChampionshipHandler $championshipHandler)
+    public function __construct(Client $client, EntityManagerInterface $em, TeamManager $teamManager, ChampionshipHandler $championshipHandler)
     {
         parent::__construct('api:update:teams');
         $this->setDescription('Update team away and home goals');
 
         $this->client = $client;
         $this->em = $em;
-        $this->teamHandler = $teamHandler;
+        $this->teamManager = $teamManager;
         $this->championshipHandler = $championshipHandler;
     }
 
@@ -50,7 +50,7 @@ class UpdateTeamGoalsCommand extends Command
             $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings['response'][0]);
 
             foreach ($standings['response'][0] as $standing) {
-                $this->teamHandler->handleTeamUpdate($standing, $championshipGoals);
+                $this->teamManager->handleTeamUpdate($standing, $championshipGoals);
             }
 
             if ($championshipGoals['totalAwayPlayedGames'] !== 0 || $championshipGoals['totalHomePlayedGames'] !== 0) {

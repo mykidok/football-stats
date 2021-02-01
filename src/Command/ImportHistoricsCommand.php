@@ -9,7 +9,6 @@ use App\Entity\Team;
 use App\Entity\TeamHistoric;
 use App\Handler\ChampionshipHandler;
 use App\Handler\TeamHistoricHandler;
-use App\Repository\TeamRepository;
 use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -22,14 +21,12 @@ class ImportHistoricsCommand extends Command
     private $em;
     private $championshipHandler;
     private $teamHistoricHandler;
-    private $teamRepository;
 
     public function __construct(
         Client $client,
         EntityManagerInterface $em,
-        ChampionshipHandler $championshipHandler,
-        TeamHistoricHandler $teamHistoricHandler,
-        TeamRepository $teamRepository
+        ChampionshipHandler $championshipManager,
+        TeamHistoricHandler $teamHistoricHandler
     )
     {
         parent::__construct('api:import:historics');
@@ -37,13 +34,13 @@ class ImportHistoricsCommand extends Command
 
         $this->client = $client;
         $this->em = $em;
-        $this->championshipHandler = $championshipHandler;
+        $this->championshipHandler = $championshipManager;
         $this->teamHistoricHandler = $teamHistoricHandler;
-        $this->teamRepository = $teamRepository;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $teamRepository = $this->em->getRepository(Team::class);
         $championshipRepository = $this->em->getRepository(Championship::class);
 
         /** @var Championship $championship */
@@ -82,7 +79,7 @@ class ImportHistoricsCommand extends Command
 
                 foreach ($teamsHistorics as $apiId => $historic) {
                     /** @var Team|null $team */
-                    $team = $this->teamRepository->findOneBy(['apiId' => $apiId]);
+                    $team = $teamRepository->findOneBy(['apiId' => $apiId]);
 
                     if (null === $team) {
                         continue;

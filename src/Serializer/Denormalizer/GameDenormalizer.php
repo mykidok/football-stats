@@ -2,7 +2,6 @@
 
 namespace App\Serializer\Denormalizer;
 
-use App\Entity\Bet;
 use App\Entity\Game;
 use App\Entity\Team;
 use App\Entity\TeamHistoric;

@@ -10,18 +10,17 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class GameManager
 {
-    private $gameRepository;
     private $em;
 
-    public function __construct(GameRepository $gameRepository, EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->gameRepository = $gameRepository;
         $this->em = $em;
     }
 
     public function setPercentageForGamesOfTheDay(array $teams)
     {
-        $games = $this->gameRepository->findGamesOfTheDay(new \DateTime('now'));
+        $gameRepository = $this->em->getRepository(Game::class);
+        $games = $gameRepository->findGamesOfTheDay(new \DateTime('now'));
 
         /** @var Game $game */
         foreach ($games as $game) {
@@ -82,8 +81,10 @@ class GameManager
         foreach ($clientOdds as $key => $clientOdd) {
             $homeTeamName = explode('-', $key)[0];
 
+            $gameRepository = $this->em->getRepository(Game::class);
+
             /** @var Game $game */
-            $game = $this->gameRepository->findOneByHomeTeamShortName(new \DateTime('now'), $homeTeamName);
+            $game = $gameRepository->findOneByHomeTeamShortName(new \DateTime('now'), $homeTeamName);
 
             if (null === $game) {
                 continue;
@@ -149,5 +150,27 @@ class GameManager
         $this->em->flush();
 
         return $games;
+    }
+
+    public function getFormForMatch(Game $game): ?float
+    {
+        $homeTeamForm =  $game->getHomeTeam()->getMomentForm();
+        $awayTeamForm = $game->getAwayTeam()->getMomentForm();
+
+        switch (true) {
+            case null !== $awayTeamForm && null !== $homeTeamForm:
+                $formForMatch = ($game->getHomeTeam()->getMomentForm() + $game->getAwayTeam()->getMomentForm())/2;
+                break;
+            case null === $homeTeamForm && null !== $awayTeamForm:
+                $formForMatch = $game->getAwayTeam()->getMomentForm();
+                break;
+            case null === $awayTeamForm && null !== $homeTeamForm:
+                $formForMatch = $game->getHomeTeam()->getMomentForm();
+                break;
+            default:
+                $formForMatch = null;
+        }
+
+        return $formForMatch;
     }
 }

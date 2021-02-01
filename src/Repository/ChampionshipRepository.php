@@ -163,11 +163,12 @@ class ChampionshipRepository extends ServiceEntityRepository
         $query = <<<SQL
 SELECT * 
 FROM championship c
-    WHERE (SELECT COUNT(g.id) FROM game g 
-                        WHERE g.date < '$dateEnd'
-                        AND g.date > '$dateStart'
-                        AND g.championship_id = c.id
-                        AND (odd IS NULL OR winner_odd IS NULL)) > 0
+    WHERE (SELECT COUNT(b.id) FROM bet b
+                LEFT JOIN game g ON g.id = b.game_id
+                WHERE g.date < '$dateEnd'
+                AND g.date > '$dateStart'
+                AND g.championship_id = c.id
+                AND (b.odd IS NULL OR b.odd = 0) ) > 0
 SQL;
 
         $em = $this->getEntityManager();
