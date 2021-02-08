@@ -107,6 +107,12 @@ class Team
      */
     private $pointsMomentForm;
 
+    /**
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $bothTeamsScoreForm;
+
     public function getId(): int
     {
         return $this->id;
@@ -279,4 +285,18 @@ class Team
 
         return $this;
     }
+
+    public function getBothTeamsScoreForm(): ?bool
+    {
+        return $this->bothTeamsScoreForm;
+    }
+
+    public function setBothTeamsScoreForm(?bool $bothTeamsScoreForm): self
+    {
+        $this->bothTeamsScoreForm = $bothTeamsScoreForm;
+
+        return $this;
+    }
+
+
 }

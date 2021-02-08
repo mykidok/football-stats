@@ -36,8 +36,20 @@
                                         {% set value = 'N2' %}
                                     {% elseif bet.type == 'winner' and bet.winner is null %}
                                         {% set value = 'N' %}
+                                    {% elseif bet.type == 'both_teams_score' and bet.isBothTeamsScore %}
+                                        {% set value = 'translations.bets.yes' | trans %}
+                                    {% elseif bet.type == 'both_teams_score' and bet.isBothTeamsScore == false %}
+                                        {% set value = 'translations.bets.no' | trans %}
                                     {% endif %}
-                                    <td class="small">{{ value }} </td>
+                                    <td class="small">
+                                        {% if bet.type == 'both_teams_score' %}
+                                            <p class="font-weight-bold">{{ 'translations.bets.bts' | trans }}&nbsp;&nbsp;
+                                                <span class="btn btn-sm btn-{% if bet.goodResult is null %}light{% elseif bet.goodResult %}green{% elseif bet.goodResult == false %}danger{% endif %}" style="{% if bet.goodResult is null %}border: 1px grey solid;{% endif %} font-size: smaller">{{ value }}</span>
+                                            </p>
+                                        {% else %}
+                                            {{ value }}
+                                        {% endif %}
+                                    </td>
                                     <td class="small">{{ bet.odd }}</td>
                                 </tr>
                             {% endfor %}
@@ -100,8 +112,20 @@
                                                     {% set value = 'N2' %}
                                                 {% elseif bet.type == 'winner' and bet.winner is null %}
                                                     {% set value = 'N' %}
+                                                {% elseif bet.type == 'both_teams_score' and bet.isBothTeamsScore %}
+                                                    {% set value = 'translations.bets.yes' | trans %}
+                                                {% elseif bet.type == 'both_teams_score' and bet.isBothTeamsScore == false %}
+                                                    {% set value = 'translations.bets.no' | trans %}
                                                 {% endif %}
-                                                <td class="small">{{ value }}</td>
+                                                <td class="small">
+                                                    {% if bet.type == 'both_teams_score' %}
+                                                        <p class="font-weight-bold">{{ 'translations.bets.bts' | trans }}&nbsp;&nbsp;
+                                                            <span class="btn btn-sm btn-{% if bet.goodResult is null %}light{% elseif bet.goodResult %}green{% elseif bet.goodResult == false %}danger{% endif %}" style="{% if bet.goodResult is null %}border: 1px grey solid;{% endif %} font-size: smaller">{{ value }}</span>
+                                                        </p>
+                                                    {% else %}
+                                                        {{ value }}
+                                                    {% endif %}
+                                                </td>
                                                 <td class="small">{{ bet.odd }}</td>
                                                 {% if bet.goodResult %}
                                                     {% set colorGame = "green" %}

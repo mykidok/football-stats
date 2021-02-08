@@ -2,6 +2,7 @@
 
 namespace App\Serializer\Denormalizer;
 
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Game;
 use App\Entity\Team;
 use App\Entity\TeamHistoric;
@@ -42,6 +43,8 @@ class GameDenormalizer implements DenormalizerInterface
         $hometeamPercentage = 0;
         $awayteamPercentage = 0;
         $drawPercentage = 0;
+        $bothTeamsScorePercentage = 0;
+        $bothTeamsNotScorePercentage = 0;
         $previsionalWinner = null;
 
         $nbGoalsExpectedMost = null;
@@ -92,6 +95,14 @@ class GameDenormalizer implements DenormalizerInterface
                     $awayteamPercentage += $percentage;
                 }
 
+                if ($homeTeamScore === 0 || $awayTeamScore === 0) {
+                    $bothTeamsNotScorePercentage += $percentage;
+                }
+
+                if ($homeTeamScore !== 0 && $awayTeamScore !== 0) {
+                    $bothTeamsScorePercentage += $percentage;
+                }
+
                 if ($percentage > $maxResult) {
                     $maxResult = $percentage;
                     $nbGoalsExpectedMost = $totalGoals;
@@ -123,14 +134,22 @@ class GameDenormalizer implements DenormalizerInterface
         }
 
         $winnerBet = (new WinnerBet())
-                ->setWinner($previsionalWinner)
-                ->setWinOrDraw($winOrDraw)
-                ->setMyOdd(100/$myWinnerOdd)
-                ->setType(WinnerBet::WINNER_TYPE)
+            ->setWinner($previsionalWinner)
+            ->setWinOrDraw($winOrDraw)
+            ->setMyOdd(100/$myWinnerOdd)
+            ->setType(WinnerBet::WINNER_TYPE)
         ;
 
         $underOverTwoBet = $this->underOverBetFactory->constructBet(UnderOverBet::LIMIT_2_5, $averageExpectedNbGoals, $nbGoalsExpectedMost, $moreThanTwoPercentage, $lessThanTwoPercentage, $previsionalNbGoals);
         $underOverThreeBet = $this->underOverBetFactory->constructBet(UnderOverBet::LIMIT_3_5, $averageExpectedNbGoals, $nbGoalsExpectedMost, $moreThanThreePercentage, $lessThanThreePercentage, $previsionalNbGoals);
+
+        $myBothTeamsScoreOdd = $bothTeamsScorePercentage >= $bothTeamsNotScorePercentage ? 100 / $bothTeamsScorePercentage : 100 /$bothTeamsNotScorePercentage;
+        $bothTeamsScoreBet = (new BothTeamsScoreBet())
+            ->setBothTeamsScore($bothTeamsScorePercentage >= $bothTeamsNotScorePercentage)
+            ->setMyOdd($myBothTeamsScoreOdd)
+            ->setType(BothTeamsScoreBet::BOTH_TEAMS_GOAL_TYPE)
+        ;
+
 
         $game = (new Game())
                         ->setApiId($data['fixture']['id'])
@@ -144,6 +163,7 @@ class GameDenormalizer implements DenormalizerInterface
                         ->addBet($winnerBet)
                         ->addBet($underOverTwoBet)
                         ->addBet($underOverThreeBet)
+                        ->addBet($bothTeamsScoreBet)
         ;
 
         return $game;

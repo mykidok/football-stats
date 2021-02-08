@@ -129,6 +129,20 @@ class Game
      */
     private $finished;
 
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $homeTeamGoals;
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $awayTeamGoals;
+
     public function __construct()
     {
         $this->bets = new ArrayCollection();
@@ -311,5 +325,27 @@ class Game
         return $this;
     }
 
+    public function getHomeTeamGoals(): ?int
+    {
+        return $this->homeTeamGoals;
+    }
 
+    public function setHomeTeamGoals(?int $homeTeamGoals): self
+    {
+        $this->homeTeamGoals = $homeTeamGoals;
+
+        return $this;
+    }
+
+    public function getAwayTeamGoals(): ?int
+    {
+        return $this->awayTeamGoals;
+    }
+
+    public function setAwayTeamGoals(?int $awayTeamGoals): self
+    {
+        $this->awayTeamGoals = $awayTeamGoals;
+
+        return $this;
+    }
 }

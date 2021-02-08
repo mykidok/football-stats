@@ -79,6 +79,9 @@ class IndexController extends AbstractController
             case 'under-over-3-5':
                 $type = '3.5';
                 break;
+            case 'both-teams-score':
+                $type = 'both_teams_score';
+                break;
             default :
                 throw new NotFoundHttpException();
         }

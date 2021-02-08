@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Championship;
 use App\Entity\Client;
 use App\Entity\Game;
@@ -52,6 +53,9 @@ class ImportOddsForGamesOfTheDay extends Command
                 }
                 if ($formule['marketType'] === "Double chance (Temps Réglementaire)") {
                     $clientOdds[$data['label']]['doubleChance'] = $formule['outcomes'];
+                }
+                if ($formule['marketType'] === "Les 2 équipes marquent") {
+                    $clientOdds[$data['label']]['bothTeamsScore'] = $formule['outcomes'];
                 }
             }
         }
@@ -113,6 +117,15 @@ class ImportOddsForGamesOfTheDay extends Command
                                             $doubleChanceOdd = null;
                                     }
                                     $gameBet->setOdd($doubleChanceOdd);
+                                }
+                            }
+                        }
+
+                        if ('Both Teams Score' === $bet['name']) {
+                            foreach ($gameToUpdate->getBets() as $gameBet) {
+                                if ($gameBet instanceof BothTeamsScoreBet) {
+                                    $bothTeamScoreOdd = $gameBet->isBothTeamsScore() ? $this->getOdd($bet['values'], 'Yes') : $this->getOdd($bet['values'], 'No');
+                                    $gameBet->setOdd($bothTeamScoreOdd);
                                 }
                             }
                         }

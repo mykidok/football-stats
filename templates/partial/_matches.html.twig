@@ -1,7 +1,6 @@
 {% trans_default_domain 'translations' %}
-
 {% for match in championship.matches %}
-    <div class="col-md-3 card mt-1 mb-1">
+    <div class="col-md-4 card mt-1 mb-1">
         <p class="small text-center font-weight-bold" style="margin-bottom: unset">{{ match.homeTeam.name }} - {{ match.awayTeam.name }}</p>
         <p class="mt-0 small text-center">{{ match.date | date('H:i') }}</p>
 
@@ -20,8 +19,19 @@
                         {% set value = 'N2' %}
                     {% elseif bet.type == 'winner' and bet.winner is null %}
                         {% set value = 'N' %}
+                    {% elseif bet.type == 'both_teams_score' and bet.isBothTeamsScore %}
+                        {% set value = 'translations.bets.yes' | trans %}
+                    {% elseif bet.type == 'both_teams_score' and bet.isBothTeamsScore == false %}
+                        {% set value = 'translations.bets.no' | trans %}
                     {% endif %}
-                    <span class="btn btn-sm btn-{% if bet.goodResult is null %}light{% elseif bet.goodResult %}green{% elseif bet.goodResult == false %}danger{% endif %}" style="{% if bet.goodResult is null %}border: 1px grey solid;{% endif %} font-size: smaller">{{ value }}</span>
+
+                    {% if bet.type == 'both_teams_score' %}
+                                <p class="mt-1 font-weight-bold">{{ 'translations.bets.bts' | trans }}&nbsp;&nbsp;
+                                    <span class="btn btn-sm btn-{% if bet.goodResult is null %}light{% elseif bet.goodResult %}green{% elseif bet.goodResult == false %}danger{% endif %}" style="{% if bet.goodResult is null %}border: 1px grey solid;{% endif %} font-size: smaller">{{ value }}</span>
+                                </p>
+                    {% else %}
+                        <span class="btn btn-sm btn-{% if bet.goodResult is null %}light{% elseif bet.goodResult %}green{% elseif bet.goodResult == false %}danger{% endif %}" style="{% if bet.goodResult is null %}border: 1px grey solid;{% endif %} font-size: smaller">{{ value }}</span>
+                    {% endif %}
                 </div>
                 <div class="col-md-4 col-sm-4 col-4 mt-3">
                     <p class="font-weight-bold" style="font-size: smaller; margin-left: unset">

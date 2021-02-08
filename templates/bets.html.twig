@@ -28,10 +28,12 @@
                     <span class="fa fa-info-circle"></span>&nbsp;
                     {{ 'translations.bets.confidence' | trans }}
                 </p>
+                <p class="small">
+                    <b>{{ 'translations.bets.bts' | trans }}</b>: {{ 'translations.bets.bts_definition' | trans }}
+                </p>
             </div>
         </div>
         <hr class="text-center" style="width: 80%">
-
         {% if championships | length > 0 %}
             <div id="accordion">
                 {% for championshipName, championship in championships %}

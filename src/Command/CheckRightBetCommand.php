@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Championship;
 use App\Entity\Client;
 use App\Entity\Game;
@@ -77,6 +78,7 @@ class CheckRightBetCommand extends Command
                                 || ($bet instanceof WinnerBet && $bet->isWinOrDraw() && $bet->getWinner() === $game->getAwayTeam() && ($item['teams']['away']['winner'] || (!$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])))
                                 || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getAwayTeam() && $item['teams']['away']['winner'])
                                 || ($bet instanceof WinnerBet && null === $bet->getWinner() && !$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])
+                                || ($bet instanceof BothTeamsScoreBet && $item['goals']['home'] > 0 && $item['goals']['away'] > 0)
                             ) {
                                 $bet->setGoodResult(true);
                             } else {
@@ -84,8 +86,13 @@ class CheckRightBetCommand extends Command
                             }
                         }
 
-                        $game->setRealNbGoals($realNbGoals);
-                        $game->setFinished(true);
+                        $game
+                            ->setRealNbGoals($realNbGoals)
+                            ->setFinished(true)
+                            ->setHomeTeamGoals($item['goals']['home'])
+                            ->setAwayTeamGoals($item['goals']['away'])
+                        ;
+
                         if ($item['teams']['home']['winner']) {
                             $game->setWinner($game->getHomeTeam());
                         } elseif ($item['teams']['away']['winner']) {

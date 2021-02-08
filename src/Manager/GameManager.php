@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Game;
 use App\Entity\UnderOverBet;
 use App\Entity\WinnerBet;
@@ -31,6 +32,8 @@ class GameManager
             $percentageTwoHalfAway = null;
             $percentageWinnerAway = null;
             $percentageWinnerHome = null;
+            $percentageBothTeamsScoreHome = null;
+            $percentageBothTeamsScoreAway = null;
             $nbMatchHome = null;
             $nbMatchAway = null;
             foreach ($teams as $team) {
@@ -39,6 +42,7 @@ class GameManager
                     $percentageTwoHalfHome = $team['teamPercentageTwoHalf'];
                     $percentageThreeHalfHome = $team['teamPercentageThreeHalf'];
                     $percentageWinnerHome = $team['teamWinnerPercentage'];
+                    $percentageBothTeamsScoreHome = $team['teamBothTeamsScorePercentage'];
                     $i++;
                 }
                 if ($team['teamName'] === $game->getAwayTeam()->getName()) {
@@ -46,6 +50,7 @@ class GameManager
                     $percentageTwoHalfAway = $team['teamPercentageTwoHalf'];
                     $percentageThreeHalfAway = $team['teamPercentageThreeHalf'];
                     $percentageWinnerAway = $team['teamWinnerPercentage'];
+                    $percentageBothTeamsScoreAway = $team['teamBothTeamsScorePercentage'];
                     $i++;
                 }
                 if ($i === 2) {
@@ -54,6 +59,10 @@ class GameManager
                         foreach ($game->getBets() as $bet) {
                             if ($bet instanceof WinnerBet) {
                                 $bet->setPercentage(((($nbMatchHome*$percentageWinnerHome)+($nbMatchAway*$percentageWinnerAway))/($nbMatchAway+$nbMatchHome)));
+                            }
+
+                            if ($bet instanceof BothTeamsScoreBet) {
+                                $bet->setPercentage(((($nbMatchHome*$percentageBothTeamsScoreHome)+($nbMatchAway*$percentageBothTeamsScoreAway))/($nbMatchAway+$nbMatchHome)));
                             }
 
                             if ($bet instanceof UnderOverBet && ($bet->getType() === UnderOverBet::LESS_TWO_AND_A_HALF || $bet->getType() === UnderOverBet::PLUS_TWO_AND_A_HALF)) {
@@ -140,6 +149,12 @@ class GameManager
                     }
 
                     $bet->setOdd((float) str_replace(',', '.', $doubleChanceOdd));
+                }
+
+                if ($bet instanceof BothTeamsScoreBet) {
+                    $bothTeamsScoreOdd = $bet->isBothTeamsScore() ? $clientOdd['bothTeamsScore'][0]['cote'] : $clientOdd['bothTeamsScore'][1]['cote'];
+
+                    $bet->setOdd((float) str_replace(',', '.', $bothTeamsScoreOdd));
                 }
             }
 

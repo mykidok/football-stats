@@ -49,6 +49,8 @@ class CheckFormOfTheMomentCommand extends Command
 
             $goals = 0;
             $points = 0;
+            $bothTeamsScoreCount = 0;
+            $noGoalsRegistered = 0;
             foreach ($lastGames as $lastGame) {
                 $goals += $lastGame->getRealNbGoals();
                 if (null === $lastGame->getWinner()) {
@@ -56,10 +58,26 @@ class CheckFormOfTheMomentCommand extends Command
                 } elseif ($lastGame->getWinner()->getId() === $team->getId()) {
                     $points += 3;
                 }
+
+                if (null === $lastGame->getHomeTeamGoals() && null === $lastGame->getAwayTeamGoals()) {
+                    $noGoalsRegistered++;
+                    continue;
+                }
+
+                if ($lastGame->getHomeTeamGoals() > 0 && $lastGame->getAwayTeamGoals() > 0) {
+                    $bothTeamsScoreCount++;
+                }
+
             }
 
-            $team->setMomentForm($goals/count($lastGames));
-            $team->setPointsMomentForm($points);
+            $bothTeamsScoreForm = $noGoalsRegistered === count($lastGames) ? null : ($bothTeamsScoreCount === count($lastGames)) || (count($lastGames) > 2 && $bothTeamsScoreCount === (count($lastGames) - 1));
+
+            $team
+                ->setMomentForm($goals/count($lastGames))
+                ->setPointsMomentForm($points)
+                ->setBothTeamsScoreForm($bothTeamsScoreForm)
+            ;
+
             $this->em->persist($team);
         }
 
