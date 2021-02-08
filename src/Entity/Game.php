@@ -313,6 +313,12 @@ class Game
         return $this;
     }
 
+    public function removeBet(Bet $bet): self
+    {
+        $this->bets->removeElement($bet);
+        return $this;
+    }
+
     public function isFinished(): ?bool
     {
         return $this->finished;

@@ -26,7 +26,6 @@ LEFT JOIN game g ON b.game_id = g.id
     WHERE g.date > '$dateStart'
     AND g.date < '$dateEnd'
     AND b.odd IS NOT NULL
-    AND b.odd > 1.39
 ORDER BY 
       b.form DESC,
       b.percentage DESC,

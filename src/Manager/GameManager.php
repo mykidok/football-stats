@@ -2,11 +2,11 @@
 
 namespace App\Manager;
 
+use App\Entity\Bet;
 use App\Entity\BothTeamsScoreBet;
 use App\Entity\Game;
 use App\Entity\UnderOverBet;
 use App\Entity\WinnerBet;
-use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GameManager
@@ -119,6 +119,10 @@ class GameManager
                     }
 
                     $bet->setOdd((float) str_replace(',', '.', $odd));
+
+                    if ($odd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
 
                 if ($bet instanceof WinnerBet && !$bet->isWinOrDraw()) {
@@ -134,6 +138,10 @@ class GameManager
                     }
 
                     $bet->setOdd((float) str_replace(',', '.', $winnerOdd));
+
+                    if ($winnerOdd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
 
                 if ($bet instanceof WinnerBet && $bet->isWinOrDraw()) {
@@ -149,12 +157,20 @@ class GameManager
                     }
 
                     $bet->setOdd((float) str_replace(',', '.', $doubleChanceOdd));
+
+                    if ($doubleChanceOdd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
 
                 if ($bet instanceof BothTeamsScoreBet) {
                     $bothTeamsScoreOdd = $bet->isBothTeamsScore() ? $clientOdd['bothTeamsScore'][0]['cote'] : $clientOdd['bothTeamsScore'][1]['cote'];
 
                     $bet->setOdd((float) str_replace(',', '.', $bothTeamsScoreOdd));
+
+                    if ($bothTeamsScoreOdd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
             }
 

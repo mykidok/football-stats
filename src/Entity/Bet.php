@@ -20,6 +20,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class Bet
 {
+    /** @var float */
+    public const MINIMUM_ODD = 1.35;
+
     /**
      * @var int
      *
