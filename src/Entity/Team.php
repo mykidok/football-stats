@@ -23,38 +23,31 @@ class Team
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=60, nullable=false, unique=true)
-     * @Assert\NotNull()
+     * @ORM\Column(type="string", length=60, unique=true)
      */
     private $name;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true, options={"default":0})
      */
     private $nbGoalsPerMatchHome;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true, options={"default":0})
      */
     private $nbGoalsPerMatchAway;
 
     /**
      * @var Championship
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Championship")
-     * @ORM\JoinColumn()
      */
     private $championship;
 
     /**
      * @var int
-     *
-     * @ORM\Column(type="integer", unique=true, nullable=false)
+     * @ORM\Column(type="integer", unique=true)
      * @Assert\NotNull()
      */
     private $apiId;
@@ -63,66 +56,62 @@ class Team
      * @var float|null
      *
      * @ORM\Column(type="float", nullable=true)
-     * @Assert\NotNull()
      */
     private $momentForm;
 
     /**
      * @var string|null
-     *
      * @ORM\Column(type="string", nullable=true, unique=true)
      */
     private $shortName;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $homeForceAttack;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $homeForceDefense;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $awayForceAttack;
 
     /**
      * @var float|null
-     *
      * @ORM\Column(type="float", nullable=true)
      */
     private $awayForceDefense;
 
     /**
      * @var int|null
-     *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $awayPlayedGames;
 
     /**
      * @var int|null
-     *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $homePlayedGames;
 
     /**
      * @var int|null
-     *
      * @ORM\Column(type="integer", nullable=true)
-     * @Assert\NotNull()
      */
     private $pointsMomentForm;
+
+    /**
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $bothTeamsScoreForm;
 
     public function getId(): int
     {
@@ -296,4 +285,18 @@ class Team
 
         return $this;
     }
+
+    public function getBothTeamsScoreForm(): ?bool
+    {
+        return $this->bothTeamsScoreForm;
+    }
+
+    public function setBothTeamsScoreForm(?bool $bothTeamsScoreForm): self
+    {
+        $this->bothTeamsScoreForm = $bothTeamsScoreForm;
+
+        return $this;
+    }
+
+
 }

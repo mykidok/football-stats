@@ -1,27 +1,25 @@
 <?php
 
-namespace App\Handler;
+namespace App\Manager;
 
 use App\Entity\Team;
-use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TeamHandler
+class TeamManager
 {
     private $em;
-    private $teamRepository;
 
-    public function __construct(EntityManagerInterface $em, TeamRepository $teamRepository)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
-        $this->teamRepository = $teamRepository;
     }
 
     public function handleTeamUpdate(array $data, array $championshipGoals)
     {
-        foreach ($data['standings'][0] as $datum) {
+        $teamRepository = $this->em->getRepository(Team::class);
+        foreach ($data['standings'][0] as $teamStanding) {
             /** @var Team $team */
-            $team = $this->teamRepository->findOneBy(['apiId' => $datum['team']['id']]);
+            $team = $teamRepository->findOneBy(['apiId' => $teamStanding['team']['id']]);
 
             $homeForceAttack = 0;
             $homeForceDefense = 0;
@@ -30,9 +28,9 @@ class TeamHandler
             $nbGoalsPerMatchHome = 0;
             $nbGoalsPerMatchAway  =0;
 
-            if (($homePlayedGames = $datum['home']['played']) !== 0) {
-                $homeGoalsFor = $datum['home']['goals']['for'];
-                $homeGoalsAgainst =  $datum['home']['goals']['against'];
+            if (($homePlayedGames = $teamStanding['home']['played']) !== 0) {
+                $homeGoalsFor = $teamStanding['home']['goals']['for'];
+                $homeGoalsAgainst =  $teamStanding['home']['goals']['against'];
 
                 if ($homeGoalsFor > 0 || $homeGoalsAgainst > 0) {
                     $nbGoalsPerMatchHome = ($homeGoalsFor + $homeGoalsAgainst) / $homePlayedGames;
@@ -46,9 +44,9 @@ class TeamHandler
 
             }
 
-            if (($awayPlayedGames = $datum['away']['played']) !== 0) {
-                $awayGoalsFor = $datum['away']['goals']['for'];
-                $awayGoalsAgainst =  $datum['away']['goals']['against'];
+            if (($awayPlayedGames = $teamStanding['away']['played']) !== 0) {
+                $awayGoalsFor = $teamStanding['away']['goals']['for'];
+                $awayGoalsAgainst =  $teamStanding['away']['goals']['against'];
 
                 if ($awayGoalsFor > 0 || $awayGoalsAgainst > 0) {
                     $nbGoalsPerMatchAway = ($awayGoalsFor + $awayGoalsAgainst) / $awayPlayedGames;

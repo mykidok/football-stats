@@ -3,29 +3,22 @@
 namespace App\Controller;
 
 use App\Entity\Championship;
-use App\Entity\Client;
 use App\Entity\Combination;
 use App\Entity\Game;
 use App\Form\Type\DateType;
-use App\Repository\ChampionshipRepository;
-use App\Repository\CombinationRepository;
-use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
-    private $client;
     private $entityManager;
 
-    public function __construct(Client $client, EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->client = $client;
         $this->entityManager = $entityManager;
     }
 
@@ -85,6 +78,9 @@ class IndexController extends AbstractController
                 break;
             case 'under-over-3-5':
                 $type = '3.5';
+                break;
+            case 'both-teams-score':
+                $type = 'both_teams_score';
                 break;
             default :
                 throw new NotFoundHttpException();

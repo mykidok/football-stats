@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Entity\Championship;
 use App\Entity\Client;
-use App\Entity\DataClient;
 use App\Entity\Team;
 use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +19,7 @@ class ImportTeamsCommand extends Command
     private $em;
     private $denormalizer;
 
-    public function __construct(DataClient $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer)
+    public function __construct(Client $client, EntityManagerInterface $em, DenormalizerInterface $denormalizer)
     {
         parent::__construct('api:import:teams');
         $this

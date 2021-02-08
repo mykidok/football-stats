@@ -2,8 +2,9 @@
 
 namespace App\Command;
 
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Championship;
-use App\Entity\DataClient;
+use App\Entity\Client;
 use App\Entity\Game;
 use App\Entity\UnderOverBet;
 use App\Entity\WinnerBet;
@@ -17,7 +18,7 @@ class CheckRightBetCommand extends Command
     private $client;
     private $em;
 
-    public function __construct(DataClient $client, EntityManagerInterface $em)
+    public function __construct(Client $client, EntityManagerInterface $em)
     {
         parent::__construct('api:check:bet');
         $this->setDescription('Check results of the day to check if bets were right');
@@ -42,8 +43,18 @@ class CheckRightBetCommand extends Command
                 ]
             );
 
+            if (!empty($gameDay['errors'])) {
+                foreach ($gameDay['errors'] as $key => $error) {
+                    $output->writeln(sprintf('%s : %s', $key, $error));
+                }
+                sleep(6);
+                continue;
+            }
+
+
             if (0 === $gameDay['results']) {
                 $output->writeln(sprintf('------ No match today for %s ------', $championship->getName()));
+                sleep(6);
                 continue;
             }
 
@@ -63,8 +74,11 @@ class CheckRightBetCommand extends Command
                                 || (UnderOverBet::PLUS_TWO_AND_A_HALF ===  $bet->getType() && $realNbGoals > UnderOverBet::LIMIT_2_5)
                                 || (UnderOverBet::PLUS_THREE_AND_A_HALF ===  $bet->getType() && $realNbGoals > UnderOverBet::LIMIT_3_5)
                                 || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getHomeTeam() && $item['teams']['home']['winner'])
+                                || ($bet instanceof WinnerBet && $bet->isWinOrDraw() && $bet->getWinner() === $game->getHomeTeam() && ($item['teams']['home']['winner'] || (!$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])))
+                                || ($bet instanceof WinnerBet && $bet->isWinOrDraw() && $bet->getWinner() === $game->getAwayTeam() && ($item['teams']['away']['winner'] || (!$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])))
                                 || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getAwayTeam() && $item['teams']['away']['winner'])
                                 || ($bet instanceof WinnerBet && null === $bet->getWinner() && !$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])
+                                || ($bet instanceof BothTeamsScoreBet && $item['goals']['home'] > 0 && $item['goals']['away'] > 0)
                             ) {
                                 $bet->setGoodResult(true);
                             } else {
@@ -72,7 +86,13 @@ class CheckRightBetCommand extends Command
                             }
                         }
 
-                        $game->setRealNbGoals($realNbGoals);
+                        $game
+                            ->setRealNbGoals($realNbGoals)
+                            ->setFinished(true)
+                            ->setHomeTeamGoals($item['goals']['home'])
+                            ->setAwayTeamGoals($item['goals']['away'])
+                        ;
+
                         if ($item['teams']['home']['winner']) {
                             $game->setWinner($game->getHomeTeam());
                         } elseif ($item['teams']['away']['winner']) {
@@ -86,6 +106,7 @@ class CheckRightBetCommand extends Command
                 }
             }
             $output->writeln(sprintf('------ %d matches updated for %s ------', $i, $championship->getName()));
+            sleep(6);
         }
     }
 

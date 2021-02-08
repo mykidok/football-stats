@@ -24,13 +24,6 @@ class Combination
     private $id;
 
     /**
-     * @var Game[]|Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Game")
-     */
-    private $games;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
@@ -61,25 +54,12 @@ class Combination
 
     public function __construct()
     {
-        $this->games = new ArrayCollection();
         $this->bets = new ArrayCollection();
     }
 
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getGames(): Collection
-    {
-        return $this->games;
-    }
-
-    public function addGame(Game $game): self
-    {
-        $this->games->add($game);
-
-        return $this;
     }
 
     public function getDate(): \DateTime

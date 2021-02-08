@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Championship;
 use App\Entity\Game;
 use App\Entity\Team;
@@ -86,8 +87,10 @@ class ChampionshipRepository extends ServiceEntityRepository
         $betAlias = 'b';
         if ((string)UnderOverBet::LIMIT_2_5 === $type || (string)UnderOverBet::LIMIT_3_5 ===  $type) {
             $qb->leftJoin(UnderOverBet::class, $betAlias, Join::WITH, sprintf("%s.game = g.id AND (%s.type = '+ %s' OR %s.type = '- %s')", $betAlias, $betAlias, $type, $betAlias, $type));
-        } else {
+        } elseif (WinnerBet::WINNER_TYPE === $type) {
             $qb->leftJoin(WinnerBet::class, $betAlias, Join::WITH, sprintf('%s.game = g.id', $betAlias));
+        } elseif (BothTeamsScoreBet::BOTH_TEAMS_GOAL_TYPE === $type) {
+            $qb->leftJoin(BothTeamsScoreBet::class, $betAlias, Join::WITH, sprintf('%s.game = g.id', $betAlias));
         }
 
 
@@ -143,10 +146,23 @@ class ChampionshipRepository extends ServiceEntityRepository
                             ELSE 0 END
                         ) as teamWinnerPercentage'
             )
+            ->addSelect(
+                'SUM(
+                            CASE WHEN (bt.goodResult = 1 AND (g.homeTeam = t.id OR g.awayTeam = t.id))
+                            THEN 1
+                            ELSE 0 END
+                    ) * 100 /
+                    SUM(
+                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND bt.goodResult IS NOT NULL)
+                            THEN 1
+                            ELSE 0 END
+                        ) as teamBothTeamsScorePercentage'
+            )
             ->leftJoin(Game::class, 'g', Join::WITH, 'c.id = g.championship')
             ->leftJoin(UnderOverBet::class, 'uob2', Join::WITH, "uob2.game = g.id AND (uob2.type = '+ 2.5' OR uob2.type = '- 2.5')")
             ->leftJoin(UnderOverBet::class, 'uob3', Join::WITH, "uob3.game = g.id AND (uob3.type = '+ 3.5' OR uob3.type = '- 3.5')")
             ->leftJoin(WinnerBet::class, 'wb', Join::WITH, 'wb.game = g.id')
+            ->leftJoin(BothTeamsScoreBet::class, 'bt', Join::WITH, 'bt.game = g.id')
             ->leftJoin(Team::class, 't', Join::WITH, 'c.id = t.championship')
             ->groupBy('c.id, teamName')
             ->addOrderBy('teamPercentageTwoHalf', 'DESC')
@@ -163,11 +179,12 @@ class ChampionshipRepository extends ServiceEntityRepository
         $query = <<<SQL
 SELECT * 
 FROM championship c
-    WHERE (SELECT COUNT(g.id) FROM game g 
-                        WHERE g.date < '$dateEnd'
-                        AND g.date > '$dateStart'
-                        AND g.championship_id = c.id
-                        AND (odd IS NULL OR winner_odd IS NULL)) > 0
+    WHERE (SELECT COUNT(b.id) FROM bet b
+                LEFT JOIN game g ON g.id = b.game_id
+                WHERE g.date < '$dateEnd'
+                AND g.date > '$dateStart'
+                AND g.championship_id = c.id
+                AND (b.odd IS NULL OR b.odd = 0) ) > 0
 SQL;
 
         $em = $this->getEntityManager();

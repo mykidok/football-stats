@@ -2,9 +2,9 @@
 
 namespace App\Command;
 
-use App\Entity\Bet;
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Championship;
-use App\Entity\DataClient;
+use App\Entity\Client;
 use App\Entity\Game;
 use App\Entity\OddsClient;
 use App\Entity\UnderOverBet;
@@ -22,7 +22,7 @@ class ImportOddsForGamesOfTheDay extends Command
     private $dataClient;
     private $entityManager;
 
-    public function __construct(GameManager $gameManager, OddsClient $client, DataClient $dataClient, EntityManagerInterface $entityManager)
+    public function __construct(GameManager $gameManager, OddsClient $client, Client $dataClient, EntityManagerInterface $entityManager)
     {
         parent::__construct('api:import:odds');
         $this->setDescription('Import all odds for games of the day');
@@ -51,8 +51,11 @@ class ImportOddsForGamesOfTheDay extends Command
                 if ($formule['marketType'] === "Plus/Moins 3,5 buts (Temps Réglementaire)") {
                     $clientOdds[$data['label']]['underOverThree'] = $formule['outcomes'];
                 }
-                if ($formule['marketType'] === "Double chance (Temps Réglementaire") {
+                if ($formule['marketType'] === "Double chance (Temps Réglementaire)") {
                     $clientOdds[$data['label']]['doubleChance'] = $formule['outcomes'];
+                }
+                if ($formule['marketType'] === "Les 2 équipes marquent") {
+                    $clientOdds[$data['label']]['bothTeamsScore'] = $formule['outcomes'];
                 }
             }
         }
@@ -118,6 +121,15 @@ class ImportOddsForGamesOfTheDay extends Command
                             }
                         }
 
+                        if ('Both Teams Score' === $bet['name']) {
+                            foreach ($gameToUpdate->getBets() as $gameBet) {
+                                if ($gameBet instanceof BothTeamsScoreBet) {
+                                    $bothTeamScoreOdd = $gameBet->isBothTeamsScore() ? $this->getOdd($bet['values'], 'Yes') : $this->getOdd($bet['values'], 'No');
+                                    $gameBet->setOdd($bothTeamScoreOdd);
+                                }
+                            }
+                        }
+
                         if ('Goals Over/Under' === $bet['name']) {
                             foreach ($gameToUpdate->getBets() as $gameBet) {
                                 if ($gameBet instanceof UnderOverBet) {
@@ -148,6 +160,7 @@ class ImportOddsForGamesOfTheDay extends Command
                 $this->entityManager->persist($gameToUpdate);
                 $this->entityManager->flush();
                 $games[] = $gameToUpdate;
+                sleep(6);
             }
         }
 

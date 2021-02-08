@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorMap({
  *     "winner"="App\Entity\WinnerBet",
  *     "under_over"="App\Entity\UnderOverBet",
+ *     "both_teams_score"="App\Entity\BothTeamsScoreBet",
  * })
  */
 abstract class Bet

@@ -29,6 +29,10 @@ translations.bets.game: Match
 translations.bets.odd: Cote
 translations.bets.form: Forme
 translations.bets.predictional_goals: Prévision
+translations.bets.yes: Oui
+translations.bets.no: Non
+translations.bets.bts: LDM
+translations.bets.bts_definition: Les 2 équipes marquent
 translations.combination.combination_of_the_day: Ticket du jour
 translations.bets.games: Match
 translations.combination.bet: |
@@ -56,4 +60,6 @@ translations.country.netherlands: Pays-Bas
 translations.country.belgium: Belgique
 translations.country.romania: Roumanie
 translations.country.greece: Grèce
-translations.menu.useful_links: Liens utiles
+translations.country.switzerland: Suisse
+translations.country.hungary: Hongrie
+translations.country.croatia: Croatie

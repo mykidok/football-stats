@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\BothTeamsScoreBet;
 use App\Entity\Game;
 use App\Entity\UnderOverBet;
 use App\Entity\WinnerBet;
@@ -10,18 +11,17 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class GameManager
 {
-    private $gameRepository;
     private $em;
 
-    public function __construct(GameRepository $gameRepository, EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->gameRepository = $gameRepository;
         $this->em = $em;
     }
 
     public function setPercentageForGamesOfTheDay(array $teams)
     {
-        $games = $this->gameRepository->findGamesOfTheDay(new \DateTime('now'));
+        $gameRepository = $this->em->getRepository(Game::class);
+        $games = $gameRepository->findGamesOfTheDay(new \DateTime('now'));
 
         /** @var Game $game */
         foreach ($games as $game) {
@@ -32,6 +32,8 @@ class GameManager
             $percentageTwoHalfAway = null;
             $percentageWinnerAway = null;
             $percentageWinnerHome = null;
+            $percentageBothTeamsScoreHome = null;
+            $percentageBothTeamsScoreAway = null;
             $nbMatchHome = null;
             $nbMatchAway = null;
             foreach ($teams as $team) {
@@ -40,6 +42,7 @@ class GameManager
                     $percentageTwoHalfHome = $team['teamPercentageTwoHalf'];
                     $percentageThreeHalfHome = $team['teamPercentageThreeHalf'];
                     $percentageWinnerHome = $team['teamWinnerPercentage'];
+                    $percentageBothTeamsScoreHome = $team['teamBothTeamsScorePercentage'];
                     $i++;
                 }
                 if ($team['teamName'] === $game->getAwayTeam()->getName()) {
@@ -47,6 +50,7 @@ class GameManager
                     $percentageTwoHalfAway = $team['teamPercentageTwoHalf'];
                     $percentageThreeHalfAway = $team['teamPercentageThreeHalf'];
                     $percentageWinnerAway = $team['teamWinnerPercentage'];
+                    $percentageBothTeamsScoreAway = $team['teamBothTeamsScorePercentage'];
                     $i++;
                 }
                 if ($i === 2) {
@@ -55,6 +59,10 @@ class GameManager
                         foreach ($game->getBets() as $bet) {
                             if ($bet instanceof WinnerBet) {
                                 $bet->setPercentage(((($nbMatchHome*$percentageWinnerHome)+($nbMatchAway*$percentageWinnerAway))/($nbMatchAway+$nbMatchHome)));
+                            }
+
+                            if ($bet instanceof BothTeamsScoreBet) {
+                                $bet->setPercentage(((($nbMatchHome*$percentageBothTeamsScoreHome)+($nbMatchAway*$percentageBothTeamsScoreAway))/($nbMatchAway+$nbMatchHome)));
                             }
 
                             if ($bet instanceof UnderOverBet && ($bet->getType() === UnderOverBet::LESS_TWO_AND_A_HALF || $bet->getType() === UnderOverBet::PLUS_TWO_AND_A_HALF)) {
@@ -82,8 +90,10 @@ class GameManager
         foreach ($clientOdds as $key => $clientOdd) {
             $homeTeamName = explode('-', $key)[0];
 
+            $gameRepository = $this->em->getRepository(Game::class);
+
             /** @var Game $game */
-            $game = $this->gameRepository->findOneByHomeTeamShortName(new \DateTime('now'), $homeTeamName);
+            $game = $gameRepository->findOneByHomeTeamShortName(new \DateTime('now'), $homeTeamName);
 
             if (null === $game) {
                 continue;
@@ -140,6 +150,12 @@ class GameManager
 
                     $bet->setOdd((float) str_replace(',', '.', $doubleChanceOdd));
                 }
+
+                if ($bet instanceof BothTeamsScoreBet) {
+                    $bothTeamsScoreOdd = $bet->isBothTeamsScore() ? $clientOdd['bothTeamsScore'][0]['cote'] : $clientOdd['bothTeamsScore'][1]['cote'];
+
+                    $bet->setOdd((float) str_replace(',', '.', $bothTeamsScoreOdd));
+                }
             }
 
             $games[] = $game;
@@ -149,5 +165,27 @@ class GameManager
         $this->em->flush();
 
         return $games;
+    }
+
+    public function getFormForMatch(Game $game): ?float
+    {
+        $homeTeamForm =  $game->getHomeTeam()->getMomentForm();
+        $awayTeamForm = $game->getAwayTeam()->getMomentForm();
+
+        switch (true) {
+            case null !== $awayTeamForm && null !== $homeTeamForm:
+                $formForMatch = ($game->getHomeTeam()->getMomentForm() + $game->getAwayTeam()->getMomentForm())/2;
+                break;
+            case null === $homeTeamForm && null !== $awayTeamForm:
+                $formForMatch = $game->getAwayTeam()->getMomentForm();
+                break;
+            case null === $awayTeamForm && null !== $homeTeamForm:
+                $formForMatch = $game->getHomeTeam()->getMomentForm();
+                break;
+            default:
+                $formForMatch = null;
+        }
+
+        return $formForMatch;
     }
 }

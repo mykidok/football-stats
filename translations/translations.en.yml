@@ -15,6 +15,10 @@ translations:
     legend: Indicates you if the form of the teams agrees with the prediction
     bet: Bet
     confidence: Trust index
+    yes: Yes
+    no: No
+    bts: BTS
+    bts_definition: Both teams score
   home:
     welcome: Welcome to My Football Bets!
     advises: Here, you will be given advises to help you make your bets better.
@@ -65,5 +69,6 @@ translations:
     belgium: Belgium
     romania: Romania
     greece: Greece
-  menu:
-    useful_links: Useful links
+    switzerland: Switzeland
+    hungary: Hungary
+    croatia: Croatia

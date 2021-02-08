@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Factory;
-
 
 use App\Entity\UnderOverBet;
 
@@ -28,5 +26,4 @@ class UnderOverBetFactory
             ->setPrevisionIsSameAsExpected($nbGoalsIsSameAsExpected)
         ;
     }
-
 }

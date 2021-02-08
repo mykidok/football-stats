@@ -30,7 +30,6 @@ class UnderOverBet extends Bet
 
     /**
      * @var bool|null
-     *
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $previsionIsSameAsExpected;
