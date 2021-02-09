@@ -101,7 +101,7 @@ class ImportOddsForGamesOfTheDay extends Command
                                     }
                                     $gameBet->setOdd($winnerOdd);
                                     if (null !== $winnerOdd && $winnerOdd < Bet::MINIMUM_ODD) {
-                                        $game->removeBet($gameBet);
+                                        $gameToUpdate->removeBet($gameBet);
                                     }
                                 }
                             }
@@ -122,7 +122,7 @@ class ImportOddsForGamesOfTheDay extends Command
                                     }
                                     $gameBet->setOdd($doubleChanceOdd);
                                     if (null !== $doubleChanceOdd && $doubleChanceOdd < Bet::MINIMUM_ODD) {
-                                        $game->removeBet($gameBet);
+                                        $gameToUpdate->removeBet($gameBet);
                                     }
                                 }
                             }
@@ -135,7 +135,7 @@ class ImportOddsForGamesOfTheDay extends Command
                                     $gameBet->setOdd($bothTeamScoreOdd);
 
                                     if (null !== $bothTeamScoreOdd && $bothTeamScoreOdd < Bet::MINIMUM_ODD) {
-                                        $game->removeBet($gameBet);
+                                        $gameToUpdate->removeBet($gameBet);
                                     }
                                 }
                             }
@@ -164,7 +164,7 @@ class ImportOddsForGamesOfTheDay extends Command
                                     $gameBet->setOdd($underOverOdd);
 
                                     if (null !== $underOverOdd && $underOverOdd < Bet::MINIMUM_ODD) {
-                                        $game->removeBet($gameBet);
+                                        $gameToUpdate->removeBet($gameBet);
                                     }
                                 }
                             }
