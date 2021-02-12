@@ -57,8 +57,9 @@ abstract class Bet
     protected $percentage;
 
     /**
-     * @var Game
+     * @var Game|null
      * @ORM\ManyToOne(targetEntity="App\Entity\Game", inversedBy="bets")
+     * @ORM\JoinColumn(nullable=true)
      */
     protected $game;
 
@@ -127,26 +128,14 @@ abstract class Bet
         return $this;
     }
 
-    public function getGame(): Game
+    public function getGame(): ?Game
     {
         return $this->game;
     }
 
-    public function setGame(Game $game): self
+    public function setGame(?Game $game): self
     {
         $this->game = $game;
-
-        return $this;
-    }
-
-    public function getCombination(): Combination
-    {
-        return $this->combination;
-    }
-
-    public function setCombination(Combination $combination): self
-    {
-        $this->combination = $combination;
 
         return $this;
     }

@@ -5,8 +5,11 @@ namespace App\Repository;
 
 
 use App\Entity\Bet;
+use App\Entity\Game;
+use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\Expr\Join;
 
 class BetRepository extends ServiceEntityRepository
 {
@@ -41,6 +44,26 @@ SQL;
 
         $em = $this->getEntityManager();
         return $em->getConnection()->executeQuery($query)->fetchAll();
+    }
+
+    public function findBetsForTeams(Team $team, string $type)
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $orStatement = $qb->expr()->orX();
+        $orStatement->add('g.homeTeam = :team');
+        $orStatement->add('g.awayTeam = :team');
+
+        $qb
+            ->leftJoin(Game::class, 'g', Join::WITH, 'g.id = b.game')
+            ->where($orStatement)
+            ->andWhere('b.type = :type')
+            ->andWhere($qb->expr()->isNotNull('b.goodResult'))
+            ->setParameter('team', $team->getId())
+            ->setParameter('type', $type)
+        ;
+
+        return $qb->getQuery()->getResult();
     }
 
 }

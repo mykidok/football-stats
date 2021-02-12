@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-md-3 col-sm-3 col-3 mt-3">
                     <h4 class="font-weight-bold" style="font-size: smaller; margin-left: unset">
-                        <span class="fa fa-info-circle"></span> {{ bet.percentage // 10 }}
+                        <span class="fa fa-info-circle"></span> {% if bet.percentage is not null %}{{ bet.percentage // 10 }}{% else %}N/D{% endif %}
                     </h4>
                 </div>
             </div>

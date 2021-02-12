@@ -78,7 +78,8 @@ class CheckRightBetCommand extends Command
                                 || ($bet instanceof WinnerBet && $bet->isWinOrDraw() && $bet->getWinner() === $game->getAwayTeam() && ($item['teams']['away']['winner'] || (!$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])))
                                 || ($bet instanceof WinnerBet && $bet->getWinner() === $game->getAwayTeam() && $item['teams']['away']['winner'])
                                 || ($bet instanceof WinnerBet && null === $bet->getWinner() && !$item['teams']['home']['winner'] && !$item['teams']['away']['winner'])
-                                || ($bet instanceof BothTeamsScoreBet && $item['goals']['home'] > 0 && $item['goals']['away'] > 0)
+                                || ($bet instanceof BothTeamsScoreBet && $bet->isBothTeamsScore() && $item['goals']['home'] > 0 && $item['goals']['away'] > 0)
+                                || ($bet instanceof BothTeamsScoreBet && !$bet->isBothTeamsScore() && ($item['goals']['home'] === 0 || $item['goals']['away'] === 0))
                             ) {
                                 $bet->setGoodResult(true);
                             } else {
