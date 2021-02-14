@@ -6,7 +6,17 @@
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-12 col-12 text-center">
                 <img src="{{ asset('build/images/logo.png') }}" class="img-fluid" width="300">
-                {% include "partial/_languages.html.twig" %}
+                <ul class="navbar nav" style="text-decoration: none;">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="?_locale=en">&#x1F1EC;&#x1F1E7;</a>
+                            <a class="dropdown-item" href="?_locale=fr">&#x1F1EB;&#x1F1F7;</a>
+                        </div>
+                    </li>
+                </ul>
             </div>
             <div class="col-md-9 col-lg-9">
                 <h1 class="display-4">{{ 'translations.home.welcome'|trans }}</h1>

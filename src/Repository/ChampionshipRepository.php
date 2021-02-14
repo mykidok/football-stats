@@ -28,6 +28,13 @@ class ChampionshipRepository extends ServiceEntityRepository
             ->addSelect('t.name as teamName')
             ->addSelect(
                 "SUM(
+                            CASE WHEN (b.goodResult IS NOT NULL AND g.championship = c.id AND b.form = 1)
+                            THEN 1
+                            ELSE 0 END
+                    ) as nbMatchWithForm"
+            )
+            ->addSelect(
+                "SUM(
                             CASE WHEN (b.goodResult IS NOT NULL AND g.championship = c.id)
                             THEN 1
                             ELSE 0 END
@@ -47,7 +54,7 @@ class ChampionshipRepository extends ServiceEntityRepository
             )
             ->addSelect(
                 "SUM(
-                            CASE WHEN (b.goodResult = 1 AND g.championship = c.id  AND b.form = 1)
+                            CASE WHEN (b.goodResult = 1 AND g.championship = c.id AND b.form = 1)
                             THEN 1
                             ELSE 0 END
                     ) * 100 /
@@ -59,10 +66,17 @@ class ChampionshipRepository extends ServiceEntityRepository
             )
             ->addSelect(
                 "SUM(
-                            CASE WHEN ((g.homeTeam = t.id OR g.awayTeam = t.id) AND b.goodResult IS NOT NULL)
+                            CASE WHEN (g.homeTeam = t.id AND b.goodResult IS NOT NULL)
                             THEN 1
                             ELSE 0 END
-                        ) as teamNbMatch"
+                        ) as teamNbMatchHome"
+            )
+            ->addSelect(
+                "SUM(
+                            CASE WHEN (g.awayTeam = t.id AND b.goodResult IS NOT NULL)
+                            THEN 1
+                            ELSE 0 END
+                        ) as teamNbMatchAway"
             )
             ->addSelect(
                 "SUM(
@@ -76,12 +90,35 @@ class ChampionshipRepository extends ServiceEntityRepository
                             ELSE 0 END
                         ) as teamPercentage"
             )
+            ->addSelect(
+                "SUM(
+                            CASE WHEN (b.goodResult = 1 AND g.homeTeam = t.id)
+                            THEN 1
+                            ELSE 0 END
+                    ) * 100 /
+                    SUM(
+                            CASE WHEN (g.homeTeam = t.id AND b.goodResult IS NOT NULL)
+                            THEN 1
+                            ELSE 0 END
+                        ) as teamHomePercentage"
+            )
+            ->addSelect(
+                "SUM(
+                            CASE WHEN (b.goodResult = 1 AND g.awayTeam = t.id)
+                            THEN 1
+                            ELSE 0 END
+                    ) * 100 /
+                    SUM(
+                            CASE WHEN (g.awayTeam = t.id AND b.goodResult IS NOT NULL)
+                            THEN 1
+                            ELSE 0 END
+                        ) as teamAwayPercentage"
+            )
             ->leftJoin(Team::class, 't', Join::WITH, 'c.id = t.championship')
             ->leftJoin(Game::class, 'g', Join::WITH, 'c.id = g.championship')
             ->groupBy('c.id, teamName')
             ->orderBy('c.name', 'ASC')
             ->addOrderBy('teamPercentage', 'DESC')
-            ->addOrderBy('teamNbMatch', 'DESC')
         ;
 
         $betAlias = 'b';

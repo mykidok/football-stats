@@ -12,13 +12,13 @@ translations.sidebar.statistics: Statistiques
 translations.sidebar.combination: Ticket du jour
 translations.home.welcome: Bienvenue sur My Football Bets !
 translations.home.advises: Ici, tu vas recevoir des conseils pour t'aider à faire tes paris.
-translations.home.explanation: Sur ce site, tu pourras choisir le nombre de buts sur lequel tu veux parier (under/over) et tu auras accès aux prédictions de chaque match sur 18 championnats.
+translations.home.explanation: Sur ce site, tu pourras choisir parmi différents paris et tu auras accès aux prédictions de chaque match sur 24 championnats.
 translations.home.statistics: Tu peux aussi avoir accès aux statistiques des prédictions, tu pourras donc savoir sur quel championnat ou sur quelle équipe les prédictions sont les plus efficaces.
 translations.home.enjoy: Hope you'll enjoy it!
 translations.home.click: Clique ici pour voir les prédictions !
 translations.statistics.championship_statistics: Statistiques du Championnat
-translations.statistics.played_games: Matchs joués
-translations.statistics.success: Réussite globale
+translations.statistics.played_bets: Paris joués
+translations.statistics.success: Réussite globale / Joués
 translations.statistics.success_with_form: Réussite avec forme du moment
 translations.statistics.name: Nom
 translations.statistics.percentage: Pourcentage
@@ -63,3 +63,5 @@ translations.country.greece: Grèce
 translations.country.switzerland: Suisse
 translations.country.hungary: Hongrie
 translations.country.croatia: Croatie
+translations.statistics.away_success: Extérieur / Joués
+translations.statistics.home_success: Domicile / Joués

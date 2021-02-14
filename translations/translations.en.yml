@@ -23,8 +23,8 @@ translations:
     welcome: Welcome to My Football Bets!
     advises: Here, you will be given advises to help you make your bets better.
     explanation: |
-     On this website, you will be able to choose which number of goals you want to bet on (under/over) and you will
-     see what the predictions are saying for each match of 18 championships.
+     On this website, you will be able to choose between several bets and you will
+     see what the predictions are saying for each match of 24 championships.
     statistics: You can also have some help on the statistics page where you can see all succeded bets for each championship and for each team.
     enjoy: Hope you'll enjoy it!
     click: Click here to see the bets!
@@ -35,8 +35,10 @@ translations:
     combination: Combination
   statistics:
     championship_statistics: Championship Statistics
-    played_games: Played matches
-    success: General Success
+    played_bets: Played bets
+    home_success: Home
+    away_success: Away
+    success: Global Success
     success_with_form: Success with form
     name: Name
     percentage: Percentage
