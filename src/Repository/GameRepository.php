@@ -58,10 +58,10 @@ class GameRepository extends ServiceEntityRepository
 
         $qb
             ->where($qb->expr()->orX('g.homeTeam = :team', 'g.awayTeam = :team'))
-            ->andWhere($qb->expr()->isNotNull('g.goodResult'))
+            ->andWhere('g.finished = :true')
             ->orderBy('g.id', 'DESC')
             ->setMaxResults(4)
-            ->setParameters(['team' => $team])
+            ->setParameters(['team' => $team, 'true' => true])
         ;
 
         return $qb->getQuery()->getResult();
