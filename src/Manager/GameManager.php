@@ -27,8 +27,8 @@ class GameManager
         /** @var Game $game */
         foreach ($games as $game) {
             foreach ($game->getBets() as $bet) {
-                $homeBets = $betRepository->findBetsForTeams($game->getHomeTeam(), $bet->getType());
-                $awayBets = $betRepository->findBetsForTeams($game->getAwayTeam(), $bet->getType());
+                $homeBets = $betRepository->findBetsForTeams($game->getHomeTeam(), $bet);
+                $awayBets = $betRepository->findBetsForTeams($game->getAwayTeam(), $bet);
 
                 if (($nbBetsHome = count($homeBets)) === 0 || ($nbBetsAway = count($awayBets)) === 0) {
                     continue;
