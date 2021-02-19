@@ -51,7 +51,8 @@ class BetManager
         }
 
         if ($bet instanceof BothTeamsScoreBet) {
-            if ($game->getHomeTeam()->getBothTeamsScoreForm() && $game->getAwayTeam()->getBothTeamsScoreForm()) {
+            if (($bet->isBothTeamsScore() && $game->getHomeTeam()->getBothTeamsScoreForm() && $game->getAwayTeam()->getBothTeamsScoreForm())
+                || (!$bet->isBothTeamsScore() && !$game->getHomeTeam()->getBothTeamsScoreForm() && !$game->getAwayTeam()->getBothTeamsScoreForm())) {
                 return true;
             }
 
