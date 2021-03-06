@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Bet;
 use App\Entity\BothTeamsScoreBet;
 use App\Entity\Championship;
 use App\Entity\Client;
@@ -99,6 +100,9 @@ class ImportOddsForGamesOfTheDay extends Command
                                             $winnerOdd = $this->getOdd($bet['values'], 'Draw');
                                     }
                                     $gameBet->setOdd($winnerOdd);
+                                    if (null !== $winnerOdd && $winnerOdd < Bet::MINIMUM_ODD) {
+                                        $gameToUpdate->removeBet($gameBet);
+                                    }
                                 }
                             }
                         }
@@ -117,6 +121,9 @@ class ImportOddsForGamesOfTheDay extends Command
                                             $doubleChanceOdd = null;
                                     }
                                     $gameBet->setOdd($doubleChanceOdd);
+                                    if (null !== $doubleChanceOdd && $doubleChanceOdd < Bet::MINIMUM_ODD) {
+                                        $gameToUpdate->removeBet($gameBet);
+                                    }
                                 }
                             }
                         }
@@ -126,6 +133,10 @@ class ImportOddsForGamesOfTheDay extends Command
                                 if ($gameBet instanceof BothTeamsScoreBet) {
                                     $bothTeamScoreOdd = $gameBet->isBothTeamsScore() ? $this->getOdd($bet['values'], 'Yes') : $this->getOdd($bet['values'], 'No');
                                     $gameBet->setOdd($bothTeamScoreOdd);
+
+                                    if (null !== $bothTeamScoreOdd && $bothTeamScoreOdd < Bet::MINIMUM_ODD) {
+                                        $gameToUpdate->removeBet($gameBet);
+                                    }
                                 }
                             }
                         }
@@ -151,6 +162,10 @@ class ImportOddsForGamesOfTheDay extends Command
                                     }
 
                                     $gameBet->setOdd($underOverOdd);
+
+                                    if (null !== $underOverOdd && $underOverOdd < Bet::MINIMUM_ODD) {
+                                        $gameToUpdate->removeBet($gameBet);
+                                    }
                                 }
                             }
                         }

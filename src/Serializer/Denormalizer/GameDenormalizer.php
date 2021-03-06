@@ -45,7 +45,6 @@ class GameDenormalizer implements DenormalizerInterface
         $drawPercentage = 0;
         $bothTeamsScorePercentage = 0;
         $bothTeamsNotScorePercentage = 0;
-        $previsionalWinner = null;
 
         $nbGoalsExpectedMost = null;
         $nbGoalsIsSameAsExpected = null;
@@ -106,16 +105,17 @@ class GameDenormalizer implements DenormalizerInterface
                 if ($percentage > $maxResult) {
                     $maxResult = $percentage;
                     $nbGoalsExpectedMost = $totalGoals;
-
-                    if ($homeTeamScore > $awayTeamScore) {
-                        $previsionalWinner = $homeTeam;
-                    } elseif ($homeTeamScore < $awayTeamScore) {
-                        $previsionalWinner = $awayTeam;
-                    }
-                    //else do nothing, let $previsionalWinner as null for draw
                 }
             }
         }
+
+        $previsionalWinner = null;
+        if ($hometeamPercentage > $awayteamPercentage) {
+            $previsionalWinner = $homeTeam;
+        } elseif ($hometeamPercentage < $awayteamPercentage) {
+            $previsionalWinner = $awayTeam;
+        }
+        //else do nothing, let $previsionalWinner as null for draw
 
         $myWinnerOdd = $previsionalWinner === $homeTeam ? $hometeamPercentage : $awayteamPercentage;
         $winOrDraw = false;

@@ -5,8 +5,14 @@ namespace App\Repository;
 
 
 use App\Entity\Bet;
+use App\Entity\BothTeamsScoreBet;
+use App\Entity\Game;
+use App\Entity\Team;
+use App\Entity\UnderOverBet;
+use App\Entity\WinnerBet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\Expr\Join;
 
 class BetRepository extends ServiceEntityRepository
 {
@@ -25,8 +31,7 @@ FROM bet b
 LEFT JOIN game g ON b.game_id = g.id
     WHERE g.date > '$dateStart'
     AND g.date < '$dateEnd'
-    AND b.odd IS NOT NULL
-    AND b.odd > 1.39
+    AND b.odd IS NOT NULL AND b.odd > 0
 ORDER BY 
       b.form DESC,
       b.percentage DESC,
@@ -34,7 +39,6 @@ ORDER BY
       WHEN (b.my_odd - b.odd) > 0 THEN (b.my_odd - b.odd)
       WHEN (b.odd - b.my_odd) > 0 THEN (b.odd - b.my_odd)
       END ASC,
-      g.nb_match_for_teams DESC,
       b.odd DESC,
       b.my_odd DESC
 SQL;
@@ -42,6 +46,62 @@ SQL;
 
         $em = $this->getEntityManager();
         return $em->getConnection()->executeQuery($query)->fetchAll();
+    }
+
+    public function findBetsForTeams(Team $team, Bet $bet)
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $orStatement = $qb->expr()->orX();
+        $orStatement->add('g.homeTeam = :team');
+        $orStatement->add('g.awayTeam = :team');
+
+        $qb
+            ->leftJoin(Game::class, 'g', Join::WITH, 'g.id = b.game')
+            ->where($orStatement)
+            ->andWhere($qb->expr()->isNotNull('b.goodResult'))
+            ->setParameter('team', $team->getId())
+        ;
+
+        if (UnderOverBet::LESS_TWO_AND_A_HALF === $bet->getType() || UnderOverBet::PLUS_TWO_AND_A_HALF === $bet->getType()) {
+            $orBetTypeStatement = $qb->expr()->orX();
+            $orBetTypeStatement->add('b.type = :type_under');
+            $orBetTypeStatement->add('b.type = :type_over');
+
+            $qb
+                ->andWhere($orBetTypeStatement)
+                ->setParameter('type_under', UnderOverBet::LESS_TWO_AND_A_HALF)
+                ->setParameter('type_over', UnderOverBet::PLUS_TWO_AND_A_HALF)
+            ;
+        }
+
+        if (UnderOverBet::LESS_THREE_AND_A_HALF === $bet->getType() || UnderOverBet::PLUS_THREE_AND_A_HALF === $bet->getType()) {
+            $orBetTypeStatement = $qb->expr()->orX();
+            $orBetTypeStatement->add('b.type = :type_under');
+            $orBetTypeStatement->add('b.type = :type_over');
+
+            $qb
+                ->andWhere($orBetTypeStatement)
+                ->setParameter('type_under', UnderOverBet::LESS_THREE_AND_A_HALF)
+                ->setParameter('type_over', UnderOverBet::PLUS_THREE_AND_A_HALF)
+            ;
+        }
+
+        if (WinnerBet::WINNER_TYPE === $bet->getType()) {
+            $qb
+                ->andWhere('b.type = :type')
+                ->setParameter('type', WinnerBet::WINNER_TYPE)
+            ;
+        }
+
+        if (BothTeamsScoreBet::BOTH_TEAMS_GOAL_TYPE === $bet->getType()) {
+            $qb
+                ->andWhere('b.type = :type')
+                ->setParameter('type', BothTeamsScoreBet::BOTH_TEAMS_GOAL_TYPE)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
 }

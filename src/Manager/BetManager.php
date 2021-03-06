@@ -11,7 +11,7 @@ use App\Entity\WinnerBet;
 
 class BetManager
 {
-    public function getFormOfTheMomentForBet(Game $game, Bet $bet, float $formForMatch): bool
+    public function getFormOfTheMomentForBet(Game $game, Bet $bet, float $formForMatch): ?bool
     {
         $homePointMomentForm = $game->getHomeTeam()->getPointsMomentForm();
         $awayPointMomentForm = $game->getAwayTeam()->getPointsMomentForm();
@@ -50,8 +50,15 @@ class BetManager
             }
         }
 
-        if ($bet instanceof BothTeamsScoreBet && $game->getHomeTeam()->getBothTeamsScoreForm() && $game->getAwayTeam()->getBothTeamsScoreForm()) {
-            return true;
+        if ($bet instanceof BothTeamsScoreBet) {
+            if (($bet->isBothTeamsScore() && $game->getHomeTeam()->getBothTeamsScoreForm() && $game->getAwayTeam()->getBothTeamsScoreForm())
+                || (!$bet->isBothTeamsScore() && !$game->getHomeTeam()->getBothTeamsScoreForm() && !$game->getAwayTeam()->getBothTeamsScoreForm())) {
+                return true;
+            }
+
+            if (null === $game->getHomeTeam()->getBothTeamsScoreForm() && null === $game->getAwayTeam()->getBothTeamsScoreForm()) {
+                return null;
+            }
         }
 
         return false;

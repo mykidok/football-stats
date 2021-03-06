@@ -69,7 +69,7 @@ class IndexController extends AbstractController
      */
     public function statistics(Request $request)
     {
-        switch ($request->attributes->get('id')) {
+        switch ($id = $request->attributes->get('id')) {
             case '1n2':
                 $type = 'winner';
                 break;
@@ -90,14 +90,18 @@ class IndexController extends AbstractController
         $data = array_reduce($championshipRepository->findChampionshipsWithStatistics($type), function ($memo, $championship) {
             $teamData = [
                 'name' => $championship['teamName'],
-                'teamNbMatch' => $championship['teamNbMatch'],
+                'teamNbMatch' => $championship['teamNbMatchHome'] + $championship['teamNbMatchAway'],
+                'teamNbMatchHome' => $championship['teamNbMatchHome'],
+                'teamNbMatchAway' => $championship['teamNbMatchAway'],
                 'percentage' => round($championship['teamPercentage'], 3),
+                'homePercentage' => round($championship['teamHomePercentage'], 3),
+                'awayPercentage' => round($championship['teamAwayPercentage'], 3),
             ];
             if (!array_key_exists($championship['name'], $memo)) {
-
                 $memo[$championship['name']][] = [
                     'name' => $championship['name'],
                     'nbMatch' => $championship['nbMatch'],
+                    'nbMatchWithForm' => $championship['nbMatchWithForm'],
                     'logo' => $championship['logo'],
                     'championshipPercentage' => round($championship['championshipPercentage'], 2),
                     'championshipPercentageWithForm' => round($championship['championshipPercentageWithForm'], 2),
@@ -108,6 +112,7 @@ class IndexController extends AbstractController
             $memo[$championship['name']]['name'] = $championship['name'];
             $memo[$championship['name']]['teams'][] = $teamData;
             $memo[$championship['name']]['nbMatch'] = $championship['nbMatch'];
+            $memo[$championship['name']]['nbMatchWithForm'] = $championship['nbMatchWithForm'];
             $memo[$championship['name']]['logo'] = $championship['logo'];
             $memo[$championship['name']]['championshipPercentage'] = round($championship['championshipPercentage'], 2);
             $memo[$championship['name']]['championshipPercentageWithForm'] = round($championship['championshipPercentageWithForm'], 2);
@@ -116,6 +121,7 @@ class IndexController extends AbstractController
         }, []);
 
         return [
+            'id' => $id,
             'data' => $data,
         ];
     }

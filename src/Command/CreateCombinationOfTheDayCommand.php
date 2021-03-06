@@ -29,10 +29,7 @@ class CreateCombinationOfTheDayCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $championshipRepository = $this->em->getRepository(Championship::class);
-        $teams = $championshipRepository->findTeamsWithStatistics();
-
-        $this->gameManager->setPercentageForGamesOfTheDay($teams);
+        $this->gameManager->setPercentageForGamesOfTheDay();
 
         $betRepository = $this->em->getRepository(Bet::class);
         $bets = $betRepository->findBetsOfTheDayOrderByOddAndPercentage();
@@ -54,7 +51,7 @@ class CreateCombinationOfTheDayCommand extends Command
                     continue;
                 }
 
-                if (null !== $addedBet && $addedBet instanceof UnderOverBet && $betToAdd instanceof UnderOverBet && $betToAdd->getGame() === $addedBet->getGame()) {
+                if (null !== $addedBet && $betToAdd->getGame() === $addedBet->getGame()) {
                     continue;
                 }
 

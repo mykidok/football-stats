@@ -119,7 +119,7 @@ class Game
     /**
      * @var Bet[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\Bet", mappedBy="game", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Bet", mappedBy="game", cascade={"persist"}, orphanRemoval=true)
      */
     private $bets;
 
@@ -309,6 +309,14 @@ class Game
     {
         $this->bets->add($bet);
         $bet->setGame($this);
+
+        return $this;
+    }
+
+    public function removeBet(Bet $bet): self
+    {
+        $this->bets->removeElement($bet);
+        $bet->setGame(null);
 
         return $this;
     }

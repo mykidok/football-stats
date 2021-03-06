@@ -20,8 +20,6 @@ Encore
     .addEntry('app', './assets/js/app.js')
     .addEntry('logo', './assets/img/logo.png')
     .addEntry('favicon', './assets/img/favicon.ico')
-    .addEntry('english_flag', './assets/img/english_flag.png')
-    .addEntry('france_flag', './assets/img/france_flag.png')
     //.addEntry('page1', './assets/js/page1.js')
     //.addEntry('page2', './assets/js/page2.js')
 

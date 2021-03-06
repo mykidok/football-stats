@@ -2,11 +2,11 @@
 
 namespace App\Manager;
 
+use App\Entity\Bet;
 use App\Entity\BothTeamsScoreBet;
 use App\Entity\Game;
 use App\Entity\UnderOverBet;
 use App\Entity\WinnerBet;
-use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GameManager
@@ -18,66 +18,34 @@ class GameManager
         $this->em = $em;
     }
 
-    public function setPercentageForGamesOfTheDay(array $teams)
+    public function setPercentageForGamesOfTheDay()
     {
+        $betRepository = $this->em->getRepository(Bet::class);
         $gameRepository = $this->em->getRepository(Game::class);
         $games = $gameRepository->findGamesOfTheDay(new \DateTime('now'));
 
         /** @var Game $game */
         foreach ($games as $game) {
-            $i = 0;
-            $percentageThreeHalfHome = null;
-            $percentageThreeHalfAway = null;
-            $percentageTwoHalfHome = null;
-            $percentageTwoHalfAway = null;
-            $percentageWinnerAway = null;
-            $percentageWinnerHome = null;
-            $percentageBothTeamsScoreHome = null;
-            $percentageBothTeamsScoreAway = null;
-            $nbMatchHome = null;
-            $nbMatchAway = null;
-            foreach ($teams as $team) {
-                if ($team['teamName'] === $game->getHomeTeam()->getName()) {
-                    $nbMatchHome = $team['teamNbMatch'];
-                    $percentageTwoHalfHome = $team['teamPercentageTwoHalf'];
-                    $percentageThreeHalfHome = $team['teamPercentageThreeHalf'];
-                    $percentageWinnerHome = $team['teamWinnerPercentage'];
-                    $percentageBothTeamsScoreHome = $team['teamBothTeamsScorePercentage'];
-                    $i++;
+            foreach ($game->getBets() as $bet) {
+                $homeBets = $betRepository->findBetsForTeams($game->getHomeTeam(), $bet);
+                $awayBets = $betRepository->findBetsForTeams($game->getAwayTeam(), $bet);
+
+                if (($nbBetsHome = count($homeBets)) === 0 || ($nbBetsAway = count($awayBets)) === 0) {
+                    continue;
                 }
-                if ($team['teamName'] === $game->getAwayTeam()->getName()) {
-                    $nbMatchAway = $team['teamNbMatch'];
-                    $percentageTwoHalfAway = $team['teamPercentageTwoHalf'];
-                    $percentageThreeHalfAway = $team['teamPercentageThreeHalf'];
-                    $percentageWinnerAway = $team['teamWinnerPercentage'];
-                    $percentageBothTeamsScoreAway = $team['teamBothTeamsScorePercentage'];
-                    $i++;
-                }
-                if ($i === 2) {
-                    $game->setNbMatchForTeams($nbmatches = $nbMatchAway+$nbMatchHome);
-                    if ($nbmatches !== 0) {
-                        foreach ($game->getBets() as $bet) {
-                            if ($bet instanceof WinnerBet) {
-                                $bet->setPercentage(((($nbMatchHome*$percentageWinnerHome)+($nbMatchAway*$percentageWinnerAway))/($nbMatchAway+$nbMatchHome)));
-                            }
 
-                            if ($bet instanceof BothTeamsScoreBet) {
-                                $bet->setPercentage(((($nbMatchHome*$percentageBothTeamsScoreHome)+($nbMatchAway*$percentageBothTeamsScoreAway))/($nbMatchAway+$nbMatchHome)));
-                            }
+                $homeGoodBets = array_filter($homeBets, function(Bet $homeBet) {
+                    return $homeBet->isGoodResult();
+                });
 
-                            if ($bet instanceof UnderOverBet && ($bet->getType() === UnderOverBet::LESS_TWO_AND_A_HALF || $bet->getType() === UnderOverBet::PLUS_TWO_AND_A_HALF)) {
-                                $bet->setPercentage(((($nbMatchHome*$percentageTwoHalfHome)+($nbMatchAway*$percentageTwoHalfAway))/($nbMatchAway+$nbMatchHome)));
+                $awayGoodBets = array_filter($awayBets, function(Bet $awayBet) {
+                    return $awayBet->isGoodResult();
+                });
 
-                            }
+                $percentageHome = count($homeGoodBets) * 100 / $nbBetsHome;
+                $percentageAway = count($awayGoodBets) * 100 / $nbBetsAway;
 
-                            if ($bet instanceof UnderOverBet && ($bet->getType() === UnderOverBet::LESS_THREE_AND_A_HALF || $bet->getType() === UnderOverBet::PLUS_THREE_AND_A_HALF)) {
-                                $bet->setPercentage(((($nbMatchHome*$percentageThreeHalfHome)+($nbMatchAway*$percentageThreeHalfAway))/($nbMatchAway+$nbMatchHome)));
-                            }
-                        }
-                    }
-
-                    $this->em->persist($game);
-                }
+                $bet->setPercentage(((($nbBetsHome*$percentageHome)+($nbBetsAway*$percentageAway))/($nbBetsHome+$nbBetsAway)));
             }
         }
 
@@ -87,8 +55,14 @@ class GameManager
     public function setOddsForGamesOfTheDay(array $clientOdds): array
     {
         $games = [];
+        $alreadyImportedHomeTeamBets = [];
         foreach ($clientOdds as $key => $clientOdd) {
             $homeTeamName = explode('-', $key)[0];
+
+            if (\in_array($homeTeamName, $alreadyImportedHomeTeamBets, true)) {
+                continue;
+            }
+            $alreadyImportedHomeTeamBets[] = $homeTeamName;
 
             $gameRepository = $this->em->getRepository(Game::class);
 
@@ -103,25 +77,33 @@ class GameManager
                 if ($bet instanceof UnderOverBet) {
                     switch ($bet->getType()) {
                         case UnderOverBet::LESS_TWO_AND_A_HALF:
-                            $odd = $clientOdd['underOverTwo'][1]['cote'];
+                            $odd = isset($clientOdd['underOverTwo']) ? $clientOdd['underOverTwo'][1]['cote'] : null;
                             break;
                         case UnderOverBet::PLUS_TWO_AND_A_HALF:
-                            $odd = $clientOdd['underOverTwo'][0]['cote'];
+                            $odd = isset($clientOdd['underOverTwo']) ? $clientOdd['underOverTwo'][0]['cote'] : null;
                             break;
                         case UnderOverBet::LESS_THREE_AND_A_HALF:
-                            $odd = $clientOdd['underOverThree'][1]['cote'];
+                            $odd = isset($clientOdd['underOverThree']) ? $clientOdd['underOverThree'][1]['cote'] : null;
                             break;
                         case UnderOverBet::PLUS_THREE_AND_A_HALF:
-                            $odd = $clientOdd['underOverThree'][0]['cote'];
+                            $odd = isset($clientOdd['underOverThree']) ? $clientOdd['underOverThree'][0]['cote'] : null;
                             break;
                         default:
                             $odd = null;
                     }
 
+                    if (null === $odd) {
+                        continue;
+                    }
+
                     $bet->setOdd((float) str_replace(',', '.', $odd));
+
+                    if (null !== $bet->getOdd() && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
 
-                if ($bet instanceof WinnerBet && !$bet->isWinOrDraw()) {
+                if ($bet instanceof WinnerBet && !$bet->isWinOrDraw() && isset($clientOdd['winner'])) {
                     switch ($bet->getWinner()) {
                         case $game->getHomeTeam():
                             $winnerOdd = $clientOdd['winner'][0]['cote'];
@@ -134,9 +116,13 @@ class GameManager
                     }
 
                     $bet->setOdd((float) str_replace(',', '.', $winnerOdd));
+
+                    if ($winnerOdd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
 
-                if ($bet instanceof WinnerBet && $bet->isWinOrDraw()) {
+                if ($bet instanceof WinnerBet && $bet->isWinOrDraw() && isset($clientOdd['doubleChance'])) {
                     switch ($bet->getWinner()) {
                         case $game->getHomeTeam():
                             $doubleChanceOdd = $clientOdd['doubleChance'][0]['cote'];
@@ -149,12 +135,20 @@ class GameManager
                     }
 
                     $bet->setOdd((float) str_replace(',', '.', $doubleChanceOdd));
+
+                    if ($doubleChanceOdd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
 
-                if ($bet instanceof BothTeamsScoreBet) {
+                if ($bet instanceof BothTeamsScoreBet && isset($clientOdd['bothTeamsScore'])) {
                     $bothTeamsScoreOdd = $bet->isBothTeamsScore() ? $clientOdd['bothTeamsScore'][0]['cote'] : $clientOdd['bothTeamsScore'][1]['cote'];
 
                     $bet->setOdd((float) str_replace(',', '.', $bothTeamsScoreOdd));
+
+                    if ($bothTeamsScoreOdd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                        $game->removeBet($bet);
+                    }
                 }
             }
 
