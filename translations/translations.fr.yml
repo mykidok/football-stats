@@ -32,7 +32,7 @@ translations.bets.predictional_goals: Prévision
 translations.bets.yes: Oui
 translations.bets.no: Non
 translations.bets.bts: LDM
-translations.bets.bts_definition: Les 2 équipes marquent
+translations.bets.both_teams_score: Les 2 équipes marquent
 translations.combination.combination_of_the_day: Ticket du jour
 translations.bets.games: Match
 translations.combination.bet: |

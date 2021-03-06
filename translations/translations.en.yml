@@ -18,7 +18,7 @@ translations:
     yes: Yes
     no: No
     bts: BTS
-    bts_definition: Both teams score
+    both_teams_score: Both teams score
   home:
     welcome: Welcome to My Football Bets!
     advises: Here, you will be given advises to help you make your bets better.

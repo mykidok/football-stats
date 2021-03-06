@@ -51,7 +51,7 @@ class CreateCombinationOfTheDayCommand extends Command
                     continue;
                 }
 
-                if (null !== $addedBet && $addedBet instanceof UnderOverBet && $betToAdd instanceof UnderOverBet && $betToAdd->getGame() === $addedBet->getGame()) {
+                if (null !== $addedBet && $betToAdd->getGame() === $addedBet->getGame()) {
                     continue;
                 }
 

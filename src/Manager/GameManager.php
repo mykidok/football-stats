@@ -92,9 +92,13 @@ class GameManager
                             $odd = null;
                     }
 
+                    if (null === $odd) {
+                        continue;
+                    }
+
                     $bet->setOdd((float) str_replace(',', '.', $odd));
 
-                    if ($odd !== null && $bet->getOdd() < Bet::MINIMUM_ODD) {
+                    if (null !== $bet->getOdd() && $bet->getOdd() < Bet::MINIMUM_ODD) {
                         $game->removeBet($bet);
                     }
                 }
