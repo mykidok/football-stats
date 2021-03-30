@@ -35,12 +35,12 @@ LEFT JOIN game g ON b.game_id = g.id
 ORDER BY 
       b.form DESC,
       b.percentage DESC,
+      b.my_odd ASC,
       CASE
       WHEN (b.my_odd - b.odd) > 0 THEN (b.my_odd - b.odd)
       WHEN (b.odd - b.my_odd) > 0 THEN (b.odd - b.my_odd)
       END ASC,
-      b.odd DESC,
-      b.my_odd DESC
+      b.odd DESC
 SQL;
 
 

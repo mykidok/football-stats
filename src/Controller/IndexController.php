@@ -139,7 +139,7 @@ class IndexController extends AbstractController
         /** @var Combination $combination */
         foreach ($combinationRepository->findCombinationFinished() as $combination) {
             $dates[] = $combination->getDate()->format('d/m');
-            $amount = $combination->isSuccess() ? $amount + ($combination->getGeneralOdd() - Combination::BET_AMOUNT) : $amount - Combination::BET_AMOUNT;
+            $amount = $combination->isSuccess() ? $amount + ($combination->getGeneralOdd() - $combination->getBet()) : $amount - $combination->getBet();
             $payroll[] = round($amount, 2);
         }
 
