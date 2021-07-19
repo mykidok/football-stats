@@ -40,7 +40,7 @@ class ImportTeamsCommand extends Command
             $teams = $this->client->get('teams', [
                 'query' => [
                     'league' =>$championship->getApiId(),
-                    'season' => 2020,
+                    'season' => 2021,
                 ]
             ]);
 
