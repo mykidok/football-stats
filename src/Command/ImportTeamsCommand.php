@@ -33,13 +33,15 @@ class ImportTeamsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $championshipRepository = $this->em->getRepository(Championship::class);
+        $teamRepository = $this->em->getRepository(Team::class);
         $championships = $championshipRepository->findAll();
 
+        $teamsImported = [];
         /** @var Championship $championship */
         foreach ($championships as $championship) {
             $teams = $this->client->get('teams', [
                 'query' => [
-                    'league' =>$championship->getApiId(),
+                    'league' => $championship->getApiId(),
                     'season' => 2021,
                 ]
             ]);
@@ -48,7 +50,7 @@ class ImportTeamsCommand extends Command
 
             foreach ($teams['response'] as $item) {
                 $teamRepository = $this->em->getRepository(Team::class);
-
+                $teamsImported[$championship->getId()][] = $item['team']['id'];
                 /** @var Team|null $alreadyExistsTeam */
                 $alreadyExistsTeam = $teamRepository->findOneBy(['apiId' => $item['team']['id']]);
                 $item['championship'] = $championship;
@@ -77,7 +79,21 @@ class ImportTeamsCommand extends Command
                 }
             }
 
+            sleep(6);
             $output->writeln(sprintf('------ %d teams imported for %s', $i, $championship->getName()));
         }
+
+        /** @var Championship $championship */
+        foreach ($championships as $championship) {
+            /** @var Team $team */
+            foreach ($teamRepository->findBy(['championship' => $championship->getId()]) as $team) {
+                if (!in_array($team->getApiId(), $teamsImported[$championship->getId()])) {
+                    $team->setChampionship(null);
+                    $this->em->persist($team);
+                    $output->writeln(sprintf('------ %s removed from %s', $team->getName(), $championship->getName()));
+                }
+            }
+        }
+        $this->em->flush();
     }
 }

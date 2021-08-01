@@ -40,7 +40,7 @@ class Team
     private $nbGoalsPerMatchAway;
 
     /**
-     * @var Championship
+     * @var Championship|null
      * @ORM\ManyToOne(targetEntity="App\Entity\Championship")
      */
     private $championship;
