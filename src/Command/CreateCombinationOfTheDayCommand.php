@@ -76,14 +76,19 @@ class CreateCombinationOfTheDayCommand extends Command
         $kellyCriterion = (($finalPercentage * ($odd - 1)) - (1 - $finalPercentage)) / ($odd - 1);
 
         $combinationRepository = $this->em->getRepository(Combination::class);
-        $amount = 0;
+        $amount = 50;
         /** @var Combination $finishedCombination */
         foreach ($combinationRepository->findCombinationFinished() as $finishedCombination) {
             $amount = $finishedCombination->isSuccess() ? $amount + ($finishedCombination->getGeneralOdd() - $finishedCombination->getBet()) : $amount - $finishedCombination->getBet();
         }
 
+        $combinationBet = round(($amount / 5) / (1 / $kellyCriterion));
+
+        if ($combinationBet === 0.0) {
+            return $output->writeln('No combination created because no chances');
+        }
         // to divide by 5 to not bet more than 20%
-        $combination->setBet( round(($amount / 5) / (1 / $kellyCriterion)));
+        $combination->setBet($combinationBet);
         foreach ($combination->getBets() as $bet) {
             if (null === $combinationOdd = $combination->getGeneralOdd()) {
                 $combination->setGeneralOdd($bet->getOdd() * $combination->getBet());

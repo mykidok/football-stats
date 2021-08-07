@@ -47,9 +47,8 @@ class ImportHistoricsCommand extends Command
         /** @var Championship $championship */
         $championships = $championshipRepository->findAll();
 
-        $year = (int) (new \DateTime())->format('Y') - 1;
         foreach ($championships as $championship) {
-            for ($year; $year >= 2017; $year--) {
+            for ($year = (int) (new \DateTime())->format('Y') - 1; $year >= 2017; $year--) {
                 $standings = $this->client->get('standings', [
                     'query' => [
                         'league' => $championship->getApiId(),
@@ -61,7 +60,6 @@ class ImportHistoricsCommand extends Command
                     continue;
                 }
                 $championshipGoals = $this->championshipHandler->handleChampionshipGoals($standings['response'][0]);
-
 
                 if (null === ($championshipHistoric = $championshipHistoricRepository->findOneBy(['season' => $year, 'championship' => $championship]))) {
                     $championshipHistoric = (new ChampionshipHistoric())

@@ -11,6 +11,7 @@ use App\Entity\WinnerBet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\Expr\Join;
+use function Doctrine\ORM\QueryBuilder;
 
 class ChampionshipRepository extends ServiceEntityRepository
 {
@@ -117,6 +118,7 @@ class ChampionshipRepository extends ServiceEntityRepository
             ->leftJoin(Team::class, 't', Join::WITH, 'c.id = t.championship')
             ->leftJoin(Game::class, 'g', Join::WITH, 'c.id = g.championship')
             ->groupBy('c.id, teamName')
+            ->where($qb->expr()->gte('g.date', 'c.startDate'))
             ->orderBy('c.name', 'ASC')
             ->addOrderBy('teamPercentage', 'DESC')
         ;

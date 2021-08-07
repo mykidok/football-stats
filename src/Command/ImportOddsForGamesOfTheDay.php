@@ -44,6 +44,9 @@ class ImportOddsForGamesOfTheDay extends Command
 
         $clientOdds = [];
         foreach ($odds as $data) {
+            if (isset($clientOdds[$data['label']]['winner'])) {
+                continue;
+            }
             $clientOdds[$data['label']]['winner'] = $data['outcomes'];
             foreach ((array) $data['formules'] as $formule) {
                 if ($formule['marketType'] === "Plus/Moins 2,5 buts (Temps Réglementaire)") {
@@ -68,7 +71,7 @@ class ImportOddsForGamesOfTheDay extends Command
             $odds = $this->dataClient->get('odds', [
                     'query' => [
                         'league' => $championship['api_id'],
-                        'season' => 2020,
+                        'season' =>  (int) (new \DateTime($championship['start_date']))->format('Y'),
                         'bookmaker' => 6,
                         'date' => (new \DateTime())->format('Y-m-d'),
                     ]

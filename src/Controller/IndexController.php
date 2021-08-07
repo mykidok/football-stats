@@ -132,8 +132,8 @@ class IndexController extends AbstractController
      */
     public function combination()
     {
-        $payroll = [0];
-        $amount = 0;
+        $payroll = [50];
+        $amount = 50;
         $dates = [''];
         $combinationRepository = $this->entityManager->getRepository(Combination::class);
         /** @var Combination $combination */

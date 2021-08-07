@@ -4,8 +4,8 @@ translations:
     under_limit_goals: Under %nbLimit% goals
     over_limit_goals: Over %nbLimit% goals
     goals: GOALS
-    no_games: NO MATCHES
-    no_games_today: No MATCHES today
+    no_games_season: SEASON NOT STARTED
+    no_games_today: No matches today
     game: Game
     games: Games
     hour: Hour

@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Bet;
 use App\Entity\BothTeamsScoreBet;
+use App\Entity\Championship;
 use App\Entity\Game;
 use App\Entity\Team;
 use App\Entity\UnderOverBet;
@@ -58,8 +59,10 @@ SQL;
 
         $qb
             ->leftJoin(Game::class, 'g', Join::WITH, 'g.id = b.game')
+            ->leftJoin(Championship::class, 'c', Join::WITH, 'c.id = g.championship')
             ->where($orStatement)
             ->andWhere($qb->expr()->isNotNull('b.goodResult'))
+            ->andWhere($qb->expr()->gte('g.date', 'c.startDate'))
             ->setParameter('team', $team->getId())
         ;
 

@@ -37,7 +37,7 @@ class CheckRightBetCommand extends Command
             $gameDay = $this->client->get('fixtures', [
                     'query' => [
                         'league' => $championship->getApiId(),
-                        'season' => 2020,
+                        'season' => (int) $championship->getStartDate()->format('Y'),
                         'date' => (new \DateTime('yesterday'))->format('Y-m-d'),
                     ]
                 ]

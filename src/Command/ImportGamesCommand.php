@@ -35,10 +35,13 @@ class ImportGamesCommand extends Command
 
         /** @var Championship $championship */
         foreach ($championshipRepository->findAll() as $championship) {
+            if (new \DateTime() < $championship->getStartDate()) {
+                continue;
+            }
             $gameDay = $this->client->get('fixtures', [
                     'query' => [
                         'league' => $championship->getApiId(),
-                        'season' => 2020,
+                        'season' => (int) $championship->getStartDate()->format('Y'),
                         'date' => (new \DateTime('now'))->format('Y-m-d'),
                     ]
                 ]
