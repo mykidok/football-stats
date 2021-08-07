@@ -8,6 +8,11 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 
 class CombinationRepository extends ServiceEntityRepository
 {
+    /**
+     * @var string
+     */
+    public const COMBINATION_STAR_DATE = '2021-07-01';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Combination::class);
@@ -35,8 +40,10 @@ class CombinationRepository extends ServiceEntityRepository
 
         $qb
             ->where($qb->expr()->isNotNull('c.success'))
+            ->andWhere($qb->expr()->gte('c.date', ':date'))
             ->orderBy('c.id', 'DESC')
             ->setMaxResults(5)
+            ->setParameter('date', new \DateTime(self::COMBINATION_STAR_DATE))
         ;
 
         return $qb->getQuery()->getResult();
@@ -48,7 +55,9 @@ class CombinationRepository extends ServiceEntityRepository
 
         $qb
             ->where($qb->expr()->isNotNull('c.success'))
+            ->andWhere($qb->expr()->gte('c.date', ':date'))
             ->orderBy('c.id', 'ASC')
+            ->setParameter('date', new \DateTime(self::COMBINATION_STAR_DATE))
         ;
 
         return $qb->getQuery()->getResult();

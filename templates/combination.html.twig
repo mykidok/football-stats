@@ -57,7 +57,7 @@
                         </table>
                         <hr>
                         <div>
-                            {{ 'translations.combination.bet' | trans }} <span class="badge badge-primary">20 €</span>
+                            {{ 'translations.combination.bet' | trans }} <span class="badge badge-primary">{{ combination.bet }} €</span>
                         </div>
                         <div class="text-right">
                             {{ 'translations.combination.possible_win' | trans }} <span class="badge badge-primary">{{ combination.generalOdd | round(2) }} €</span>
@@ -141,6 +141,9 @@
                                     </table>
                                     {% if combination.success %}
                                         <hr>
+                                        <div>
+                                            {{ 'translations.combination.bet' | trans }} <span class="badge badge-primary">{{ combination.bet }} €</span>
+                                        </div>
                                         <div class="text-right">
                                             {{ 'translations.combination.win' | trans }} <span class="badge badge-primary">{{ combination.generalOdd | round(2) }} €</span>
                                         </div>

@@ -21,12 +21,16 @@ class TeamManager
             /** @var Team $team */
             $team = $teamRepository->findOneBy(['apiId' => $teamStanding['team']['id']]);
 
-            $homeForceAttack = 0;
-            $homeForceDefense = 0;
-            $awayForceAttack = 0;
-            $awayForceDefense = 0;
-            $nbGoalsPerMatchHome = 0;
-            $nbGoalsPerMatchAway  =0;
+            if (null === $team) {
+                continue;
+            }
+
+            $homeForceAttack = null;
+            $homeForceDefense = null;
+            $awayForceAttack = null;
+            $awayForceDefense = null;
+            $nbGoalsPerMatchHome = null;
+            $nbGoalsPerMatchAway = null;
 
             if (($homePlayedGames = $teamStanding['home']['played']) !== 0) {
                 $homeGoalsFor = $teamStanding['home']['goals']['for'];
@@ -40,8 +44,6 @@ class TeamManager
                     $homeForceAttack = ($homeGoalsFor/$homePlayedGames)/($championshipGoals['totalHomeGoalsFor']/$championshipGoals['totalHomePlayedGames']);
                     $homeForceDefense = ($homeGoalsAgainst/$homePlayedGames)/($championshipGoals['totalHomeGoalsAgainst']/$championshipGoals['totalHomePlayedGames']);
                 }
-
-
             }
 
             if (($awayPlayedGames = $teamStanding['away']['played']) !== 0) {

@@ -78,6 +78,14 @@ class Championship
      */
     private $country;
 
+    /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Assert\NotNull()
+     */
+    private $startDate;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
@@ -193,4 +201,18 @@ class Championship
 
         return $this;
     }
+
+    public function getStartDate(): ?\DateTime
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?\DateTime $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+
 }

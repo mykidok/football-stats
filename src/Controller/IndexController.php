@@ -132,14 +132,14 @@ class IndexController extends AbstractController
      */
     public function combination()
     {
-        $payroll = [0];
-        $amount = 0;
+        $payroll = [50];
+        $amount = 50;
         $dates = [''];
         $combinationRepository = $this->entityManager->getRepository(Combination::class);
         /** @var Combination $combination */
         foreach ($combinationRepository->findCombinationFinished() as $combination) {
             $dates[] = $combination->getDate()->format('d/m');
-            $amount = $combination->isSuccess() ? $amount + ($combination->getGeneralOdd() - Combination::BET_AMOUNT) : $amount - Combination::BET_AMOUNT;
+            $amount = $combination->isSuccess() ? $amount + ($combination->getGeneralOdd() - $combination->getBet()) : $amount - $combination->getBet();
             $payroll[] = round($amount, 2);
         }
 

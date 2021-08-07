@@ -52,6 +52,12 @@ class Combination
      */
     private $bets;
 
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $bet;
+
     public function __construct()
     {
         $this->bets = new ArrayCollection();
@@ -113,4 +119,15 @@ class Combination
         return $this;
     }
 
+    public function getBet(): int
+    {
+        return $this->bet;
+    }
+
+    public function setBet(int $bet): self
+    {
+        $this->bet = $bet;
+
+        return $this;
+    }
 }

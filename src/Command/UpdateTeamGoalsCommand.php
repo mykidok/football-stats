@@ -36,10 +36,14 @@ class UpdateTeamGoalsCommand extends Command
 
         /** @var Championship $championship */
         foreach ($championships as $championship) {
+            if (new \DateTime() < $championship->getStartDate()) {
+                continue;
+            }
+
             $standings = $this->client->get('standings', [
                 'query' => [
                     'league' => $championship->getApiId(),
-                    'season' => 2020,
+                    'season' => (int) $championship->getStartDate()->format('Y'),
                 ]
             ]);
 

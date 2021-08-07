@@ -133,10 +133,11 @@ class GameDenormalizer implements DenormalizerInterface
             $averageExpectedNbGoals = $nbGoalsExpectedMost;
         }
 
+        $myOdd = $myWinnerOdd === 0.0 ? (float) 1 : 100/$myWinnerOdd;
         $winnerBet = (new WinnerBet())
             ->setWinner($previsionalWinner)
             ->setWinOrDraw($winOrDraw)
-            ->setMyOdd(100/$myWinnerOdd)
+            ->setMyOdd($myOdd)
             ->setType(WinnerBet::WINNER_TYPE)
         ;
 
@@ -208,8 +209,9 @@ class GameDenormalizer implements DenormalizerInterface
         $currentYearCoeff = 8;
         $coeffs = [
             2017 => 1,
-            2018 => 3,
-            2019 => 5,
+            2018 => 2,
+            2019 => 3,
+            2020 => 5,
         ];
 
         foreach ($teamHistorics as $teamHistoric) {

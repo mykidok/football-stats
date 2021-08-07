@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Bet;
 use App\Entity\BothTeamsScoreBet;
+use App\Entity\Championship;
 use App\Entity\Game;
 use App\Entity\Team;
 use App\Entity\UnderOverBet;
@@ -35,12 +36,12 @@ LEFT JOIN game g ON b.game_id = g.id
 ORDER BY 
       b.form DESC,
       b.percentage DESC,
+      b.my_odd ASC,
       CASE
       WHEN (b.my_odd - b.odd) > 0 THEN (b.my_odd - b.odd)
       WHEN (b.odd - b.my_odd) > 0 THEN (b.odd - b.my_odd)
       END ASC,
-      b.odd DESC,
-      b.my_odd DESC
+      b.odd DESC
 SQL;
 
 
@@ -58,8 +59,10 @@ SQL;
 
         $qb
             ->leftJoin(Game::class, 'g', Join::WITH, 'g.id = b.game')
+            ->leftJoin(Championship::class, 'c', Join::WITH, 'c.id = g.championship')
             ->where($orStatement)
             ->andWhere($qb->expr()->isNotNull('b.goodResult'))
+            ->andWhere($qb->expr()->gte('g.date', 'c.startDate'))
             ->setParameter('team', $team->getId())
         ;
 
