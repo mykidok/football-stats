@@ -56,7 +56,7 @@ class ImportTeamsCommand extends Command
                 $item['championship'] = $championship;
 
                 if (null !== $alreadyExistsTeam) {
-                    if ($championship->getApiId() === $alreadyExistsTeam->getChampionship()->getApiId()) {
+                    if (null !== $alreadyExistsTeam->getChampionship() && $championship->getApiId() === $alreadyExistsTeam->getChampionship()->getApiId()) {
                         continue;
                     }
 
