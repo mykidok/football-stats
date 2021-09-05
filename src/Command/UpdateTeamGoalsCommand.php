@@ -37,6 +37,7 @@ class UpdateTeamGoalsCommand extends Command
         /** @var Championship $championship */
         foreach ($championships as $championship) {
             if (new \DateTime() < $championship->getStartDate()) {
+                sleep(6);
                 continue;
             }
 
@@ -48,6 +49,8 @@ class UpdateTeamGoalsCommand extends Command
             ]);
 
             if (empty($standings['response'])) {
+                $output->writeln(sprintf('------ No standings available for %s ------', $championship->getName()));
+                sleep(6);
                 continue;
             }
 
