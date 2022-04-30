@@ -3,10 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Bet;
-use App\Entity\Championship;
 use App\Entity\Combination;
-use App\Entity\Game;
-use App\Entity\UnderOverBet;
 use App\Manager\GameManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -34,40 +31,27 @@ class CreateCombinationOfTheDayCommand extends Command
         $betRepository = $this->em->getRepository(Bet::class);
         $bets = $betRepository->findBetsOfTheDayOrderByOddAndPercentage();
 
-        if (count($bets) < 15) {
-            return $output->writeln('Not enough games today to create combination');
-        }
-
         $combination = new Combination();
         $combination->setDate(new \DateTime('now'));
 
-        $addedBet = null;
-        $myOdd = null;
-        $percentage = null;
-        $odd = null;
         foreach ($bets as $bet) {
             /** @var Bet|null $betToAdd */
             $betToAdd = $betRepository->find($bet['id']);
 
             if (null !== $betToAdd) {
-                if ($combination->getBets()->count() === 2) {
-                    continue;
-                }
-
-                if (null !== $addedBet && $betToAdd->getGame() === $addedBet->getGame()) {
+                if ($combination->getBets()->count() === 1) {
                     continue;
                 }
 
                 $combination->addBet($betToAdd);
-                $addedBet = $betToAdd;
 
-                $odd = null === $odd ? $betToAdd->getOdd() : $odd * $betToAdd->getOdd();
-                $myOdd = null === $myOdd ? $betToAdd->getMyOdd() : $myOdd * $betToAdd->getMyOdd();
-                $percentage = null === $percentage ? $betToAdd->getPercentage() : ($percentage + $betToAdd->getPercentage()) / 2;
+                $odd = $betToAdd->getOdd();
+                $myOdd = $betToAdd->getMyOdd();
+                $percentage =$betToAdd->getPercentage();
             }
         }
 
-        if ($combination->getBets()->count() < 2) {
+        if ($combination->getBets()->count() === 0) {
             return $output->writeln('Not enough bets today to create combination');
         }
 
@@ -82,12 +66,13 @@ class CreateCombinationOfTheDayCommand extends Command
             $amount = $finishedCombination->isSuccess() ? $amount + ($finishedCombination->getGeneralOdd() - $finishedCombination->getBet()) : $amount - $finishedCombination->getBet();
         }
 
-        $combinationBet = round(($amount / 5) / (1 / $kellyCriterion));
+        // to divide by 2 to not bet more than 50%
+        $combinationBet = round(($amount / 2) / (1 / $kellyCriterion));
 
-        if ($combinationBet === 0.0) {
+        if ($combinationBet < 1) {
             return $output->writeln('No combination created because no chances');
         }
-        // to divide by 5 to not bet more than 20%
+
         $combination->setBet($combinationBet);
         foreach ($combination->getBets() as $bet) {
             if (null === $combinationOdd = $combination->getGeneralOdd()) {
