@@ -11,7 +11,7 @@ class CombinationRepository extends ServiceEntityRepository
     /**
      * @var string
      */
-    public const COMBINATION_STAR_DATE = '2021-07-01';
+    public const COMBINATION_START_DATE = '2022-07-01';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -43,7 +43,7 @@ class CombinationRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->gte('c.date', ':date'))
             ->orderBy('c.id', 'DESC')
             ->setMaxResults(5)
-            ->setParameter('date', new \DateTime(self::COMBINATION_STAR_DATE))
+            ->setParameter('date', new \DateTime(self::COMBINATION_START_DATE))
         ;
 
         return $qb->getQuery()->getResult();
@@ -57,7 +57,7 @@ class CombinationRepository extends ServiceEntityRepository
             ->where($qb->expr()->isNotNull('c.success'))
             ->andWhere($qb->expr()->gte('c.date', ':date'))
             ->orderBy('c.id', 'ASC')
-            ->setParameter('date', new \DateTime(self::COMBINATION_STAR_DATE))
+            ->setParameter('date', new \DateTime(self::COMBINATION_START_DATE))
         ;
 
         return $qb->getQuery()->getResult();
