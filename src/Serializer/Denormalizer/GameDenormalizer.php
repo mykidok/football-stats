@@ -29,11 +29,15 @@ class GameDenormalizer implements DenormalizerInterface
     public function denormalize($data, $class, $format = null, array $context = array()): ?Game
     {
         $teamRepository = $this->em->getRepository(Team::class);
-        /** @var Team $homeTeam */
+        /** @var Team|null $homeTeam */
         $homeTeam = $teamRepository->findOneBy(['apiId' => $data['teams']['home']['id']]);
 
-        /** @var Team $awayTeam */
+        /** @var Team|null $awayTeam */
         $awayTeam = $teamRepository->findOneBy(['apiId' => $data['teams']['away']['id']]);
+
+        if (null === $homeTeam || null === $awayTeam) {
+            return null;
+        }
 
         $maxResult = 0;
         $lessThanTwoPercentage = 0;

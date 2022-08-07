@@ -32,7 +32,7 @@ FROM bet b
 LEFT JOIN game g ON b.game_id = g.id
     WHERE g.date > '$dateStart'
     AND g.date < '$dateEnd'
-    AND b.odd IS NOT NULL AND b.odd > 0
+    AND b.odd IS NOT NULL AND b.odd > 1.49
 ORDER BY 
       b.form DESC,
       b.percentage DESC,
