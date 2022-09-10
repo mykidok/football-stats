@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Championship;
 use App\Entity\Client;
+use App\Entity\Payroll;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,5 +59,15 @@ class UpdateChampionshipDateCommand extends Command
             $this->em->flush();
             $output->writeln(sprintf('------ Start date updated for %s ------', $championshipExists->getName()));
         }
+
+        $payroll = (new Payroll())
+            ->setDate(new \DateTime())
+            ->setAmount(50)
+        ;
+
+        $this->em->persist($payroll);
+        $this->em->flush();
+
+        $output->writeln('------ Starting payroll created ------');
     }
 }

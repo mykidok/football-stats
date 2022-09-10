@@ -209,13 +209,14 @@ class GameDenormalizer implements DenormalizerInterface
         /** @var TeamHistoric[] $teamHistorics */
         $teamHistorics = $teamHistoricRepository->findBy(['team' => $team], ['season' => 'ASC']);
 
-        // 8 is current year coeff
-        $currentYearCoeff = 8;
+        // 13 is current year coeff
+        $currentYearCoeff = 13;
         $coeffs = [
             2017 => 1,
             2018 => 2,
             2019 => 3,
             2020 => 5,
+            2021 => 8,
         ];
 
         foreach ($teamHistorics as $teamHistoric) {

@@ -62,4 +62,19 @@ class CombinationRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findLastCombinationsForRising()
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb
+            ->where($qb->expr()->isNotNull('c.success'))
+            ->andWhere($qb->expr()->gte('c.date', ':date'))
+            ->orderBy('c.id', 'ASC')
+            ->setMaxResults(4)
+            ->setParameter('date', new \DateTime(self::COMBINATION_START_DATE))
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
 }

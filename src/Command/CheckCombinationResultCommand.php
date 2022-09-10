@@ -4,7 +4,9 @@ namespace App\Command;
 
 use App\Entity\Combination;
 use App\Entity\Game;
+use App\Entity\Payroll;
 use App\Repository\CombinationRepository;
+use App\Repository\PayrollRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,13 +46,26 @@ class CheckCombinationResultCommand extends Command
             }
         }
 
+        /** @var PayrollRepository $payrollRepository */
+        $payrollRepository = $this->em->getRepository(Payroll::class);
+        /** @var Payroll $lastPayroll */
+        $lastPayroll = $payrollRepository->findLastPayroll()[0];
+
         if ($i !== $lastCombination->getBets()->count()) {
             $lastCombination->setSuccess(false);
+            $amount = $lastPayroll->getAmount() - $lastCombination->getBet();
         } else {
             $lastCombination->setSuccess(true);
+            $amount = $lastPayroll->getAmount() + ($lastCombination->getGeneralOdd() - $lastCombination->getBet());
         }
 
+        $payroll = (new Payroll())
+            ->setDate(new \DateTime('1 day ago'))
+            ->setAmount($amount)
+        ;
+
         $this->em->persist($lastCombination);
+        $this->em->persist($payroll);
         $this->em->flush();
 
         $output->writeln('Combination updated !');
